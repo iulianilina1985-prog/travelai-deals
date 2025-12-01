@@ -1,0 +1,21 @@
+.react-datepicker__day--in-range {
+  background-color: rgba(37, 99, 235, 0.2); /* albastru deschis */
+  color: #1d4ed8; /* text albastru */
+}
+
+.react-datepicker__day--in-selecting-range {
+  background-color: rgba(37, 99, 235, 0.15);
+}
+
+.react-datepicker__day--selected,
+.react-datepicker__day--range-start,
+.react-datepicker__day--range-end {
+  background-color: #2563eb; /* albastru intens */
+  color: white;
+  border-radius: 50%;
+}
+
+.react-datepicker__day--keyboard-selected {
+  background-color: #2563eb !important;
+  color: white !important;
+}
