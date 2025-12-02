@@ -31,6 +31,7 @@ import {
   getAllChats,
   deleteChat,
 } from "../../services/chatService";
+console.log("ENV LIVE:", import.meta.env);
 
 // ======================================================
 // COMPONENTĂ PRINCIPALĂ
