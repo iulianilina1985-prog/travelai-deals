@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 const Footer = () => {
   return (
     <footer className="bg-background border-t border-border py-6 mt-16">
-      <div className="max-w-7xl mx-auto px-6 text-center space-y-2">
+      <div className="max-w-7xl mx-auto px-6 text-center space-y-3">
 
         {/* 🔹 Linkuri legale */}
         <div className="flex flex-wrap justify-center gap-4 text-sm text-muted-foreground">
@@ -26,10 +26,23 @@ const Footer = () => {
 
           <span className="text-muted-foreground">•</span>
 
+          <Link to="/afiliere-disclosure" className="hover:text-foreground transition">
+            Disclosure Afiliere
+          </Link>
+
+          <span className="text-muted-foreground">•</span>
+
           <Link to="/contact" className="hover:text-foreground transition">
             Contact
           </Link>
         </div>
+
+        {/* 🔹 Text legal affiliate disclosure (obligatoriu) */}
+        <p className="text-xs text-muted-foreground max-w-3xl mx-auto leading-relaxed px-4">
+          TravelAI Deals utilizează linkuri de afiliere către parteneri precum Booking.com, 
+          Klook, Trip.com, Momondo și alții. Este posibil să primim un comision dacă efectuați 
+          o rezervare prin linkurile afișate, fără costuri suplimentare pentru dumneavoastră.
+        </p>
 
         {/* 🔹 Copyright */}
         <p className="text-xs text-muted-foreground">

@@ -24,6 +24,7 @@ import ResetPasswordPage from "./pages/user-profile/components/reset-password";
 import CookiePolicy from "./pages/legal/CookiePolicy";
 import ContactPage from "./pages/legal/contact";
 import Hotels from "./pages/hotels/Hotels";
+import AfiliereDisclosure from "./pages/legal/AfiliereDisclosure";
 
 import CheckoutSuccess from "./pages/payments/CheckoutSuccess";
 import CheckoutCancel from "./pages/payments/CheckoutCancel";
@@ -53,6 +54,7 @@ const Routes = () => {
           <Route path="/politica-cookie" element={<CookiePolicy />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/hotels" element={<Hotels />} />
+          <Route path="/afiliere-disclosure" element={<AfiliereDisclosure />} />
 
           <Route path="/checkout-success" element={<CheckoutSuccess />} />
           <Route path="/checkout-cancel" element={<CheckoutCancel />} />
