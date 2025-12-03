@@ -20,6 +20,7 @@ const Header = () => {
     { label: "Chat", path: "/ai-chat-interface", icon: "MessageCircle" },
     { label: "Ofertele mele", path: "/my-offers-dashboard", icon: "Gift" },
     { label: "Profil", path: "/user-profile", icon: "User" },
+    { label: "Hoteluri", path: "/hotels", icon: "Building2" },
   ];
 
   const isActivePath = (path) => location?.pathname === path;
