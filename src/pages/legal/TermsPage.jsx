@@ -200,7 +200,7 @@ const TermsPage = () => {
         </div>
       </div>
 
-      <Footer />
+      
     </div>
   );
 };

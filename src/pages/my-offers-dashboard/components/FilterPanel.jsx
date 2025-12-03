@@ -5,7 +5,7 @@ import Input from "../../../components/ui/Input";
 import Select from "../../../components/ui/Select";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import "./datepicker-custom.css"; // 🎨 Stil pentru zilele colorate
+import "./datepicker-custom.css";
 
 const FilterPanel = ({
   filters,
@@ -13,15 +13,15 @@ const FilterPanel = ({
   onClearFilters,
   isCollapsed,
   onToggleCollapse,
-  onApplyFilters, // butonul „Caută”
+  onApplyFilters,
 }) => {
-  // 🔹 Tipuri de oferte
+  // 🔹 Tipuri de oferte — EXTINS
   const dealTypeOptions = [
     { value: "all", label: "Toate tipurile" },
-    { value: "flight", label: "Zboruri" },
-    { value: "hotel", label: "Hoteluri" },
-    { value: "package", label: "Pachete complete" },
-    { value: "car", label: "Închirieri auto" },
+    { value: "flight", label: "Zboruri ✈️" },
+    { value: "hotel", label: "Hoteluri 🏨" },
+    { value: "package", label: "Pachete complete 🎁" },
+    { value: "car", label: "Rent a Car 🚗" },
   ];
 
   // 🔹 Sortare
@@ -33,14 +33,14 @@ const FilterPanel = ({
     { value: "rating", label: "Rating înalt" },
   ];
 
-  // 🔹 State pentru selecția intervalului
+  // 🔹 Perioadă
   const [dateRange, setDateRange] = useState([
     filters?.startDate ? new Date(filters.startDate) : null,
     filters?.endDate ? new Date(filters.endDate) : null,
   ]);
   const [startDate, endDate] = dateRange;
 
-  // sincronizare cu filtrele globale
+  // Actualizăm global filters când alegem datele
   useEffect(() => {
     onFiltersChange({
       ...filters,
@@ -49,7 +49,6 @@ const FilterPanel = ({
     });
   }, [startDate, endDate]);
 
-  // funcție auxiliară
   const handleFilterChange = (key, value) => {
     onFiltersChange({
       ...filters,
@@ -59,7 +58,8 @@ const FilterPanel = ({
 
   return (
     <div className="bg-card border border-border rounded-lg overflow-hidden">
-      {/* 🔹 Header mobil */}
+      
+      {/* Header mobile */}
       <div className="md:hidden flex items-center justify-between p-4 border-b border-border">
         <h3 className="font-semibold text-foreground">Filtre și sortare</h3>
         <Button variant="ghost" size="icon" onClick={onToggleCollapse}>
@@ -67,18 +67,18 @@ const FilterPanel = ({
         </Button>
       </div>
 
-      {/* 🔹 Conținut */}
       <div className={`${isCollapsed ? "hidden md:block" : "block"}`}>
         <div className="p-4 space-y-4">
-          {/* 🔎 Căutare generală */}
+
+          {/* 🔍 Căutare */}
           <Input
             type="search"
-            placeholder="Caută oferte..."
+            placeholder="Caută destinații, orașe, hoteluri..."
             value={filters?.search || ""}
             onChange={(e) => handleFilterChange("search", e.target.value)}
           />
 
-          {/* 🏙 Destinație liberă */}
+          {/* 🏙 Destinație */}
           <Input
             type="text"
             label="Destinație"
@@ -87,7 +87,7 @@ const FilterPanel = ({
             onChange={(e) => handleFilterChange("destination", e.target.value)}
           />
 
-          {/* 🧳 Tip ofertă */}
+          {/* 🎁 Tip ofertă */}
           <Select
             label="Tip ofertă"
             options={dealTypeOptions}
@@ -95,7 +95,7 @@ const FilterPanel = ({
             onChange={(value) => handleFilterChange("dealType", value)}
           />
 
-          {/* 💶 Interval de preț */}
+          {/* 💶 Preț */}
           <div className="grid grid-cols-2 gap-2">
             <Input
               type="number"
@@ -115,19 +115,20 @@ const FilterPanel = ({
             />
           </div>
 
-          {/* 📅 Interval de date */}
+          {/* 📅 Interval date */}
           <div>
             <label className="text-sm font-medium text-foreground">
               Perioada călătoriei
             </label>
+
             <DatePicker
               selectsRange
               startDate={startDate}
               endDate={endDate}
               onChange={(update) => setDateRange(update)}
-              minDate={new Date()} // 🔒 Blochează trecutul
+              minDate={new Date()}
               dateFormat="dd/MM/yyyy"
-              placeholderText="Selectează perioada"
+              placeholderText="Selectează perioada..."
               monthsShown={2}
               showMonthDropdown
               showYearDropdown
@@ -144,7 +145,7 @@ const FilterPanel = ({
             onChange={(value) => handleFilterChange("sortBy", value)}
           />
 
-          {/* 🧭 Butoane acțiune */}
+          {/* ACTION BUTTONS */}
           <div className="flex flex-col gap-2 pt-3">
             <Button
               variant="default"
