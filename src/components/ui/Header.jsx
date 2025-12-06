@@ -31,8 +31,8 @@ const Header = () => {
     <header className="fixed top-0 left-0 right-0 z-100 bg-background/95 backdrop-blur-sm border-b border-border">
       <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-
-          {/* ✅ LOGO */}
+          
+          {/* LOGO */}
           <div className="flex-shrink-0">
             <Link to="/" className="flex items-center space-x-2">
               <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
@@ -44,7 +44,7 @@ const Header = () => {
             </Link>
           </div>
 
-          {/* ✅ NAV DESKTOP */}
+          {/* DESKTOP NAV */}
           <nav className="hidden md:flex items-center space-x-1">
             {isAuthenticated ? (
               <>
@@ -63,7 +63,7 @@ const Header = () => {
                   </Link>
                 ))}
 
-                {/* 👑 Buton vizibil doar pentru admin */}
+                {/* ADMIN BUTTON */}
                 {userProfile?.roles?.includes("admin") && (
                   <Link
                     to="/admin-dashboard"
@@ -90,12 +90,26 @@ const Header = () => {
               </>
             ) : (
               <>
+                {/* PENTRU NELOGAȚI — CAUTĂ OFERTE */}
+                <Link
+                  to="/cauta-oferte"
+                  className={`nav-item ${
+                    isActivePath("/cauta-oferte") ? "active" : ""
+                  }`}
+                >
+                  <div className="flex items-center space-x-2">
+                    <Icon name="Search" size={18} />
+                    <span>Caută oferte</span>
+                  </div>
+                </Link>
+
                 <button
                   onClick={() => navigate("/login")}
                   className="ml-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
                 >
                   Autentificare
                 </button>
+
                 <button
                   onClick={() => navigate("/register")}
                   className="ml-2 bg-transparent border border-blue-600 text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-600 hover:text-white transition"
@@ -106,7 +120,7 @@ const Header = () => {
             )}
           </nav>
 
-          {/* ✅ MOBILE BUTTON */}
+          {/* MOBILE MENU BUTTON */}
           <div className="md:hidden">
             <Button
               variant="ghost"
@@ -120,10 +134,11 @@ const Header = () => {
         </div>
       </div>
 
-      {/* ✅ MENIU MOBIL */}
+      {/* MOBILE NAV */}
       {isMobileMenuOpen && (
         <div className="md:hidden absolute top-16 left-0 right-0 bg-background border-b border-border shadow-elevated animate-slide-down">
           <nav className="px-4 py-4 space-y-2">
+
             {isAuthenticated ? (
               <>
                 {navigationItems.map((item) => (
@@ -142,7 +157,6 @@ const Header = () => {
                   </Link>
                 ))}
 
-                {/* 👑 Buton admin și în mobil */}
                 {userProfile?.roles?.includes("admin") && (
                   <Link
                     to="/admin-dashboard"
@@ -171,6 +185,16 @@ const Header = () => {
               </>
             ) : (
               <>
+                {/* MOBILE — PENTRU NELOGAȚI */}
+                <Link
+                  to="/cauta-oferte"
+                  onClick={closeMobileMenu}
+                  className="flex items-center space-x-3 px-4 py-3 rounded-lg text-foreground hover:bg-muted transition"
+                >
+                  <Icon name="Search" size={20} />
+                  <span className="font-medium">Caută oferte</span>
+                </Link>
+
                 <button
                   onClick={() => {
                     closeMobileMenu();
@@ -180,6 +204,7 @@ const Header = () => {
                 >
                   Autentificare
                 </button>
+
                 <button
                   onClick={() => {
                     closeMobileMenu();
@@ -195,7 +220,7 @@ const Header = () => {
         </div>
       )}
 
-      {/* ✅ BACKDROP mobil */}
+      {/* BACKDROP */}
       {isMobileMenuOpen && (
         <div
           className="md:hidden fixed inset-0 top-16 bg-black/20 backdrop-blur-xs z-90"

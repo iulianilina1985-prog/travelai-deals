@@ -2,6 +2,10 @@ import React, { useState } from "react";
 import Header from "../../components/ui/Header";
 import Footer from "../../components/ui/Footer";
 import AuthModal from "../../components/AuthModal";
+import TravelGuidesSection from "./components/TravelGuidesSection";
+
+// 🔥 Noua secțiune de conținut travel
+import FeaturedDestinationsSection from "./components/FeaturedDestinationsSection";
 
 import HeroSection from "./components/HeroSection";
 import FeaturesSection from "./components/FeaturesSection";
@@ -20,7 +24,7 @@ const HomePage = () => {
   return (
     <div className="relative min-h-screen flex flex-col text-foreground overflow-hidden">
 
-      {/* 🌅 Background doar in prima zona (hero) */}
+      {/* 🌅 Background doar în prima zonă (hero) */}
       <div className="absolute top-0 left-0 w-full h-[550px] -z-10 overflow-hidden">
         <img
           src="/assets/images/frontimage.png"
@@ -41,15 +45,18 @@ const HomePage = () => {
         {/* 🔥 Secțiune parteneri logo */}
         <PartnersSection />
 
+        {/* 🗺️ Secțiune cu destinații — OBLIGATORIE pentru Travelpayouts */}
+        <FeaturedDestinationsSection />
+
+        {/* 🔥 GHIDURI TRAVEL – Conținut editorial pentru Travelpayouts */}
+        <TravelGuidesSection />
+
         <StatsSection />
         <HowItWorksSection />
         <FeaturesSection />
         <TestimonialsSection />
         <CTASection onStart={openAuthModal} />
       </main>
-
-      
-
       {showAuthModal && <AuthModal onClose={closeAuthModal} />}
     </div>
   );

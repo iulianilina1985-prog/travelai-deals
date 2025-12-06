@@ -25,6 +25,11 @@ import CookiePolicy from "./pages/legal/CookiePolicy";
 import ContactPage from "./pages/legal/contact";
 import Hotels from "./pages/hotels/Hotels";
 import AfiliereDisclosure from "./pages/legal/AfiliereDisclosure";
+import GuideDestinatii2025 from "./pages/guides/GuideDestinatii2025";
+import GuideBileteAvion from "./pages/guides/GuideBileteAvion";
+import GuideHoteluri from "./pages/guides/GuideHoteluri";
+
+import OffersPage from "./pages/offers"; // 🔥 PAGINA CORECTĂ
 
 import CheckoutSuccess from "./pages/payments/CheckoutSuccess";
 import CheckoutCancel from "./pages/payments/CheckoutCancel";
@@ -39,13 +44,14 @@ const Routes = () => {
       <ErrorBoundary>
         <ScrollToTop />
 
-        {/* 🔥 Header vizibil pe toate paginile */}
+        {/* Header global */}
         <Header />
 
-        {/* 🔥 Cookie Banner integrat corect în Router */}
+        {/* Cookie Banner global */}
         <CookieBanner />
 
         <RouterRoutes>
+
           {/* Publice */}
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
@@ -55,6 +61,12 @@ const Routes = () => {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/hotels" element={<Hotels />} />
           <Route path="/afiliere-disclosure" element={<AfiliereDisclosure />} />
+          <Route path="/ghiduri/destinatii-2025" element={<GuideDestinatii2025 />} />
+          <Route path="/ghiduri/bilete-ieftine" element={<GuideBileteAvion />} />
+          <Route path="/ghiduri/rezervare-hotel" element={<GuideHoteluri />} />
+
+          {/* 🔥 Noua pagină de căutare */}
+          <Route path="/cauta-oferte" element={<OffersPage />} />
 
           <Route path="/checkout-success" element={<CheckoutSuccess />} />
           <Route path="/checkout-cancel" element={<CheckoutCancel />} />
@@ -100,7 +112,7 @@ const Routes = () => {
             }
           />
 
-          {/* Admin-only */}
+          {/* Admin */}
           <Route
             path="/admin-dashboard"
             element={
@@ -112,10 +124,12 @@ const Routes = () => {
 
           {/* 404 */}
           <Route path="*" element={<NotFound />} />
+
         </RouterRoutes>
 
-        {/* 🔥 Footer vizibil pe toate paginile */}
+        {/* Footer global */}
         <Footer />
+
       </ErrorBoundary>
     </BrowserRouter>
   );
