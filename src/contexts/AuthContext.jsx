@@ -18,7 +18,7 @@ export const AuthProvider = ({ children }) => {
   const [profileLoading, setProfileLoading] = useState(false);
 
   // ===========================================================
-  // LOAD PROFILE & ROLES
+  // LOAD PROFILE + ROLES
   // ===========================================================
   const loadProfile = async (userId) => {
     if (!userId) return;
@@ -26,7 +26,6 @@ export const AuthProvider = ({ children }) => {
     setProfileLoading(true);
 
     try {
-      // profile
       const { data: profile, error: profileError } = await supabase
         .from("user_profiles")
         .select("*")
@@ -35,7 +34,6 @@ export const AuthProvider = ({ children }) => {
 
       if (profileError) throw profileError;
 
-      // roles
       const { data: rolesData, error: rolesError } = await supabase
         .from("user_roles")
         .select("roles(name)")
@@ -43,7 +41,7 @@ export const AuthProvider = ({ children }) => {
 
       if (rolesError) throw rolesError;
 
-      const roles = rolesData?.map(r => r.roles?.name).filter(Boolean) || [];
+      const roles = rolesData?.map((r) => r.roles?.name).filter(Boolean) || [];
 
       setUserProfile({ ...profile, roles });
     } catch (err) {
@@ -59,12 +57,12 @@ export const AuthProvider = ({ children }) => {
   };
 
   // ===========================================================
-  // AUTH STATE HANDLER
+  // AUTH STATE HANDLER (STABILIZAT)
   // ===========================================================
   const handleAuthChange = async (event, session) => {
     const userData = session?.user || null;
 
-    // if logout
+    // If session is null -> logout / no session
     if (!session) {
       setUser(null);
       clearProfile();
@@ -72,15 +70,13 @@ export const AuthProvider = ({ children }) => {
       return;
     }
 
-    // set user
     setUser(userData);
 
-    // load profile
     await loadProfile(userData.id);
 
     setLoading(false);
 
-    // FIRST LOGIN ONLY → accept terms/privacy automatically
+    // Auto-accept terms on first login
     if (event === "SIGNED_IN") {
       try {
         await supabase
@@ -99,27 +95,45 @@ export const AuthProvider = ({ children }) => {
   };
 
   // ===========================================================
-  // INITIAL LOAD + SUBSCRIBE TO AUTH EVENTS
+  // INITIAL LOAD + FIX PENTRU MOBIL / PWA
   // ===========================================================
   useEffect(() => {
     let ignore = false;
 
     const init = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!ignore) await handleAuthChange("INITIAL_LOAD", session);
+      try {
+        // 🔥 FIX: Safari / Chrome Mobile / PWA nu trimit token instant
+        await supabase.auth.refreshSession();
+
+        const { data: { session }, error } = await supabase.auth.getSession();
+
+        if (error) {
+          console.error("getSession error:", error);
+          if (!ignore) setLoading(false);
+          return;
+        }
+
+        // 🔥 Dacă sesiunea e null, trebuie ORICUM să ieșim din loading
+        await handleAuthChange("INITIAL_LOAD", session);
+
+      } catch (err) {
+        console.error("Init session error:", err);
+        if (!ignore) setLoading(false);
+      }
     };
 
     init();
 
+    // Subscribe to auth changes
     const { data: subscription } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        if (!ignore) handleAuthChange(event, session);
+      async (event, session) => {
+        if (!ignore) await handleAuthChange(event, session);
       }
     );
 
     return () => {
       ignore = true;
-      subscription.unsubscribe();
+      subscription?.unsubscribe?.();
     };
   }, []);
 
