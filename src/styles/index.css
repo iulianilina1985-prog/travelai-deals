@@ -10,3 +10,12 @@ body {
   font-family: inherit;
   margin: unset;
 }
+/* Ascundem scrollbar-ul orizontal pentru nav-ul de taburi */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE / Edge */
+  scrollbar-width: none;    /* Firefox */
+}

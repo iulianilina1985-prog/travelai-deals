@@ -204,8 +204,14 @@ const MyOffersDashboard = () => {
 
           {/* TABS */}
           <div className="border-b mb-6">
-            <nav className="flex space-x-8">
-              
+            <nav className="
+              flex 
+              space-x-6 
+              overflow-x-auto 
+              no-scrollbar 
+              py-2
+              sm:justify-start
+            ">
               {/* ACTIVE DEALS */}
               <button
                 onClick={() => setActiveTab("deals")}
