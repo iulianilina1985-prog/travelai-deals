@@ -7,7 +7,7 @@ import Icon from "../../components/AppIcon";
 
 const TermsPage = () => {
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col pt-24 md:pt-28">
       <Header />
 
       {/* HERO */}

@@ -31,7 +31,7 @@ const ContactPage = () => {
   };
 
   return (
-    <div className="bg-background min-h-screen flex flex-col">
+    <div className="bg-background min-h-screen flex flex-col pt-24 md:pt-28">
       <Header />
 
       {/* HERO */}
