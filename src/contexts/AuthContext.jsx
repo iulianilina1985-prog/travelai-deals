@@ -18,7 +18,7 @@ export const AuthProvider = ({ children }) => {
   const [profileLoading, setProfileLoading] = useState(false);
 
   // ===========================================================
-  // LOAD PROFILE + ROLES
+  // LOAD PROFILE & ROLES
   // ===========================================================
   const loadProfile = async (userId) => {
     if (!userId) return;
@@ -26,6 +26,7 @@ export const AuthProvider = ({ children }) => {
     setProfileLoading(true);
 
     try {
+      // profile
       const { data: profile, error: profileError } = await supabase
         .from("user_profiles")
         .select("*")
@@ -34,6 +35,7 @@ export const AuthProvider = ({ children }) => {
 
       if (profileError) throw profileError;
 
+      // roles
       const { data: rolesData, error: rolesError } = await supabase
         .from("user_roles")
         .select("roles(name)")
@@ -41,7 +43,7 @@ export const AuthProvider = ({ children }) => {
 
       if (rolesError) throw rolesError;
 
-      const roles = rolesData?.map((r) => r.roles?.name).filter(Boolean) || [];
+      const roles = rolesData?.map(r => r.roles?.name).filter(Boolean) || [];
 
       setUserProfile({ ...profile, roles });
     } catch (err) {
@@ -57,11 +59,12 @@ export const AuthProvider = ({ children }) => {
   };
 
   // ===========================================================
-  // HANDLE AUTH EVENTS
+  // AUTH STATE HANDLER
   // ===========================================================
   const handleAuthChange = async (event, session) => {
     const userData = session?.user || null;
 
+    // if logout
     if (!session) {
       setUser(null);
       clearProfile();
@@ -69,10 +72,15 @@ export const AuthProvider = ({ children }) => {
       return;
     }
 
+    // set user
     setUser(userData);
+
+    // load profile
     await loadProfile(userData.id);
+
     setLoading(false);
 
+    // FIRST LOGIN ONLY → accept terms/privacy automatically
     if (event === "SIGNED_IN") {
       try {
         await supabase
@@ -85,70 +93,47 @@ export const AuthProvider = ({ children }) => {
           })
           .eq("id", userData.id);
       } catch (err) {
-        console.warn("Auto-update terms failed:", err);
+        console.warn("Auto-terms update failed:", err);
       }
     }
   };
 
   // ===========================================================
-  // INITIAL SESSION LOAD
+  // INITIAL LOAD + SUBSCRIBE TO AUTH EVENTS
   // ===========================================================
   useEffect(() => {
     let ignore = false;
 
     const init = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!ignore) await handleAuthChange("INITIAL_LOAD", session);
-      } catch (err) {
-        console.error("Init session error:", err);
-        if (!ignore) setLoading(false);
-      }
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!ignore) await handleAuthChange("INITIAL_LOAD", session);
     };
 
     init();
 
     const { data: subscription } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (!ignore) await handleAuthChange(event, session);
+      (event, session) => {
+        if (!ignore) handleAuthChange(event, session);
       }
     );
 
     return () => {
       ignore = true;
-      subscription?.unsubscribe?.();
+      subscription.unsubscribe();
     };
   }, []);
 
   // ===========================================================
-  // SIGN IN (IMMEDIATE USER SET)
+  // SIGN IN / OUT / UPDATE PROFILE
   // ===========================================================
   const signIn = async (email, password) => {
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
-
-      if (error) return { error };
-
-      const loggedUser = data?.user;
-
-      if (loggedUser) {
-        setUser(loggedUser);
-        await loadProfile(loggedUser.id);
-        setLoading(false);
-      }
-
-      return { data };
+      return await supabase.auth.signInWithPassword({ email, password });
     } catch (err) {
       return { error: { message: "Network error" } };
     }
   };
 
-  // ===========================================================
-  // SIGN OUT
-  // ===========================================================
   const signOut = async () => {
     try {
       const { error } = await supabase.auth.signOut();
@@ -162,9 +147,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // ===========================================================
-  // UPDATE PROFILE
-  // ===========================================================
   const updateProfile = async (updates) => {
     if (!user) return { error: { message: "No user logged in" } };
 
