@@ -1,4 +1,5 @@
 // src/pages/legal/TermsPage.jsx
+
 import React from "react";
 import Header from "../../components/ui/Header";
 import Footer from "../../components/ui/Footer";
@@ -10,33 +11,40 @@ const TermsPage = () => {
       <Header />
 
       {/* HERO */}
-      <div className="w-full bg-gradient-to-r from-primary/20 via-primary/10 to-secondary/20 py-20 px-6 text-center border-b border-border shadow-inner">
-        <h1 className="text-5xl font-bold text-foreground mb-4">
+      <div className="w-full bg-gradient-to-r from-primary/20 via-primary/10 to-secondary/20 
+                      py-14 md:py-20 px-4 md:px-6 text-center border-b border-border shadow-inner">
+        <h1 className="text-3xl md:text-5xl font-bold text-foreground mb-4">
           Termeni și Condiții 📘
         </h1>
-        <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+
+        <p className="text-muted-foreground text-base md:text-lg max-w-2xl mx-auto">
           Consultă regulile, drepturile și obligațiile privind utilizarea TravelAI Deals.
         </p>
-        <p className="text-sm text-muted-foreground mt-4">
+
+        <p className="text-xs md:text-sm text-muted-foreground mt-4">
           Ultima actualizare: {new Date().toLocaleDateString("ro-RO")}
         </p>
       </div>
 
       {/* CONȚINUT */}
-      <div className="py-20 px-6 flex-1">
-        <div className="max-w-4xl mx-auto bg-card border border-border rounded-3xl p-10 shadow-xl text-base leading-relaxed">
-          <p className="text-muted-foreground mb-10 text-lg">
+      <div className="py-10 md:py-20 px-4 md:px-6 flex-1">
+        <div className="max-w-4xl mx-auto bg-card border border-border 
+                        rounded-2xl md:rounded-3xl 
+                        p-6 md:p-10 shadow-xl text-sm md:text-base leading-relaxed">
+
+          {/* INTRO */}
+          <p className="text-muted-foreground mb-10 text-base md:text-lg">
             Platforma <strong>TravelAI Deals</strong> este operată de{" "}
             <strong>GLOBAL LINKNET SRL</strong>
             (CUI 48291648, J03/1287/2023), cu sediul în Pitești, Str. Dorobanților nr. 14.
           </p>
 
-          <div className="space-y-12">
+          <div className="space-y-10 md:space-y-12">
 
             {/* 1 */}
             <section>
-              <h2 className="flex items-center gap-2 text-2xl font-semibold mb-3">
-                <Icon name="Book" size={24} className="text-primary" />
+              <h2 className="flex items-center gap-2 text-xl md:text-2xl font-semibold mb-3">
+                <Icon name="Book" size={20} className="md:w-6 md:h-6 text-primary" />
                 1. Definiții
               </h2>
 
@@ -50,8 +58,8 @@ const TermsPage = () => {
 
             {/* 2 */}
             <section>
-              <h2 className="flex items-center gap-2 text-2xl font-semibold mb-3">
-                <Icon name="CheckCircle" size={24} className="text-primary" />
+              <h2 className="flex items-center gap-2 text-xl md:text-2xl font-semibold mb-3">
+                <Icon name="CheckCircle" size={20} className="text-primary" />
                 2. Acceptarea termenilor
               </h2>
 
@@ -63,8 +71,8 @@ const TermsPage = () => {
 
             {/* 3 */}
             <section>
-              <h2 className="flex items-center gap-2 text-2xl font-semibold mb-3">
-                <Icon name="Globe" size={24} className="text-primary" />
+              <h2 className="flex items-center gap-2 text-xl md:text-2xl font-semibold mb-3">
+                <Icon name="Globe" size={20} className="text-primary" />
                 3. Natura serviciului
               </h2>
 
@@ -76,8 +84,8 @@ const TermsPage = () => {
 
             {/* 4 */}
             <section>
-              <h2 className="flex items-center gap-2 text-2xl font-semibold mb-3">
-                <Icon name="UserPlus" size={24} className="text-primary" />
+              <h2 className="flex items-center gap-2 text-xl md:text-2xl font-semibold mb-3">
+                <Icon name="UserPlus" size={20} className="text-primary" />
                 4. Crearea și utilizarea contului
               </h2>
 
@@ -94,8 +102,8 @@ const TermsPage = () => {
 
             {/* 5 */}
             <section>
-              <h2 className="flex items-center gap-2 text-2xl font-semibold mb-3">
-                <Icon name="CreditCard" size={24} className="text-primary" />
+              <h2 className="flex items-center gap-2 text-xl md:text-2xl font-semibold mb-3">
+                <Icon name="CreditCard" size={20} className="text-primary" />
                 5. Abonamente și plăți
               </h2>
 
@@ -107,8 +115,8 @@ const TermsPage = () => {
 
             {/* 6 */}
             <section>
-              <h2 className="flex items-center gap-2 text-2xl font-semibold mb-3">
-                <Icon name="Link" size={24} className="text-primary" />
+              <h2 className="flex items-center gap-2 text-xl md:text-2xl font-semibold mb-3">
+                <Icon name="Link" size={20} className="text-primary" />
                 6. Afiliere
               </h2>
 
@@ -120,8 +128,8 @@ const TermsPage = () => {
 
             {/* 7 */}
             <section>
-              <h2 className="flex items-center gap-2 text-2xl font-semibold mb-3">
-                <Icon name="AlertTriangle" size={24} className="text-primary" />
+              <h2 className="flex items-center gap-2 text-xl md:text-2xl font-semibold mb-3">
+                <Icon name="AlertTriangle" size={20} className="text-primary" />
                 7. Limitarea responsabilității
               </h2>
 
@@ -142,8 +150,8 @@ const TermsPage = () => {
 
             {/* 8 */}
             <section>
-              <h2 className="flex items-center gap-2 text-2xl font-semibold mb-3">
-                <Icon name="Slash" size={24} className="text-primary" />
+              <h2 className="flex items-center gap-2 text-xl md:text-2xl font-semibold mb-3">
+                <Icon name="Slash" size={20} className="text-primary" />
                 8. Suspendarea sau ștergerea contului
               </h2>
 
@@ -155,8 +163,8 @@ const TermsPage = () => {
 
             {/* 9 */}
             <section>
-              <h2 className="flex items-center gap-2 text-2xl font-semibold mb-3">
-                <Icon name="Shield" size={24} className="text-primary" />
+              <h2 className="flex items-center gap-2 text-xl md:text-2xl font-semibold mb-3">
+                <Icon name="Shield" size={20} className="text-primary" />
                 9. Prelucrarea datelor personale
               </h2>
 
@@ -171,8 +179,8 @@ const TermsPage = () => {
 
             {/* 10 */}
             <section>
-              <h2 className="flex items-center gap-2 text-2xl font-semibold mb-3">
-                <Icon name="RefreshCcw" size={24} className="text-primary" />
+              <h2 className="flex items-center gap-2 text-xl md:text-2xl font-semibold mb-3">
+                <Icon name="RefreshCcw" size={20} className="text-primary" />
                 10. Modificarea termenilor
               </h2>
 
@@ -184,8 +192,8 @@ const TermsPage = () => {
 
             {/* 11 */}
             <section>
-              <h2 className="flex items-center gap-2 text-2xl font-semibold mb-3">
-                <Icon name="Mail" size={24} className="text-primary" />
+              <h2 className="flex items-center gap-2 text-xl md:text-2xl font-semibold mb-3">
+                <Icon name="Mail" size={20} className="text-primary" />
                 11. Contact
               </h2>
 
@@ -196,11 +204,10 @@ const TermsPage = () => {
                 </a>
               </p>
             </section>
+
           </div>
         </div>
       </div>
-
-      
     </div>
   );
 };
