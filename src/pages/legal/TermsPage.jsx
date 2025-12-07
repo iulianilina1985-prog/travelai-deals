@@ -12,7 +12,7 @@ const TermsPage = () => {
 
       {/* HERO */}
       <div className="w-full bg-gradient-to-r from-primary/20 via-primary/10 to-secondary/20 
-                      py-14 md:py-20 px-4 md:px-6 text-center border-b border-border shadow-inner">
+                      py-14 md:py-24 px-4 md:px-6 text-center border-b border-border shadow-inner">
         <h1 className="text-3xl md:text-5xl font-bold text-foreground mb-4">
           Termeni și Condiții 📘
         </h1>
