@@ -1,3 +1,4 @@
+// src/pages/legal/ContactPage.jsx
 import React, { useState } from "react";
 import Header from "../../components/ui/Header";
 import Footer from "../../components/ui/Footer";
@@ -34,23 +35,38 @@ const ContactPage = () => {
       <Header />
 
       {/* HERO */}
-      <div className="w-full bg-gradient-to-r from-primary/20 via-primary/10 to-secondary/20 py-24 px-6 text-center border-b border-border shadow-inner">
-        <h1 className="text-5xl font-bold text-foreground mb-4">
+      <div className="
+        w-full 
+        bg-gradient-to-r from-primary/20 via-primary/10 to-secondary/20 
+        py-14 md:py-24 
+        px-4 md:px-6 
+        text-center 
+        border-b border-border shadow-inner
+      ">
+        <h1 className="text-3xl md:text-5xl font-bold text-foreground mb-4">
           Hai să vorbim! 👋
         </h1>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+
+        <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
           Suntem aici ca să-ți facem experiența cât mai clară. Fie că ai întrebări,
           feedback sau propuneri, scrie-ne și îți răspundem rapid.
         </p>
       </div>
 
       {/* GRID CONTACT */}
-      <div className="w-full px-10 py-20 flex-1">
-        <div className="max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-[1fr_1.3fr] gap-16">
+      <div className="w-full px-4 md:px-10 py-12 md:py-20 flex-1">
+        <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-[1fr_1.3fr] gap-10 md:gap-16">
 
           {/* CARD DATE */}
-          <div className="bg-card border border-border p-12 rounded-3xl shadow-xl hover:shadow-2xl transition-shadow duration-300 space-y-6 text-lg">
-            <h2 className="text-3xl font-semibold text-foreground mb-6 flex items-center gap-3">
+          <div className="
+            bg-card border border-border 
+            p-6 md:p-12 
+            rounded-2xl md:rounded-3xl 
+            shadow-xl hover:shadow-2xl 
+            transition-shadow duration-300 
+            text-base md:text-lg space-y-6
+          ">
+            <h2 className="text-2xl md:text-3xl font-semibold text-foreground mb-6 flex items-center gap-3">
               <Icon name="Building" size={26} className="text-primary" />
               Date Companie
             </h2>
@@ -80,20 +96,27 @@ const ContactPage = () => {
           </div>
 
           {/* FORMULAR */}
-          <div className="bg-card border border-border p-12 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300">
-            <h2 className="text-3xl font-semibold text-foreground mb-6 flex items-center gap-3">
+          <div className="
+            bg-card border border-border 
+            p-6 md:p-12 
+            rounded-2xl md:rounded-3xl 
+            shadow-xl hover:shadow-2xl 
+            transition-shadow duration-300
+          ">
+            <h2 className="text-2xl md:text-3xl font-semibold text-foreground mb-6 flex items-center gap-3">
               <Icon name="Mail" size={26} className="text-primary" />
               Trimite-ne un mesaj
             </h2>
 
-            <form onSubmit={sendEmail} className="space-y-8 text-lg">
+            <form onSubmit={sendEmail} className="space-y-6 md:space-y-8 text-base md:text-lg">
+
               <div>
                 <label className="block text-sm font-medium mb-2">Nume</label>
                 <input
                   name="name"
                   type="text"
                   required
-                  className="w-full bg-muted border border-border rounded-xl px-5 py-4 text-base"
+                  className="w-full bg-muted border border-border rounded-xl px-4 md:px-5 py-3 md:py-4 text-base"
                 />
               </div>
 
@@ -103,7 +126,7 @@ const ContactPage = () => {
                   name="email"
                   type="email"
                   required
-                  className="w-full bg-muted border border-border rounded-xl px-5 py-4 text-base"
+                  className="w-full bg-muted border border-border rounded-xl px-4 md:px-5 py-3 md:py-4 text-base"
                 />
               </div>
 
@@ -111,16 +134,24 @@ const ContactPage = () => {
                 <label className="block text-sm font-medium mb-2">Mesaj</label>
                 <textarea
                   name="message"
-                  rows="8"
+                  rows="6"
                   required
-                  className="w-full bg-muted border border-border rounded-xl px-5 py-4 text-base"
+                  className="w-full bg-muted border border-border rounded-xl px-4 md:px-5 py-3 md:py-4 text-base"
                 ></textarea>
               </div>
 
               <button
                 type="submit"
                 disabled={sending}
-                className="bg-gradient-to-r from-primary to-secondary text-white px-8 py-4 rounded-xl font-medium hover:opacity-90 transition w-full shadow-lg"
+                className="
+                  bg-gradient-to-r from-primary to-secondary 
+                  text-white 
+                  px-6 md:px-8 
+                  py-3 md:py-4 
+                  rounded-xl font-medium 
+                  hover:opacity-90 transition 
+                  w-full shadow-lg
+                "
               >
                 {sending ? "Se trimite..." : "Trimite mesajul"}
               </button>
@@ -141,35 +172,38 @@ const ContactPage = () => {
         </div>
       </div>
 
-      {/* DESPRE NOI - CARDURI */}
-      <section className="w-full py-24 px-6 bg-muted border-t border-border">
-        <h2 className="text-4xl font-bold text-center text-foreground mb-16">
+      {/* DESPRE NOI */}
+      <section className="w-full py-16 md:py-24 px-4 md:px-6 bg-muted border-t border-border">
+        <h2 className="text-3xl md:text-4xl font-bold text-center text-foreground mb-12 md:mb-16">
           Despre noi
         </h2>
 
-        <div className="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">
+        <div className="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-12">
 
-          <div className="bg-card border border-border p-10 rounded-3xl shadow-xl text-center hover:-translate-y-1 hover:shadow-2xl transition">
+          {/* CARD 1 */}
+          <div className="bg-card border border-border p-8 md:p-10 rounded-2xl md:rounded-3xl shadow-xl text-center hover:-translate-y-1 hover:shadow-2xl transition">
             <Icon name="Target" size={40} className="mx-auto mb-6 text-primary" />
-            <h3 className="text-2xl font-semibold mb-4">Misiunea noastră</h3>
+            <h3 className="text-xl md:text-2xl font-semibold mb-4">Misiunea noastră</h3>
             <p className="text-muted-foreground leading-relaxed">
               Să facem tehnologia AI accesibilă tuturor românilor
               și să transformăm planificarea unei vacanțe într-o experiență rapidă și eficientă.
             </p>
           </div>
 
-          <div className="bg-card border border-border p-10 rounded-3xl shadow-xl text-center hover:-translate-y-1 hover:shadow-2xl transition">
+          {/* CARD 2 */}
+          <div className="bg-card border border-border p-8 md:p-10 rounded-2xl md:rounded-3xl shadow-xl text-center hover:-translate-y-1 hover:shadow-2xl transition">
             <Icon name="Compass" size={40} className="mx-auto mb-6 text-primary" />
-            <h3 className="text-2xl font-semibold mb-4">Ce facem?</h3>
+            <h3 className="text-xl md:text-2xl font-semibold mb-4">Ce facem?</h3>
             <p className="text-muted-foreground leading-relaxed">
               Oferim recomandări personalizate pentru destinații,
               zboruri, hoteluri și pachete — toate generate instant de AI.
             </p>
           </div>
 
-          <div className="bg-card border border-border p-10 rounded-3xl shadow-xl text-center hover:-translate-y-1 hover:shadow-2xl transition">
+          {/* CARD 3 */}
+          <div className="bg-card border border-border p-8 md:p-10 rounded-2xl md:rounded-3xl shadow-xl text-center hover:-translate-y-1 hover:shadow-2xl transition">
             <Icon name="Handshake" size={40} className="mx-auto mb-6 text-primary" />
-            <h3 className="text-2xl font-semibold mb-4">Valorile noastre</h3>
+            <h3 className="text-xl md:text-2xl font-semibold mb-4">Valorile noastre</h3>
             <p className="text-muted-foreground leading-relaxed">
               Corectitudine, transparență și neutralitate.
               Oferim doar recomandări reale — fără reclame mascate.
@@ -179,6 +213,7 @@ const ContactPage = () => {
         </div>
       </section>
 
+      {/* FOOTER */}
       
     </div>
   );
