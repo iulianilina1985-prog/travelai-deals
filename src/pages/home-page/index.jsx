@@ -38,7 +38,7 @@ const HomePage = () => {
       <Header onAuthClick={openAuthModal} />
 
       {/* MAIN CONTENT */}
-      <main className="flex-grow">
+      <main className="flex-grow pt-16">
 
         <HeroSection onStart={openAuthModal} />
 

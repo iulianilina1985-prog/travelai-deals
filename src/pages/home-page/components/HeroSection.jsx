@@ -10,7 +10,7 @@ const HeroSection = () => {
       {/* Background */}
       <img
         src="/images/travel-bg.jpg"
-        alt="Travel background"
+        
         className="absolute inset-0 w-full h-full object-cover"
       />
       <div className="absolute inset-0 bg-black/50 backdrop-blur-[1px]" />
@@ -35,7 +35,7 @@ const HeroSection = () => {
         {/* Subtext */}
         <p className="text-lg md:text-xl text-gray-200 max-w-2xl mx-auto mb-10 leading-relaxed">
           Platforma inteligentă care găsește automat cele mai avantajoase bilete
-          de avion și vacanțe din peste 1.000 de site-uri turistice.
+          de avion și vacanțe din peste 100 de site-uri turistice.
         </p>
 
         {/* Butoane */}
