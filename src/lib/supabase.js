@@ -1,8 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 
-// 🔥 DEBUG ENV — asta ne arată dacă .env este încărcat corect
-console.log("DEBUG ENV URL =", import.meta.env.VITE_SUPABASE_URL);
-console.log("DEBUG ENV KEY =", import.meta.env.VITE_SUPABASE_ANON_KEY);
+
 
 // Preluăm variabilele
 const supabaseUrl = import.meta.env?.VITE_SUPABASE_URL;
