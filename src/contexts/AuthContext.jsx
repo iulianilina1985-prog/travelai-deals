@@ -57,12 +57,11 @@ export const AuthProvider = ({ children }) => {
   };
 
   // ===========================================================
-  // AUTH STATE HANDLER (STABILIZAT)
+  // HANDLE AUTH EVENTS
   // ===========================================================
   const handleAuthChange = async (event, session) => {
     const userData = session?.user || null;
 
-    // If session is null -> logout / no session
     if (!session) {
       setUser(null);
       clearProfile();
@@ -71,12 +70,9 @@ export const AuthProvider = ({ children }) => {
     }
 
     setUser(userData);
-
     await loadProfile(userData.id);
-
     setLoading(false);
 
-    // Auto-accept terms on first login
     if (event === "SIGNED_IN") {
       try {
         await supabase
@@ -89,33 +85,21 @@ export const AuthProvider = ({ children }) => {
           })
           .eq("id", userData.id);
       } catch (err) {
-        console.warn("Auto-terms update failed:", err);
+        console.warn("Auto-update terms failed:", err);
       }
     }
   };
 
   // ===========================================================
-  // INITIAL LOAD + FIX PENTRU MOBIL / PWA
+  // INITIAL SESSION LOAD
   // ===========================================================
   useEffect(() => {
     let ignore = false;
 
     const init = async () => {
       try {
-        // 🔥 FIX: Safari / Chrome Mobile / PWA nu trimit token instant
-        await supabase.auth.refreshSession();
-
-        const { data: { session }, error } = await supabase.auth.getSession();
-
-        if (error) {
-          console.error("getSession error:", error);
-          if (!ignore) setLoading(false);
-          return;
-        }
-
-        // 🔥 Dacă sesiunea e null, trebuie ORICUM să ieșim din loading
-        await handleAuthChange("INITIAL_LOAD", session);
-
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!ignore) await handleAuthChange("INITIAL_LOAD", session);
       } catch (err) {
         console.error("Init session error:", err);
         if (!ignore) setLoading(false);
@@ -124,7 +108,6 @@ export const AuthProvider = ({ children }) => {
 
     init();
 
-    // Subscribe to auth changes
     const { data: subscription } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (!ignore) await handleAuthChange(event, session);
@@ -138,16 +121,34 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   // ===========================================================
-  // SIGN IN / OUT / UPDATE PROFILE
+  // SIGN IN (IMMEDIATE USER SET)
   // ===========================================================
   const signIn = async (email, password) => {
     try {
-      return await supabase.auth.signInWithPassword({ email, password });
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (error) return { error };
+
+      const loggedUser = data?.user;
+
+      if (loggedUser) {
+        setUser(loggedUser);
+        await loadProfile(loggedUser.id);
+        setLoading(false);
+      }
+
+      return { data };
     } catch (err) {
       return { error: { message: "Network error" } };
     }
   };
 
+  // ===========================================================
+  // SIGN OUT
+  // ===========================================================
   const signOut = async () => {
     try {
       const { error } = await supabase.auth.signOut();
@@ -161,6 +162,9 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // ===========================================================
+  // UPDATE PROFILE
+  // ===========================================================
   const updateProfile = async (updates) => {
     if (!user) return { error: { message: "No user logged in" } };
 
