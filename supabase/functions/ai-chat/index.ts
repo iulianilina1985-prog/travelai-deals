@@ -21,9 +21,19 @@ const corsHeaders = {
 // -------------------------------------------------------
 // CLIENTS
 // -------------------------------------------------------
+// -------------------------------------------------------
+// CLIENTS
+// -------------------------------------------------------
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const functionsUrl = `${supabaseUrl}/functions/v1`;   // 👈 SINGURUL URL CORECT!!!
+
+// extragem project ref din URL
+const projectRef = supabaseUrl
+  .replace("https://", "")
+  .replace(".supabase.co", "");
+
+// domeniul corect pentru funcții
+const functionsUrl = `https://${projectRef}.functions.supabase.co`;
 
 const supabase = createClient(supabaseUrl, supabaseKey, {
   auth: { persistSession: false },
@@ -33,8 +43,8 @@ const openai = new OpenAI({
   apiKey: Deno.env.get("OPENAI_KEY")!,
 });
 
-const OPENAI_MODEL =
-  Deno.env.get("OPENAI_MODEL") ?? "gpt-4.1-mini";
+const OPENAI_MODEL = Deno.env.get("OPENAI_MODEL") ?? "gpt-4.1-mini";
+
 
 // -------------------------------------------------------
 // DEFAULT MEMORY STATE
