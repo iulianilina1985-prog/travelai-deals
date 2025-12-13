@@ -15,16 +15,20 @@ const FilterPanel = ({
   onToggleCollapse,
   onApplyFilters,
 }) => {
-  // 🔹 Tipuri de oferte — EXTINS
+  // 🔹 Tipuri de oferte — EXTINS cu Klook, eSIM, Asigurări
   const dealTypeOptions = [
     { value: "all", label: "Toate tipurile" },
     { value: "flight", label: "Zboruri ✈️" },
     { value: "hotel", label: "Hoteluri 🏨" },
     { value: "package", label: "Pachete complete 🎁" },
     { value: "car", label: "Rent a Car 🚗" },
+
+    // 🔥 NOU
+    { value: "activity", label: "Activități 🎟️" },     // Klook
+    { value: "esim", label: "eSIM 🌐" },                // eSIM afiliere
+    { value: "insurance", label: "Asigurări 🛡️" },     // Asigurări travel
   ];
 
-  // 🔹 Sortare
   const sortOptions = [
     { value: "newest", label: "Cele mai noi" },
     { value: "price_low", label: "Preț crescător" },
@@ -33,14 +37,12 @@ const FilterPanel = ({
     { value: "rating", label: "Rating înalt" },
   ];
 
-  // 🔹 Perioadă
   const [dateRange, setDateRange] = useState([
     filters?.startDate ? new Date(filters.startDate) : null,
     filters?.endDate ? new Date(filters.endDate) : null,
   ]);
   const [startDate, endDate] = dateRange;
 
-  // Actualizăm global filters când alegem datele
   useEffect(() => {
     onFiltersChange({
       ...filters,
