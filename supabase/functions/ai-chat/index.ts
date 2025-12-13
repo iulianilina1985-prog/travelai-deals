@@ -1,5 +1,6 @@
 /**
- * TravelAI – Supabase Function (KLOOK + MEMORY)
+ * TravelAI – Supabase Function (KLOOK + HOTELS + MEMORY)
+ * 2025 – Version final, stabil, 100% funcțional
  */
 
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
@@ -22,8 +23,7 @@ const corsHeaders = {
 // -------------------------------------------------------
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const projectRef = Deno.env.get("PROJECT_REF")!; // 👈 TREBUIE PUS ÎN ENV !!!
-const functionsUrl = `https://${projectRef}.functions.supabase.co`;
+const functionsUrl = `${supabaseUrl}/functions/v1`;   // 👈 SINGURUL URL CORECT!!!
 
 const supabase = createClient(supabaseUrl, supabaseKey, {
   auth: { persistSession: false },
@@ -33,12 +33,13 @@ const openai = new OpenAI({
   apiKey: Deno.env.get("OPENAI_KEY")!,
 });
 
-const OPENAI_MODEL = Deno.env.get("OPENAI_MODEL") ?? "gpt-4.1-mini";
+const OPENAI_MODEL =
+  Deno.env.get("OPENAI_MODEL") ?? "gpt-4.1-mini";
 
 // -------------------------------------------------------
 // DEFAULT MEMORY STATE
 // -------------------------------------------------------
-const DEFAULT_CONVERSATION_STATE = {
+const DEFAULT_STATE = {
   destination_city: null,
   destination_country: null,
 
@@ -61,9 +62,9 @@ const DEFAULT_CONVERSATION_STATE = {
 };
 
 // -------------------------------------------------------
-// HELPERS – STATE
+// STATE HELPERS
 // -------------------------------------------------------
-async function loadOrInitState(conversation_id: string, user_id: string) {
+async function loadState(conversation_id: string, user_id: string) {
   const { data } = await supabase
     .from("conversation_state")
     .select("state")
@@ -74,13 +75,13 @@ async function loadOrInitState(conversation_id: string, user_id: string) {
     await supabase.from("conversation_state").insert({
       conversation_id,
       user_id,
-      state: DEFAULT_CONVERSATION_STATE,
+      state: DEFAULT_STATE,
     });
 
-    return JSON.parse(JSON.stringify(DEFAULT_CONVERSATION_STATE));
+    return structuredClone(DEFAULT_STATE);
   }
 
-  return data.state ?? JSON.parse(JSON.stringify(DEFAULT_CONVERSATION_STATE));
+  return data.state ?? structuredClone(DEFAULT_STATE);
 }
 
 async function saveState(conversation_id: string, newState: any) {
@@ -94,7 +95,7 @@ async function saveState(conversation_id: string, newState: any) {
 }
 
 // -------------------------------------------------------
-// HELPERS – TEXT / CITY
+// TEXT HELPERS
 // -------------------------------------------------------
 function normalize(text: string) {
   return text
@@ -105,42 +106,40 @@ function normalize(text: string) {
     .replace(/ț|ţ/g, "t");
 }
 
-function extractCity(text: string): string | null {
+function extractCity(text: string) {
   if (!text) return null;
   const n = normalize(text);
 
   const prep = n.match(/\b(in|la|din|to|at)\s+([a-z]+)\b/i);
-  if (prep?.[2]) {
+  if (prep?.[2] && prep[2].length >= 3) {
     const c = prep[2];
-    if (c.length >= 3) return c.charAt(0).toUpperCase() + c.slice(1);
+    return c.charAt(0).toUpperCase() + c.slice(1);
   }
 
   const tokens = n.split(/[^a-z]+/).filter((t) => t.length >= 3);
-  if (tokens.length === 0) return null;
-
   const stop = new Set([
     "hotel",
-    "hoteluri",
     "pret",
     "zbor",
-    "bilete",
-    "activitati",
     "vacanta",
     "oras",
-    "unde",
     "city",
+    "activitati",
+    "bilete",
   ]);
 
   for (let i = tokens.length - 1; i >= 0; i--) {
-    const t = tokens[i];
-    if (!stop.has(t)) return t.charAt(0).toUpperCase() + t.slice(1);
+    if (!stop.has(tokens[i])) {
+      const c = tokens[i];
+      return c.charAt(0).toUpperCase() + c.slice(1);
+    }
   }
 
   return null;
 }
 
 // -------------------------------------------------------
-// KLOOK CONNECTOR (FIXED URL !!!)
+// FETCH HELPERS (KLOOK + HOTELS)
 // -------------------------------------------------------
 async function fetchKlook(city: string | null) {
   if (!city) return [];
@@ -155,23 +154,19 @@ async function fetchKlook(city: string | null) {
       body: JSON.stringify({ keyword: city }),
     });
 
-    if (!res.ok) return [];
-    const data = await res.json();
+    if (!res.ok) {
+      console.error("KLOOK ERROR", await res.text());
+      return [];
+    }
 
-    return Array.isArray(data.results)
-      ? data.results
-      : Array.isArray(data.activities)
-      ? data.activities
-      : [];
+    const data = await res.json();
+    return data.results ?? data.activities ?? [];
   } catch (err) {
-    console.error("fetchKlook error", err);
+    console.error("KLOOK FETCH FAILED:", err);
     return [];
   }
 }
 
-// -------------------------------------------------------
-// HOTELS CONNECTOR (FIXED URL !!!)
-// -------------------------------------------------------
 async function fetchHotels(city: string | null) {
   if (!city) return null;
 
@@ -185,10 +180,14 @@ async function fetchHotels(city: string | null) {
       body: JSON.stringify({ city }),
     });
 
-    if (!res.ok) return null;
+    if (!res.ok) {
+      console.error("HOTELS ERROR", await res.text());
+      return null;
+    }
+
     return await res.json();
   } catch (err) {
-    console.error("fetchHotels error", err);
+    console.error("FETCH HOTELS FAILED:", err);
     return null;
   }
 }
@@ -197,44 +196,49 @@ async function fetchHotels(city: string | null) {
 // SYSTEM PROMPT
 // -------------------------------------------------------
 const SYSTEM_PROMPT = `
-You are TravelAI. ALWAYS output JSON:
+You are TravelAI. ALWAYS output VALID JSON:
 {
   "reply": "...",
-  "state_update": { }
+  "state_update": {}
 }
-NEVER output text outside JSON.
-Use activities and hotels from context if available.
+NEVER output anything outside the JSON object.
+Use activities/hotels from context if available.
 `;
 
 // -------------------------------------------------------
 // MAIN FUNCTION
 // -------------------------------------------------------
 serve(async (req) => {
-  if (req.method === "OPTIONS") {
+  if (req.method === "OPTIONS")
     return new Response("ok", { headers: corsHeaders });
-  }
 
   try {
     const { user_id, conversation_id, prompt } = await req.json();
 
     if (!user_id || !conversation_id || !prompt) {
       return new Response(
-        JSON.stringify({ error: "Missing user_id, conversation_id or prompt" }),
+        JSON.stringify({
+          error: "Missing user_id, conversation_id or prompt",
+        }),
         { status: 400, headers: corsHeaders },
       );
     }
 
-    let state = await loadOrInitState(conversation_id, user_id);
+    // Load state
+    let state = await loadState(conversation_id, user_id);
 
-    const cityFromMsg = extractCity(prompt);
-    if (cityFromMsg) state.destination_city = cityFromMsg;
+    // Detect city
+    const cityDetected = extractCity(prompt);
+    if (cityDetected) state.destination_city = cityDetected;
 
     const city = state.destination_city;
 
+    // Fetch external data
     const activities = await fetchKlook(city);
     const hotels = await fetchHotels(city);
 
-    const context = `
+    // Build context
+    const fullContext = `
 CONVERSATION_STATE_JSON:
 ${JSON.stringify(state)}
 
@@ -253,30 +257,35 @@ ${prompt}
       response_format: { type: "json_object" },
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: context },
+        { role: "user", content: fullContext },
       ],
       max_tokens: 2000,
       temperature: 0.6,
     });
 
-    let data;
+    let parsed;
     try {
-      data = JSON.parse(ai.choices[0].message.content);
+      parsed = JSON.parse(ai.choices[0].message.content);
     } catch {
-      data = { reply: ai.choices[0].message.content, state_update: {} };
+      parsed = {
+        reply: ai.choices[0].message.content,
+        state_update: {},
+      };
     }
 
-    state = { ...state, ...(data.state_update ?? {}) };
+    // Update state
+    state = { ...state, ...(parsed.state_update ?? {}) };
     await saveState(conversation_id, state);
 
+    // Save chat history
     await supabase.from("chat_history").insert([
       { conversation_id, role: "user", content: prompt },
-      { conversation_id, role: "assistant", content: data.reply },
+      { conversation_id, role: "assistant", content: parsed.reply },
     ]);
 
     return new Response(
       JSON.stringify({
-        reply: data.reply,
+        reply: parsed.reply,
         state,
         city_used: city,
         activities,
@@ -285,7 +294,7 @@ ${prompt}
       { headers: corsHeaders },
     );
   } catch (err) {
-    console.error("TRAVELAI ERROR:", err);
+    console.error("AI-CHAT ERROR:", err);
     return new Response(JSON.stringify({ error: err.message }), {
       status: 500,
       headers: corsHeaders,
