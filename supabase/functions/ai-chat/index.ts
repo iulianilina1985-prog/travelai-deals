@@ -1,6 +1,6 @@
 /**
  * TravelAI – Supabase Function (KLOOK + HOTELS + MEMORY)
- * 2025 – Version final, stabil, 100% funcțional
+ * !!! Varianta FINALĂ și FUNCȚIONALĂ !!!
  */
 
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
@@ -21,18 +21,13 @@ const corsHeaders = {
 // -------------------------------------------------------
 // CLIENTS
 // -------------------------------------------------------
-// -------------------------------------------------------
-// CLIENTS
-// -------------------------------------------------------
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
-// extragem project ref din URL
-const projectRef = supabaseUrl
-  .replace("https://", "")
-  .replace(".supabase.co", "");
+// 🟢 EXTRAGEM PROPER PROJECT REF
+const projectRef = supabaseUrl.split("https://")[1].split(".supabase.co")[0];
 
-// domeniul corect pentru funcții
+// 🟢 DOMENIUL CORECT PENTRU FUNCȚII
 const functionsUrl = `https://${projectRef}.functions.supabase.co`;
 
 const supabase = createClient(supabaseUrl, supabaseKey, {
@@ -45,34 +40,28 @@ const openai = new OpenAI({
 
 const OPENAI_MODEL = Deno.env.get("OPENAI_MODEL") ?? "gpt-4.1-mini";
 
-
 // -------------------------------------------------------
 // DEFAULT MEMORY STATE
 // -------------------------------------------------------
 const DEFAULT_STATE = {
   destination_city: null,
   destination_country: null,
-
   travelers_adults: null,
   travelers_children: null,
-
   start_date: null,
   end_date: null,
   dates_flexible: null,
-
   budget_level: null,
   budget_per_person: null,
   currency: null,
-
   focus: "general",
   last_question_type: null,
   last_question_text: null,
-
   language: "ro",
 };
 
 // -------------------------------------------------------
-// STATE HELPERS
+// STATE helpers
 // -------------------------------------------------------
 async function loadState(conversation_id: string, user_id: string) {
   const { data } = await supabase
@@ -94,18 +83,18 @@ async function loadState(conversation_id: string, user_id: string) {
   return data.state ?? structuredClone(DEFAULT_STATE);
 }
 
-async function saveState(conversation_id: string, newState: any) {
+async function saveState(conversation_id: string, updated: any) {
   await supabase
     .from("conversation_state")
     .update({
-      state: newState,
+      state: updated,
       updated_at: new Date().toISOString(),
     })
     .eq("conversation_id", conversation_id);
 }
 
 // -------------------------------------------------------
-// TEXT HELPERS
+// TEXT helpers
 // -------------------------------------------------------
 function normalize(text: string) {
   return text
@@ -118,24 +107,26 @@ function normalize(text: string) {
 
 function extractCity(text: string) {
   if (!text) return null;
+
   const n = normalize(text);
 
-  const prep = n.match(/\b(in|la|din|to|at)\s+([a-z]+)\b/i);
-  if (prep?.[2] && prep[2].length >= 3) {
-    const c = prep[2];
+  const m = n.match(/\b(in|la|din|to|at)\s+([a-z]+)\b/i);
+  if (m?.[2] && m[2].length >= 3) {
+    const c = m[2];
     return c.charAt(0).toUpperCase() + c.slice(1);
   }
 
   const tokens = n.split(/[^a-z]+/).filter((t) => t.length >= 3);
+
   const stop = new Set([
     "hotel",
     "pret",
-    "zbor",
+    "bilete",
+    "activitati",
     "vacanta",
     "oras",
     "city",
-    "activitati",
-    "bilete",
+    "zbor",
   ]);
 
   for (let i = tokens.length - 1; i >= 0; i--) {
@@ -149,7 +140,7 @@ function extractCity(text: string) {
 }
 
 // -------------------------------------------------------
-// FETCH HELPERS (KLOOK + HOTELS)
+// FETCH: KLOOK
 // -------------------------------------------------------
 async function fetchKlook(city: string | null) {
   if (!city) return [];
@@ -165,7 +156,7 @@ async function fetchKlook(city: string | null) {
     });
 
     if (!res.ok) {
-      console.error("KLOOK ERROR", await res.text());
+      console.error("KLOOK ERROR:", await res.text());
       return [];
     }
 
@@ -177,6 +168,9 @@ async function fetchKlook(city: string | null) {
   }
 }
 
+// -------------------------------------------------------
+// FETCH: HOTELS
+// -------------------------------------------------------
 async function fetchHotels(city: string | null) {
   if (!city) return null;
 
@@ -191,13 +185,13 @@ async function fetchHotels(city: string | null) {
     });
 
     if (!res.ok) {
-      console.error("HOTELS ERROR", await res.text());
+      console.error("HOTELS ERROR:", await res.text());
       return null;
     }
 
     return await res.json();
   } catch (err) {
-    console.error("FETCH HOTELS FAILED:", err);
+    console.error("HOTELS FETCH FAILED:", err);
     return null;
   }
 }
@@ -206,17 +200,16 @@ async function fetchHotels(city: string | null) {
 // SYSTEM PROMPT
 // -------------------------------------------------------
 const SYSTEM_PROMPT = `
-You are TravelAI. ALWAYS output VALID JSON:
+You are TravelAI. ALWAYS output valid JSON:
 {
   "reply": "...",
   "state_update": {}
 }
-NEVER output anything outside the JSON object.
-Use activities/hotels from context if available.
+Use activities/hotels from context when available.
 `;
 
 // -------------------------------------------------------
-// MAIN FUNCTION
+// MAIN function
 // -------------------------------------------------------
 serve(async (req) => {
   if (req.method === "OPTIONS")
@@ -227,38 +220,32 @@ serve(async (req) => {
 
     if (!user_id || !conversation_id || !prompt) {
       return new Response(
-        JSON.stringify({
-          error: "Missing user_id, conversation_id or prompt",
-        }),
-        { status: 400, headers: corsHeaders },
+        JSON.stringify({ error: "Missing user_id or conversation_id or prompt" }),
+        { status: 400, headers: corsHeaders }
       );
     }
 
-    // Load state
     let state = await loadState(conversation_id, user_id);
 
-    // Detect city
-    const cityDetected = extractCity(prompt);
-    if (cityDetected) state.destination_city = cityDetected;
+    const detectedCity = extractCity(prompt);
+    if (detectedCity) state.destination_city = detectedCity;
 
     const city = state.destination_city;
 
-    // Fetch external data
     const activities = await fetchKlook(city);
     const hotels = await fetchHotels(city);
 
-    // Build context
-    const fullContext = `
-CONVERSATION_STATE_JSON:
+    const context = `
+STATE:
 ${JSON.stringify(state)}
 
-CONTEXT_ACTIVITIES_JSON:
+ACTIVITIES:
 ${JSON.stringify(activities)}
 
-CONTEXT_HOTELS_JSON:
+HOTELS:
 ${JSON.stringify(hotels)}
 
-USER_MESSAGE:
+USER MESSAGE:
 ${prompt}
 `;
 
@@ -267,27 +254,22 @@ ${prompt}
       response_format: { type: "json_object" },
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: fullContext },
+        { role: "user", content: context },
       ],
       max_tokens: 2000,
-      temperature: 0.6,
     });
 
     let parsed;
     try {
       parsed = JSON.parse(ai.choices[0].message.content);
     } catch {
-      parsed = {
-        reply: ai.choices[0].message.content,
-        state_update: {},
-      };
+      parsed = { reply: ai.choices[0].message.content, state_update: {} };
     }
 
-    // Update state
     state = { ...state, ...(parsed.state_update ?? {}) };
+
     await saveState(conversation_id, state);
 
-    // Save chat history
     await supabase.from("chat_history").insert([
       { conversation_id, role: "user", content: prompt },
       { conversation_id, role: "assistant", content: parsed.reply },
@@ -301,7 +283,7 @@ ${prompt}
         activities,
         hotels,
       }),
-      { headers: corsHeaders },
+      { headers: corsHeaders }
     );
   } catch (err) {
     console.error("AI-CHAT ERROR:", err);
