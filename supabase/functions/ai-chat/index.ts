@@ -1,15 +1,19 @@
 /**
- * TravelAI – Supabase Function (KLOOK + HOTELS + MEMORY)
- * VARIANTA FINALĂ – FUNCȚIONEAZĂ 100%
+ * TravelAI – AI CHAT CORE (UPDATE REAL)
+ * Conversation memory
+ * Multiple cities
+ * Natural follow-up
+ * Romanian travel assistant
  */
 
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import OpenAI from "https://esm.sh/openai@4.28.0";
 
-// -------------------------------------------------------
-// CORS
-// -------------------------------------------------------
+/* =======================
+   CONFIG
+======================= */
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
@@ -18,16 +22,11 @@ const corsHeaders = {
   "Content-Type": "application/json",
 };
 
-// -------------------------------------------------------
-// CLIENTS
-// -------------------------------------------------------
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-
-// 🔥 AICI ESTE URL-UL CORECT PENTRU FUNCȚIILE TALE
+const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const functionsUrl = `${supabaseUrl}/functions/v1`;
 
-const supabase = createClient(supabaseUrl, supabaseKey, {
+const supabase = createClient(supabaseUrl, serviceKey, {
   auth: { persistSession: false },
 });
 
@@ -35,32 +34,26 @@ const openai = new OpenAI({
   apiKey: Deno.env.get("OPENAI_KEY")!,
 });
 
-const OPENAI_MODEL = Deno.env.get("OPENAI_MODEL") ?? "gpt-4.1-mini";
+const MODEL = Deno.env.get("OPENAI_MODEL") ?? "gpt-4.1-mini";
 
-// -------------------------------------------------------
-// DEFAULT MEMORY STATE
-// -------------------------------------------------------
+/* =======================
+   DEFAULT STATE
+======================= */
+
 const DEFAULT_STATE = {
-  destination_city: null,
-  destination_country: null,
-  travelers_adults: null,
-  travelers_children: null,
-  start_date: null,
-  end_date: null,
-  dates_flexible: null,
-  budget_level: null,
-  budget_per_person: null,
-  currency: null,
-  focus: "general",
-  last_question_type: null,
-  last_question_text: null,
+  travel_context: {
+    cities_mentioned: [] as string[],
+    current_city: null as string | null,
+    last_intent: null as "activities" | "hotels" | "general" | null,
+  },
   language: "ro",
 };
 
-// -------------------------------------------------------
-// STATE HELPERS
-// -------------------------------------------------------
-async function loadState(conversation_id, user_id) {
+/* =======================
+   MEMORY HELPERS
+======================= */
+
+async function loadState(conversation_id: string, user_id: string) {
   const { data } = await supabase
     .from("conversation_state")
     .select("state")
@@ -73,184 +66,96 @@ async function loadState(conversation_id, user_id) {
       user_id,
       state: DEFAULT_STATE,
     });
-
     return structuredClone(DEFAULT_STATE);
   }
 
   return data.state ?? structuredClone(DEFAULT_STATE);
 }
 
-async function saveState(conversation_id, newState) {
+async function saveState(conversation_id: string, state: any) {
   await supabase
     .from("conversation_state")
     .update({
-      state: newState,
+      state,
       updated_at: new Date().toISOString(),
     })
     .eq("conversation_id", conversation_id);
 }
 
-// -------------------------------------------------------
-// TEXT HELPERS
-// -------------------------------------------------------
-function normalize(text) {
-  return text
-    .toLowerCase()
-    .replace(/ă|â/g, "a")
-    .replace(/î/g, "i")
-    .replace(/ș|ş/g, "s")
-    .replace(/ț|ţ/g, "t");
+async function loadHistory(conversation_id: string) {
+  const { data } = await supabase
+    .from("chat_history")
+    .select("role, content")
+    .eq("conversation_id", conversation_id)
+    .order("created_at", { ascending: true })
+    .limit(20);
+
+  return data ?? [];
 }
 
-function extractCity(text) {
-  if (!text) return null;
+/* =======================
+   CITY / INTENT DETECTION
+======================= */
 
-  const n = normalize(text);
-
-  const m = n.match(/\b(in|la|din|to|at)\s+([a-z]+)\b/i);
-  if (m?.[2] && m[2].length >= 3) {
-    return m[2].charAt(0).toUpperCase() + m[2].slice(1);
-  }
-
-  const tokens = n.split(/[^a-z]+/).filter((t) => t.length >= 3);
-  const stop = new Set([
-    "hotel",
-    "pret",
-    "zbor",
-    "vacanta",
-    "city",
-    "oras",
-    "bilete",
-    "activitati",
-  ]);
-
-  for (let i = tokens.length - 1; i >= 0; i--) {
-    if (!stop.has(tokens[i])) {
-      return tokens[i].charAt(0).toUpperCase() + tokens[i].slice(1);
-    }
-  }
-
-  return null;
+function extractCities(text: string): string[] {
+  const matches = text.match(/\b([A-ZĂÂÎȘȚ][a-zăâîșț]{2,})\b/g);
+  if (!matches) return [];
+  return matches.filter(w =>
+    !["Si", "Dar", "Si", "In", "La", "De", "Pe", "Cu"].includes(w)
+  );
 }
 
-// -------------------------------------------------------
-// FETCH KLOOK
-// -------------------------------------------------------
-async function fetchKlook(city) {
-  if (!city) return [];
-
-  try {
-    const res = await fetch(`${functionsUrl}/klook-search`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${supabaseKey}`,
-      },
-      body: JSON.stringify({ keyword: city }),
-    });
-
-    if (!res.ok) {
-      console.error("KLOOK ERROR:", await res.text());
-      return [];
-    }
-
-    const data = await res.json();
-    return data.results ?? [];
-  } catch (e) {
-    console.error("KLOOK FETCH FAILED:", e);
-    return [];
-  }
+function detectIntent(text: string) {
+  const t = text.toLowerCase();
+  if (t.includes("activit")) return "activities";
+  if (t.includes("caz") || t.includes("hotel") || t.includes("pret")) return "hotels";
+  return "general";
 }
 
-// -------------------------------------------------------
-// FETCH HOTELS
-// -------------------------------------------------------
-async function fetchHotels(city) {
-  if (!city) return null;
+/* =======================
+   PROVIDERS
+======================= */
 
-  try {
-    const res = await fetch(`${functionsUrl}/get-hotels`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${supabaseKey}`,
-      },
-      body: JSON.stringify({ city }),
-    });
-
-    if (!res.ok) {
-      console.error("HOTELS ERROR:", await res.text());
-      return null;
-    }
-
-    return await res.json();
-  } catch (e) {
-    console.error("HOTELS FETCH FAILED:", e);
-    return null;
-  }
+async function getActivities(city: string) {
+  const res = await fetch(`${functionsUrl}/klook-search`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${serviceKey}`,
+    },
+    body: JSON.stringify({ keyword: city }),
+  });
+  if (!res.ok) return [];
+  return (await res.json()).results ?? [];
 }
 
-// -------------------------------------------------------
-// SYSTEM PROMPT
-// -------------------------------------------------------
+async function getHotels(city: string) {
+  const res = await fetch(`${functionsUrl}/get-hotels`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${serviceKey}`,
+    },
+    body: JSON.stringify({ city }),
+  });
+  if (!res.ok) return [];
+  return await res.json();
+}
+
+/* =======================
+   SYSTEM PROMPT
+======================= */
+
 const SYSTEM_PROMPT = `
-You are TravelAI, a conversational travel assistant with persistent memory.
-
-Your response MUST ALWAYS be a valid JSON object in this structure:
-{
-  "reply": "...",
-  "state_update": {}
-}
-
-=====================
-   MEMORY RULES
-=====================
-1. You have access to two types of memory:
-   - conversation_state (persistent key-value memory)
-   - chat_history (recent messages from the conversation)
-
-2. ALWAYS combine:
-   • the user's new message
-   • the conversation_state (destination_city, dates, budget, language, etc.)
-   • the RELEVANT parts of chat_history
-   to understand context and continuity.
-
-3. If the user does NOT repeat the city, date, or preferences, 
-   you MUST infer them from conversation_state or chat_history.
-
-4. NEVER forget prior info unless the user explicitly changes it.
-
-5. When the user clarifies or changes something, update ONLY that part in "state_update".
-
-=====================
- ACTIVITY / HOTEL RULES
-=====================
-6. NEVER invent activities or hotels.
-7. ALWAYS use items from CONTEXT_ACTIVITIES_JSON and CONTEXT_HOTELS_JSON.
-8. If activities exist → build reply using ONLY them.
-9. If no activities exist → reply: "Nu am găsit activități pentru această destinație."
-
-=====================
-  REPLY STYLE RULES
-=====================
-10. Keep replies concise, friendly, and helpful.
-11. Speak Romanian unless state.language says otherwise.
-12. Do not repeat unnecessary details if they already appeared earlier in conversation.
-
-=====================
-   YOUR JOB
-=====================
-- maintain continuity of the conversation using memory
-- infer missing details from previous state/history
-- update the state when new information is detected
-- answer ONLY using the provided activities/hotels
-- always return valid JSON
+You are TravelAI, friendly travel assistant.
+You remember previous cities.
+You answer naturally in Romanian.
 `;
 
+/* =======================
+   MAIN
+======================= */
 
-// -------------------------------------------------------
-// MAIN FUNCTION
-// -------------------------------------------------------
 serve(async (req) => {
   if (req.method === "OPTIONS")
     return new Response("ok", { headers: corsHeaders });
@@ -258,75 +163,70 @@ serve(async (req) => {
   try {
     const { user_id, conversation_id, prompt } = await req.json();
 
-    if (!user_id || !conversation_id || !prompt) {
-      return new Response(
-        JSON.stringify({ error: "Missing fields" }),
-        { status: 400, headers: corsHeaders }
-      );
+    let state = await loadState(conversation_id, user_id);
+    const history = await loadHistory(conversation_id);
+
+    // detect cities
+    const cities = extractCities(prompt);
+    if (cities.length > 0) {
+      const last = cities[cities.length - 1];
+      state.travel_context.current_city = last;
+      if (!state.travel_context.cities_mentioned.includes(last)) {
+        state.travel_context.cities_mentioned.push(last);
+      }
     }
 
-    let state = await loadState(conversation_id, user_id);
+    const intent = detectIntent(prompt);
+    state.travel_context.last_intent = intent;
 
-    const city = extractCity(prompt) ?? state.destination_city;
-    if (city) state.destination_city = city;
+    let activities = [];
+    let hotels = [];
 
-    const activities = await fetchKlook(city);
-    const hotels = await fetchHotels(city);
+    if (intent === "activities" && state.travel_context.current_city) {
+      activities = await getActivities(state.travel_context.current_city);
+    }
+    if (intent === "hotels" && state.travel_context.current_city) {
+      hotels = await getHotels(state.travel_context.current_city);
+    }
 
-    const context = `
-STATE:
-${JSON.stringify(state)}
-
-ACTIVITIES:
-${JSON.stringify(activities)}
-
-HOTELS:
-${JSON.stringify(hotels)}
-
-USER:
-${prompt}
-`;
+    const messages = [
+      { role: "system", content: SYSTEM_PROMPT },
+      ...history.map(h => ({ role: h.role, content: h.content })),
+      {
+        role: "user",
+        content: `
+Current city: ${state.travel_context.current_city}
+Intent: ${intent}
+Activities: ${JSON.stringify(activities)}
+Hotels: ${JSON.stringify(hotels)}
+Message: ${prompt}
+      `,
+      },
+    ];
 
     const ai = await openai.chat.completions.create({
-      model: OPENAI_MODEL,
-      response_format: { type: "json_object" },
-      messages: [
-        { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: context },
-      ],
-      max_tokens: 2000,
+      model: MODEL,
+      messages,
+      max_tokens: 1200,
     });
 
-    let parsed;
-    try {
-      parsed = JSON.parse(ai.choices[0].message.content);
-    } catch {
-      parsed = { reply: ai.choices[0].message.content, state_update: {} };
-    }
+    const reply = ai.choices[0].message.content!;
 
-    state = { ...state, ...(parsed.state_update ?? {}) };
     await saveState(conversation_id, state);
 
     await supabase.from("chat_history").insert([
       { conversation_id, role: "user", content: prompt },
-      { conversation_id, role: "assistant", content: parsed.reply },
+      { conversation_id, role: "assistant", content: reply },
     ]);
 
     return new Response(
-      JSON.stringify({
-        reply: parsed.reply,
-        state,
-        activities,
-        hotels,
-        city_used: city,
-      }),
+      JSON.stringify({ reply, state }),
       { headers: corsHeaders }
     );
   } catch (err) {
-    console.error("AI-CHAT ERROR:", err);
-    return new Response(JSON.stringify({ error: err.message }), {
-      status: 500,
-      headers: corsHeaders,
-    });
+    return new Response(
+      JSON.stringify({ error: err.message }),
+      { status: 500, headers: corsHeaders }
+    );
   }
 });
