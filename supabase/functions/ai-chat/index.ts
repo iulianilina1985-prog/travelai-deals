@@ -1,18 +1,16 @@
 /**
- * TravelAI – AI CHAT CORE (UPDATE REAL)
- * Conversation memory
- * Multiple cities
- * Natural follow-up
- * Romanian travel assistant
+ * TravelAI – Conversational Travel AI (STABLE)
+ * - conversational ca ChatGPT
+ * - memorie reala (chat_history)
+ * - multiple orase
+ * - fara comportament prostesc
  */
 
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import OpenAI from "https://esm.sh/openai@4.28.0";
 
-/* =======================
-   CONFIG
-======================= */
+/* ================= CONFIG ================= */
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -24,7 +22,6 @@ const corsHeaders = {
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const functionsUrl = `${supabaseUrl}/functions/v1`;
 
 const supabase = createClient(supabaseUrl, serviceKey, {
   auth: { persistSession: false },
@@ -36,22 +33,14 @@ const openai = new OpenAI({
 
 const MODEL = Deno.env.get("OPENAI_MODEL") ?? "gpt-4.1-mini";
 
-/* =======================
-   DEFAULT STATE
-======================= */
+/* ================= STATE ================= */
 
 const DEFAULT_STATE = {
-  travel_context: {
-    cities_mentioned: [] as string[],
-    current_city: null as string | null,
-    last_intent: null as "activities" | "hotels" | "general" | null,
-  },
-  language: "ro",
+  current_city: null as string | null,
+  cities_mentioned: [] as string[],
 };
 
-/* =======================
-   MEMORY HELPERS
-======================= */
+/* ================= MEMORY ================= */
 
 async function loadState(conversation_id: string, user_id: string) {
   const { data } = await supabase
@@ -93,68 +82,34 @@ async function loadHistory(conversation_id: string) {
   return data ?? [];
 }
 
-/* =======================
-   CITY / INTENT DETECTION
-======================= */
+/* ================= CITY DETECTION ================= */
 
-function extractCities(text: string): string[] {
+function extractCity(text: string): string | null {
   const matches = text.match(/\b([A-ZĂÂÎȘȚ][a-zăâîșț]{2,})\b/g);
-  if (!matches) return [];
-  return matches.filter(w =>
-    !["Si", "Dar", "Si", "In", "La", "De", "Pe", "Cu"].includes(w)
-  );
+  if (!matches) return null;
+  return matches[matches.length - 1];
 }
 
-function detectIntent(text: string) {
-  const t = text.toLowerCase();
-  if (t.includes("activit")) return "activities";
-  if (t.includes("caz") || t.includes("hotel") || t.includes("pret")) return "hotels";
-  return "general";
-}
-
-/* =======================
-   PROVIDERS
-======================= */
-
-async function getActivities(city: string) {
-  const res = await fetch(`${functionsUrl}/klook-search`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${serviceKey}`,
-    },
-    body: JSON.stringify({ keyword: city }),
-  });
-  if (!res.ok) return [];
-  return (await res.json()).results ?? [];
-}
-
-async function getHotels(city: string) {
-  const res = await fetch(`${functionsUrl}/get-hotels`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${serviceKey}`,
-    },
-    body: JSON.stringify({ city }),
-  });
-  if (!res.ok) return [];
-  return await res.json();
-}
-
-/* =======================
-   SYSTEM PROMPT
-======================= */
+/* ================= SYSTEM PROMPT ================= */
 
 const SYSTEM_PROMPT = `
-You are TravelAI, friendly travel assistant.
-You remember previous cities.
-You answer naturally in Romanian.
+You are TravelAI, a friendly and knowledgeable travel assistant.
+
+You speak naturally, like a human travel expert.
+You remember the conversation and continue it naturally.
+
+Guidelines:
+- If a city is already being discussed, continue talking about that city.
+- If the user switches to another city, smoothly switch the discussion.
+- Do NOT ask unnecessary clarification questions.
+- Do NOT sound like customer support or a form.
+- Speak Romanian.
+- Talk ONLY about travel: cities, destinations, activities, accommodation, tips.
+
+Your goal is to feel like a human travel companion.
 `;
 
-/* =======================
-   MAIN
-======================= */
+/* ================= MAIN ================= */
 
 serve(async (req) => {
   if (req.method === "OPTIONS")
@@ -163,54 +118,45 @@ serve(async (req) => {
   try {
     const { user_id, conversation_id, prompt } = await req.json();
 
+    if (!user_id || !conversation_id || !prompt) {
+      return new Response(
+        JSON.stringify({ error: "Missing fields" }),
+        { status: 400, headers: corsHeaders }
+      );
+    }
+
+    // load memory
     let state = await loadState(conversation_id, user_id);
     const history = await loadHistory(conversation_id);
 
-    // detect cities
-    const cities = extractCities(prompt);
-    if (cities.length > 0) {
-      const last = cities[cities.length - 1];
-      state.travel_context.current_city = last;
-      if (!state.travel_context.cities_mentioned.includes(last)) {
-        state.travel_context.cities_mentioned.push(last);
+    // detect city switch
+    const city = extractCity(prompt);
+    if (city) {
+      state.current_city = city;
+      if (!state.cities_mentioned.includes(city)) {
+        state.cities_mentioned.push(city);
       }
     }
 
-    const intent = detectIntent(prompt);
-    state.travel_context.last_intent = intent;
-
-    let activities = [];
-    let hotels = [];
-
-    if (intent === "activities" && state.travel_context.current_city) {
-      activities = await getActivities(state.travel_context.current_city);
-    }
-    if (intent === "hotels" && state.travel_context.current_city) {
-      hotels = await getHotels(state.travel_context.current_city);
-    }
+    // factual context as assistant message (CRUCIAL)
+    const cityFact = state.current_city
+      ? `Discutia curenta este despre orasul ${state.current_city}.`
+      : `Orasul nu a fost inca stabilit.`;
 
     const messages = [
       { role: "system", content: SYSTEM_PROMPT },
+      { role: "assistant", content: cityFact },
       ...history.map(h => ({ role: h.role, content: h.content })),
-      {
-        role: "user",
-        content: `
-Current city: ${state.travel_context.current_city}
-Intent: ${intent}
-Activities: ${JSON.stringify(activities)}
-Hotels: ${JSON.stringify(hotels)}
-Message: ${prompt}
-      `,
-      },
+      { role: "user", content: prompt },
     ];
 
-    const ai = await openai.chat.completions.create({
+    const completion = await openai.chat.completions.create({
       model: MODEL,
       messages,
       max_tokens: 1200,
     });
 
-    const reply = ai.choices[0].message.content!;
+    const reply = completion.choices[0].message.content!;
 
     await saveState(conversation_id, state);
 
@@ -223,7 +169,8 @@ Message: ${prompt}
       JSON.stringify({ reply, state }),
       { headers: corsHeaders }
     );
-  } catch (err) {
+  } catch (err: any) {
+    console.error("AI-CHAT ERROR:", err);
     return new Response(
       JSON.stringify({ error: err.message }),
       { status: 500, headers: corsHeaders }
