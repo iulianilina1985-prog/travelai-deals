@@ -1,9 +1,9 @@
 /**
- * TravelAI – Conversational Travel AI (STABLE)
- * - conversational ca ChatGPT
- * - memorie reala (chat_history)
- * - multiple orase
- * - fara comportament prostesc
+ * TravelAI – Travel Orchestrator AI
+ * - intelege cereri complexe
+ * - memorie reala
+ * - raspunsuri naturale
+ * - upsell logic (rent a car, activitati, esim)
  */
 
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
@@ -22,6 +22,7 @@ const corsHeaders = {
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const functionsUrl = `${supabaseUrl}/functions/v1`;
 
 const supabase = createClient(supabaseUrl, serviceKey, {
   auth: { persistSession: false },
@@ -33,14 +34,11 @@ const openai = new OpenAI({
 
 const MODEL = Deno.env.get("OPENAI_MODEL") ?? "gpt-4.1-mini";
 
-/* ================= STATE ================= */
+/* ================= MEMORY ================= */
 
 const DEFAULT_STATE = {
-  current_city: null as string | null,
-  cities_mentioned: [] as string[],
+  context: null as any, // cererea structurata
 };
-
-/* ================= MEMORY ================= */
 
 async function loadState(conversation_id: string, user_id: string) {
   const { data } = await supabase
@@ -77,36 +75,109 @@ async function loadHistory(conversation_id: string) {
     .select("role, content")
     .eq("conversation_id", conversation_id)
     .order("created_at", { ascending: true })
-    .limit(20);
+    .limit(15);
 
   return data ?? [];
 }
 
-/* ================= CITY DETECTION ================= */
+/* ================= AI PARSER ================= */
 
-function extractCity(text: string): string | null {
-  const matches = text.match(/\b([A-ZĂÂÎȘȚ][a-zăâîșț]{2,})\b/g);
-  if (!matches) return null;
-  return matches[matches.length - 1];
+async function parseTravelRequest(text: string) {
+  const system = `
+Extrage din text o cerere de vacanta.
+Raspunde DOAR cu JSON valid, fara explicatii.
+
+Structura:
+{
+  "city": string | null,
+  "start_date": string | null,
+  "end_date": string | null,
+  "adults": number | null,
+  "children": number[] | [],
+  "hotel_stars": number | null,
+  "meal_plan": string | null,
+  "needs_flight": boolean,
+  "needs_hotel": boolean
+}
+`;
+
+  const res = await openai.chat.completions.create({
+    model: MODEL,
+    response_format: { type: "json_object" },
+    messages: [
+      { role: "system", content: system },
+      { role: "user", content: text },
+    ],
+    max_tokens: 500,
+  });
+
+  return JSON.parse(res.choices[0].message.content!);
 }
 
-/* ================= SYSTEM PROMPT ================= */
+/* ================= MOCK PROVIDERS (TEMP) ================= */
 
-const SYSTEM_PROMPT = `
-You are TravelAI, a friendly and knowledgeable travel assistant.
+function mockHotels(city: string) {
+  return [
+    { name: "Atlantis The Palm", stars: 5, price: "3200 EUR" },
+    { name: "Jumeirah Beach Hotel", stars: 5, price: "2900 EUR" },
+    { name: "Rixos The Palm", stars: 5, price: "3100 EUR" },
+    { name: "Sofitel The Palm", stars: 5, price: "2700 EUR" },
+    { name: "Address Sky View", stars: 5, price: "2600 EUR" },
+  ];
+}
 
-You speak naturally, like a human travel expert.
-You remember the conversation and continue it naturally.
+function mockRentACar(city: string) {
+  return [
+    { company: "Hertz", price: "45 EUR / zi" },
+    { company: "Sixt", price: "50 EUR / zi" },
+    { company: "Budget", price: "38 EUR / zi" },
+  ];
+}
 
-Guidelines:
-- If a city is already being discussed, continue talking about that city.
-- If the user switches to another city, smoothly switch the discussion.
-- Do NOT ask unnecessary clarification questions.
-- Do NOT sound like customer support or a form.
-- Speak Romanian.
-- Talk ONLY about travel: cities, destinations, activities, accommodation, tips.
+/* ================= SYSTEM PROMPT (CONSULTANT) ================= */
 
-Your goal is to feel like a human travel companion.
+const CONSULTANT_PROMPT = `
+Esti TravelAI, un consultant de vacante experimentat, care discuta natural cu utilizatorul,
+exact ca un agent de turism bun, nu ca un formular sau suport clienti.
+
+REGULI DE CONVERSATIE:
+- Conversatia este continua. Fiecare mesaj se bazeaza pe ce s-a discutat anterior.
+- Daca un oras sau o destinatie a fost mentionata anterior, aceasta este considerata activa.
+- NU cere din nou orasul, perioada sau alte detalii daca ele apar deja in conversatie.
+- Cand utilizatorul pune o intrebare scurta (ex: "preturi cazare", "activitati"),
+  raspunzi direct folosind contextul deja cunoscut.
+
+CUM RASPUNZI:
+- Raspunde clar, direct si sigur pe tine.
+- Evita formularile de tip "pentru a va putea oferi..."
+- Nu cere detalii inutile daca poti oferi un raspuns util fara ele.
+- Daca unele detalii lipsesc, ofera intervale orientative sau exemple, NU intreba imediat.
+
+STRUCTURA RASPUNSULUI:
+1. O fraza scurta de context despre destinatie (daca e relevant).
+2. Oferte sau informatii concrete (hoteluri, preturi, optiuni).
+3. Recomandari similare sau alternative (daca sunt potrivite).
+4. Upsell logic, discret, doar daca are sens in context:
+   - activitati
+   - rent a car
+   - eSIM
+   - restaurante
+
+UPSOLD – REGULA DE AUR:
+- Propui upsell ca sugestie, nu ca intrebare insistenta.
+- Exemplu corect:
+  "Daca vrei, pot sa-ti arat si cateva optiuni de rent a car in Paris."
+- Exemplu gresit:
+  "Doriti sa va ofer informatii suplimentare despre..."
+
+STIL:
+- Limba romana
+- Ton natural, prietenos, profesionist
+- Ca un consultant real de travel, nu ca un chatbot rigid
+
+SCOP:
+- Ajuti utilizatorul sa aleaga si sa cumpere o vacanta.
+- Nu filozofa, nu devia de la travel.
 `;
 
 /* ================= MAIN ================= */
@@ -118,35 +189,43 @@ serve(async (req) => {
   try {
     const { user_id, conversation_id, prompt } = await req.json();
 
-    if (!user_id || !conversation_id || !prompt) {
-      return new Response(
-        JSON.stringify({ error: "Missing fields" }),
-        { status: 400, headers: corsHeaders }
-      );
-    }
-
-    // load memory
     let state = await loadState(conversation_id, user_id);
     const history = await loadHistory(conversation_id);
 
-    // detect city switch
-    const city = extractCity(prompt);
-    if (city) {
-      state.current_city = city;
-      if (!state.cities_mentioned.includes(city)) {
-        state.cities_mentioned.push(city);
-      }
+    // PAS 1: parse cererea daca nu avem context
+    if (!state.context) {
+      state.context = await parseTravelRequest(prompt);
     }
 
-    // factual context as assistant message (CRUCIAL)
-    const cityFact = state.current_city
-      ? `Discutia curenta este despre orasul ${state.current_city}.`
-      : `Orasul nu a fost inca stabilit.`;
+    const ctx = state.context;
+
+    let hotels = [];
+    let rentCars = [];
+
+    if (ctx.city && ctx.needs_hotel) {
+      hotels = mockHotels(ctx.city);
+    }
+
+    if (prompt.toLowerCase().includes("rent")) {
+      rentCars = mockRentACar(ctx.city);
+    }
 
     const messages = [
-      { role: "system", content: SYSTEM_PROMPT },
-      { role: "assistant", content: cityFact },
+      { role: "system", content: CONSULTANT_PROMPT },
       ...history.map(h => ({ role: h.role, content: h.content })),
+      {
+        role: "assistant",
+        content: `
+Context vacanta:
+${JSON.stringify(ctx)}
+
+Hoteluri:
+${JSON.stringify(hotels)}
+
+Rent a car:
+${JSON.stringify(rentCars)}
+        `,
+      },
       { role: "user", content: prompt },
     ];
 
@@ -166,11 +245,11 @@ serve(async (req) => {
     ]);
 
     return new Response(
-      JSON.stringify({ reply, state }),
+      JSON.stringify({ reply, context: ctx }),
       { headers: corsHeaders }
     );
   } catch (err: any) {
-    console.error("AI-CHAT ERROR:", err);
+    console.error(err);
     return new Response(
       JSON.stringify({ error: err.message }),
       { status: 500, headers: corsHeaders }
