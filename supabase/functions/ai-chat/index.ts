@@ -1,9 +1,5 @@
 /**
  * TravelAI – Travel Orchestrator AI
- * - intelege cereri complexe
- * - memorie reala
- * - raspunsuri naturale
- * - upsell logic (rent a car, activitati, esim)
  */
 
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
@@ -29,16 +25,14 @@ const supabase = createClient(supabaseUrl, serviceKey, {
 });
 
 const openai = new OpenAI({
-  apiKey: Deno.env.get("OPENAI_KEY")!,
+  apiKey: Deno.env.get("OPENAI_API_KEY")!,
 });
 
 const MODEL = Deno.env.get("OPENAI_MODEL") ?? "gpt-4.1-mini";
 
 /* ================= MEMORY ================= */
 
-const DEFAULT_STATE = {
-  context: null as any, // cererea structurata
-};
+const DEFAULT_STATE = { context: null as any };
 
 async function loadState(conversation_id: string, user_id: string) {
   const { data } = await supabase
@@ -84,18 +78,12 @@ async function loadHistory(conversation_id: string) {
 
 async function parseTravelRequest(text: string) {
   const system = `
-Extrage din text o cerere de vacanta.
-Raspunde DOAR cu JSON valid, fara explicatii.
+Raspunde DOAR cu JSON valid.
 
-Structura:
 {
   "city": string | null,
   "start_date": string | null,
   "end_date": string | null,
-  "adults": number | null,
-  "children": number[] | [],
-  "hotel_stars": number | null,
-  "meal_plan": string | null,
   "needs_flight": boolean,
   "needs_hotel": boolean
 }
@@ -108,76 +96,58 @@ Structura:
       { role: "system", content: system },
       { role: "user", content: text },
     ],
-    max_tokens: 500,
   });
 
   return JSON.parse(res.choices[0].message.content!);
 }
+function cityToIata(city: string): string {
+  const map: Record<string, string> = {
+    "PARIS": "PAR",
+    "BUCHAREST": "BUH",
+    "BUCURESTI": "BUH",
+    "ROME": "ROM",
+    "MILAN": "MIL",
+    "LONDON": "LON",
+  };
 
-/* ================= MOCK PROVIDERS (TEMP) ================= */
-
-function mockHotels(city: string) {
-  return [
-    { name: "Atlantis The Palm", stars: 5, price: "3200 EUR" },
-    { name: "Jumeirah Beach Hotel", stars: 5, price: "2900 EUR" },
-    { name: "Rixos The Palm", stars: 5, price: "3100 EUR" },
-    { name: "Sofitel The Palm", stars: 5, price: "2700 EUR" },
-    { name: "Address Sky View", stars: 5, price: "2600 EUR" },
-  ];
+  return map[city.toUpperCase()] ?? city.toUpperCase();
 }
 
-function mockRentACar(city: string) {
-  return [
-    { company: "Hertz", price: "45 EUR / zi" },
-    { company: "Sixt", price: "50 EUR / zi" },
-    { company: "Budget", price: "38 EUR / zi" },
-  ];
+/* ================= HELPERS ================= */
+
+async function searchFlights(ctx: any) {
+  if (!ctx.start_date || !ctx.end_date || !ctx.city) return null;
+
+  const url = new URL(`${functionsUrl}/aviasales-cheap`);
+  url.searchParams.set("origin", "BUH");
+  url.searchParams.set("destination", cityToIata(ctx.city));
+  url.searchParams.set("depart_date", ctx.start_date);
+  url.searchParams.set("return_date", ctx.end_date);
+
+  const res = await fetch(url.toString(), {
+    headers: {
+      apikey: Deno.env.get("SUPABASE_ANON_KEY")!,
+      Authorization: `Bearer ${Deno.env.get("SUPABASE_ANON_KEY")!}`,
+    },
+  });
+
+  return await res.json();
 }
 
-/* ================= SYSTEM PROMPT (CONSULTANT) ================= */
+/* ================= PROMPT ================= */
 
 const CONSULTANT_PROMPT = `
-Esti TravelAI, un consultant de vacante experimentat, care discuta natural cu utilizatorul,
-exact ca un agent de turism bun, nu ca un formular sau suport clienti.
+Esti TravelAI, un consultant de vacante real.
 
-REGULI DE CONVERSATIE:
-- Conversatia este continua. Fiecare mesaj se bazeaza pe ce s-a discutat anterior.
-- Daca un oras sau o destinatie a fost mentionata anterior, aceasta este considerata activa.
-- NU cere din nou orasul, perioada sau alte detalii daca ele apar deja in conversatie.
-- Cand utilizatorul pune o intrebare scurta (ex: "preturi cazare", "activitati"),
-  raspunzi direct folosind contextul deja cunoscut.
+- Vorbeste natural
+- Ofera solutii concrete
+- NU inventa preturi
+- Cand exista zboruri, mentioneaza ca sunt live si verificabile
+REGULA CRITICA:
+- NU genera linkuri.
+- NU mentiona alte platforme de rezervari.
+- Daca exista un link oferit in context, foloseste-l EXACT.
 
-CUM RASPUNZI:
-- Raspunde clar, direct si sigur pe tine.
-- Evita formularile de tip "pentru a va putea oferi..."
-- Nu cere detalii inutile daca poti oferi un raspuns util fara ele.
-- Daca unele detalii lipsesc, ofera intervale orientative sau exemple, NU intreba imediat.
-
-STRUCTURA RASPUNSULUI:
-1. O fraza scurta de context despre destinatie (daca e relevant).
-2. Oferte sau informatii concrete (hoteluri, preturi, optiuni).
-3. Recomandari similare sau alternative (daca sunt potrivite).
-4. Upsell logic, discret, doar daca are sens in context:
-   - activitati
-   - rent a car
-   - eSIM
-   - restaurante
-
-UPSOLD – REGULA DE AUR:
-- Propui upsell ca sugestie, nu ca intrebare insistenta.
-- Exemplu corect:
-  "Daca vrei, pot sa-ti arat si cateva optiuni de rent a car in Paris."
-- Exemplu gresit:
-  "Doriti sa va ofer informatii suplimentare despre..."
-
-STIL:
-- Limba romana
-- Ton natural, prietenos, profesionist
-- Ca un consultant real de travel, nu ca un chatbot rigid
-
-SCOP:
-- Ajuti utilizatorul sa aleaga si sa cumpere o vacanta.
-- Nu filozofa, nu devia de la travel.
 `;
 
 /* ================= MAIN ================= */
@@ -186,56 +156,40 @@ serve(async (req) => {
   if (req.method === "OPTIONS")
     return new Response("ok", { headers: corsHeaders });
 
+  let ctx: any = null;
+  let flightOffer: any = null;
+  let reply = "";
+
   try {
     const { user_id, conversation_id, prompt } = await req.json();
 
     let state = await loadState(conversation_id, user_id);
     const history = await loadHistory(conversation_id);
 
-    // PAS 1: parse cererea daca nu avem context
     if (!state.context) {
       state.context = await parseTravelRequest(prompt);
     }
 
-    const ctx = state.context;
+    ctx = state.context;
 
-    let hotels = [];
-    let rentCars = [];
-
-    if (ctx.city && ctx.needs_hotel) {
-      hotels = mockHotels(ctx.city);
-    }
-
-    if (prompt.toLowerCase().includes("rent")) {
-      rentCars = mockRentACar(ctx.city);
+    if (ctx.needs_flight) {
+      const result = await searchFlights(ctx);
+      flightOffer = result?.offers?.[0] ?? null;
     }
 
     const messages = [
       { role: "system", content: CONSULTANT_PROMPT },
       ...history.map(h => ({ role: h.role, content: h.content })),
-      {
-        role: "assistant",
-        content: `
-Context vacanta:
-${JSON.stringify(ctx)}
-
-Hoteluri:
-${JSON.stringify(hotels)}
-
-Rent a car:
-${JSON.stringify(rentCars)}
-        `,
-      },
       { role: "user", content: prompt },
     ];
 
     const completion = await openai.chat.completions.create({
       model: MODEL,
       messages,
-      max_tokens: 1200,
+      max_tokens: 800,
     });
 
-    const reply = completion.choices[0].message.content!;
+    reply = completion.choices[0].message.content!;
 
     await saveState(conversation_id, state);
 
@@ -245,13 +199,21 @@ ${JSON.stringify(rentCars)}
     ]);
 
     return new Response(
-      JSON.stringify({ reply, context: ctx }),
+      JSON.stringify({
+        reply,
+        context: ctx,
+        flight_offer: flightOffer,
+      }),
       { headers: corsHeaders }
     );
   } catch (err: any) {
     console.error(err);
     return new Response(
-      JSON.stringify({ error: err.message }),
+      JSON.stringify({
+        error: err.message,
+        context: ctx,
+        flight_offer: flightOffer,
+      }),
       { status: 500, headers: corsHeaders }
     );
   }
