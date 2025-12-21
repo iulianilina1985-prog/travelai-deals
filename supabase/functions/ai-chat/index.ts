@@ -1,6 +1,5 @@
 /**
  * TravelAI – Travel Orchestrator AI
- * STABIL / COMPATIBIL CU FRONTENDUL EXISTENT
  */
 
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
@@ -19,6 +18,8 @@ const corsHeaders = {
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const functionsUrl = `${supabaseUrl}/functions/v1`;
+
 const supabase = createClient(supabaseUrl, serviceKey, {
   auth: { persistSession: false },
 });
@@ -68,7 +69,7 @@ async function loadHistory(conversation_id: string) {
     .select("role, content")
     .eq("conversation_id", conversation_id)
     .order("created_at", { ascending: true })
-    .limit(12);
+    .limit(15);
 
   return data ?? [];
 }
@@ -99,58 +100,93 @@ Raspunde DOAR cu JSON valid.
 
   return JSON.parse(res.choices[0].message.content!);
 }
+function cityToIata(city: string): string {
+  const map: Record<string, string> = {
+    "PARIS": "PAR",
+    "BUCHAREST": "BUH",
+    "BUCURESTI": "BUH",
+    "ROME": "ROM",
+    "MILAN": "MIL",
+    "LONDON": "LON",
+  };
 
-/* ================= SYSTEM PROMPT ================= */
+  return map[city.toUpperCase()] ?? city.toUpperCase();
+}
+
+/* ================= HELPERS ================= */
+
+async function searchFlights(ctx: any) {
+  if (!ctx.start_date || !ctx.end_date || !ctx.city) return null;
+
+  const url = new URL(`${functionsUrl}/aviasales-cheap`);
+  url.searchParams.set("origin", "BUH");
+  url.searchParams.set("destination", cityToIata(ctx.city));
+  url.searchParams.set("depart_date", ctx.start_date);
+  url.searchParams.set("return_date", ctx.end_date);
+
+  const res = await fetch(url.toString(), {
+    headers: {
+      apikey: Deno.env.get("SUPABASE_ANON_KEY")!,
+      Authorization: `Bearer ${Deno.env.get("SUPABASE_ANON_KEY")!}`,
+    },
+  });
+
+  return await res.json();
+}
+
+/* ================= PROMPT ================= */
 
 const CONSULTANT_PROMPT = `
 Esti TravelAI, un consultant de vacante real.
 
-Reguli:
-- Vorbeste natural, ca un agent de turism.
-- NU inventa preturi.
+- Vorbeste natural
+- Ofera solutii concrete
+- NU inventa preturi
+- Cand exista zboruri, mentioneaza ca sunt live si verificabile
+REGULA CRITICA:
 - NU genera linkuri.
-- NU mentiona platforme externe.
-- Daca utilizatorul cere zboruri, spune ca poti afisa oferte reale in interfata.
+- NU mentiona alte platforme de rezervari.
+- Daca exista un link oferit in context, foloseste-l EXACT.
 
-Scop:
-- Ghideaza utilizatorul
-- Clarifica optiunile
-- Pregateste decizia
 `;
 
 /* ================= MAIN ================= */
 
-serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
-  }
+serve(
+  { verifyJWT: false },
+  async (req) => {
+    if (req.method === "OPTIONS") {
+      return new Response(null, {
+        status: 200,
+        headers: corsHeaders,
+      });
+    }
+
 
   let ctx: any = null;
+  let flightOffer: any = null;
   let reply = "";
 
   try {
     const { user_id, conversation_id, prompt } = await req.json();
 
-    if (!prompt || !conversation_id) {
-      return new Response(
-        JSON.stringify({ reply: "Mesaj invalid." }),
-        { headers: corsHeaders }
-      );
-    }
-
     let state = await loadState(conversation_id, user_id);
     const history = await loadHistory(conversation_id);
 
-    // parse doar o singura data
     if (!state.context) {
       state.context = await parseTravelRequest(prompt);
     }
 
     ctx = state.context;
 
+    if (ctx.needs_flight) {
+      const result = await searchFlights(ctx);
+      flightOffer = result?.offers?.[0] ?? null;
+    }
+
     const messages = [
       { role: "system", content: CONSULTANT_PROMPT },
-      ...history.map((h) => ({ role: h.role, content: h.content })),
+      ...history.map(h => ({ role: h.role, content: h.content })),
       { role: "user", content: prompt },
     ];
 
@@ -160,7 +196,7 @@ serve(async (req) => {
       max_tokens: 800,
     });
 
-    reply = completion.choices[0].message.content ?? "";
+    reply = completion.choices[0].message.content!;
 
     await saveState(conversation_id, state);
 
@@ -173,17 +209,19 @@ serve(async (req) => {
       JSON.stringify({
         reply,
         context: ctx,
+        flight_offer: flightOffer,
       }),
       { headers: corsHeaders }
     );
   } catch (err: any) {
-    console.error("AI-CHAT ERROR:", err);
+    console.error(err);
     return new Response(
       JSON.stringify({
-        reply: "Serviciul este temporar indisponibil.",
+        error: err.message,
         context: ctx,
+        flight_offer: flightOffer,
       }),
-      { status: 200, headers: corsHeaders }
+      { status: 500, headers: corsHeaders }
     );
   }
 });
