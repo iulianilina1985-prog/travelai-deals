@@ -43,31 +43,24 @@ export async function updateChat(id, title, messages) {
   try {
     const { data: auth } = await supabase.auth.getUser();
     const user = auth?.user;
+    if (!user || !id) return;
 
-    if (!user) return null;
-
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from("chat_conversations")
       .update({
         title,
-        messages
+        messages,
+        updated_at: new Date().toISOString(),
       })
       .eq("id", id)
-      .eq("user_id", user.id)
-      .select()
-      .single();
+      .eq("user_id", user.id);
 
-    if (error) {
-      console.error("❌ Eroare la updateChat:", error);
-      return null;
-    }
-
-    return data;
+    if (error) console.error("❌ updateChat:", error);
   } catch (err) {
-    console.error("❌ Eroare în updateChat:", err);
-    return null;
+    console.error("❌ updateChat fatal:", err);
   }
 }
+
 
 /**
  * ✅ Returnează toate conversațiile userului

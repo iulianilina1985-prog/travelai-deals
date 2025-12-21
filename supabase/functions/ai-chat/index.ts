@@ -1,20 +1,23 @@
 /**
  * TravelAI – Travel Orchestrator AI
+ * STABLE + CORS SAFE
  */
 
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import OpenAI from "https://esm.sh/openai@4.28.0";
 
-/* ================= CONFIG ================= */
+/* ================= CORS ================= */
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
+    "authorization, content-type, apikey, x-client-info",
   "Content-Type": "application/json",
 };
+
+/* ================= CONFIG ================= */
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -39,7 +42,7 @@ async function loadState(conversation_id: string, user_id: string) {
     .from("conversation_state")
     .select("state")
     .eq("conversation_id", conversation_id)
-    .single();
+    .maybeSingle();
 
   if (!data) {
     await supabase.from("conversation_state").insert({
@@ -56,10 +59,7 @@ async function loadState(conversation_id: string, user_id: string) {
 async function saveState(conversation_id: string, state: any) {
   await supabase
     .from("conversation_state")
-    .update({
-      state,
-      updated_at: new Date().toISOString(),
-    })
+    .update({ state })
     .eq("conversation_id", conversation_id);
 }
 
@@ -79,7 +79,6 @@ async function loadHistory(conversation_id: string) {
 async function parseTravelRequest(text: string) {
   const system = `
 Raspunde DOAR cu JSON valid.
-
 {
   "city": string | null,
   "start_date": string | null,
@@ -100,20 +99,20 @@ Raspunde DOAR cu JSON valid.
 
   return JSON.parse(res.choices[0].message.content!);
 }
+
 function cityToIata(city: string): string {
   const map: Record<string, string> = {
-    "PARIS": "PAR",
-    "BUCHAREST": "BUH",
-    "BUCURESTI": "BUH",
-    "ROME": "ROM",
-    "MILAN": "MIL",
-    "LONDON": "LON",
+    PARIS: "PAR",
+    BUCHAREST: "BUH",
+    BUCURESTI: "BUH",
+    ROME: "ROM",
+    MILAN: "MIL",
+    LONDON: "LON",
   };
-
   return map[city.toUpperCase()] ?? city.toUpperCase();
 }
 
-/* ================= HELPERS ================= */
+/* ================= FLIGHTS ================= */
 
 async function searchFlights(ctx: any) {
   if (!ctx.start_date || !ctx.end_date || !ctx.city) return null;
@@ -143,50 +142,49 @@ Esti TravelAI, un consultant de vacante real.
 - Ofera solutii concrete
 - NU inventa preturi
 - Cand exista zboruri, mentioneaza ca sunt live si verificabile
-REGULA CRITICA:
-- NU genera linkuri.
-- NU mentiona alte platforme de rezervari.
-- Daca exista un link oferit in context, foloseste-l EXACT.
 
+REGULA CRITICA:
+- NU genera linkuri
+- Daca exista un link in context, foloseste-l EXACT
 `;
 
 /* ================= MAIN ================= */
 
-serve(
-  { verifyJWT: false },
-  async (req) => {
-    if (req.method === "OPTIONS") {
-      return new Response(null, {
-        status: 200,
-        headers: corsHeaders,
-      });
-    }
-
-
-  let ctx: any = null;
-  let flightOffer: any = null;
-  let reply = "";
+serve(async (req) => {
+  // ✅ PRE-FLIGHT
+  if (req.method === "OPTIONS") {
+    return new Response("ok", {
+      status: 200,
+      headers: { ...corsHeaders, "Content-Length": "2" },
+    });
+  }
 
   try {
     const { user_id, conversation_id, prompt } = await req.json();
 
-    let state = await loadState(conversation_id, user_id);
+    if (!user_id || !conversation_id || !prompt) {
+      return new Response(
+        JSON.stringify({ error: "Missing parameters" }),
+        { status: 400, headers: corsHeaders }
+      );
+    }
+
+    const state = await loadState(conversation_id, user_id);
     const history = await loadHistory(conversation_id);
 
     if (!state.context) {
       state.context = await parseTravelRequest(prompt);
     }
 
-    ctx = state.context;
-
-    if (ctx.needs_flight) {
-      const result = await searchFlights(ctx);
+    let flightOffer = null;
+    if (state.context?.needs_flight) {
+      const result = await searchFlights(state.context);
       flightOffer = result?.offers?.[0] ?? null;
     }
 
     const messages = [
       { role: "system", content: CONSULTANT_PROMPT },
-      ...history.map(h => ({ role: h.role, content: h.content })),
+      ...history.map((h) => ({ role: h.role, content: h.content })),
       { role: "user", content: prompt },
     ];
 
@@ -196,7 +194,7 @@ serve(
       max_tokens: 800,
     });
 
-    reply = completion.choices[0].message.content!;
+    const reply = completion.choices[0].message.content!;
 
     await saveState(conversation_id, state);
 
@@ -208,20 +206,18 @@ serve(
     return new Response(
       JSON.stringify({
         reply,
-        context: ctx,
+        context: state.context,
         flight_offer: flightOffer,
       }),
-      { headers: corsHeaders }
+      { status: 200, headers: corsHeaders }
     );
   } catch (err: any) {
-    console.error(err);
+    console.error("AI CHAT ERROR:", err);
     return new Response(
-      JSON.stringify({
-        error: err.message,
-        context: ctx,
-        flight_offer: flightOffer,
-      }),
+      JSON.stringify({ error: err.message }),
       { status: 500, headers: corsHeaders }
     );
   }
 });
+
+
