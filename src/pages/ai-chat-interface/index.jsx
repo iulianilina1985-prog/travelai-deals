@@ -40,6 +40,7 @@ import {
 const AIChatInterface = () => {
   const navigate = useNavigate();
   const messagesEndRef = useRef(null);
+  const [offerCard, setOfferCard] = useState(null);
 
   // ------------------------------------------------------
   // STATE
@@ -235,6 +236,7 @@ const AIChatInterface = () => {
   // ======================================================
   const handleSendMessage = async (content) => {
   if (!content?.trim()) return;
+    setOfferCard(null);
 
   // 1️⃣ Moderare
   const safe = await moderateUserInput(content).catch(() => true);
@@ -379,7 +381,39 @@ Ai atins limita zilnică de 5 mesaje.
         out: ai?.tokens_out || 0,
       },
       isSupabaseMode: ai?.isSupabaseMode || supabaseMode,
-    };
+    };    
+
+    // 🔥 OFERTE (doar dacă AI a returnat intent)
+if (ai?.intent) {
+  try {
+    const { data: auth } = await supabase.auth.getSession();
+    const token = auth?.session?.access_token;
+
+    const res = await fetch(
+      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/offers`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${token || import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({
+          intent: ai.intent,
+        }),
+      }
+    );
+
+    const data = await res.json();
+
+    if (data?.card) {
+      setOfferCard(data.card);
+    }
+  } catch (err) {
+    console.error("Eroare offers:", err);
+  }
+}
+
 
     // Salvare + update UI
     setMessages(prev => {
@@ -559,6 +593,25 @@ Ai atins limita zilnică de 5 mesaje.
                     supabaseMode={supabaseMode}
                   />
                 ))}
+
+                {offerCard && (
+  <div className="mt-4 p-4 border rounded-lg bg-card">
+    <h3 className="font-semibold text-lg">{offerCard.title}</h3>
+    <p className="text-sm text-muted-foreground">
+      {offerCard.subtitle}
+    </p>
+
+    <a
+      href={offerCard.cta.url}
+      target="_blank"
+      rel="noreferrer"
+      className="inline-block mt-3 px-4 py-2 bg-primary text-white rounded"
+    >
+      {offerCard.cta.label}
+    </a>
+  </div>
+)}
+
 
                 {/* TYPING */}
                 {isTyping && (
