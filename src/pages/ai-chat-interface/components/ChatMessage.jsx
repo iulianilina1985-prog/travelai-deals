@@ -20,6 +20,43 @@ const ChatMessage = ({ message, onBookDeal, offlineMode = false }) => {
     }
   };
 
+  // ============================================================
+// 🧩 OFFER CARD (Aviasales / Booking / Klook)
+// ============================================================
+if (message?.type === "offer" && message?.card) {
+  const { card } = message;
+
+  return (
+    <div className="flex justify-start mb-6">
+      <div className="flex max-w-[80%] items-start gap-3">
+        {/* Avatar AI */}
+        <div className="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center shadow bg-gradient-to-br from-primary to-secondary">
+          <Icon name="Bot" size={16} color="white" />
+        </div>
+
+        {/* Card ofertă */}
+        <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm">
+          <h3 className="font-semibold text-lg">{card.title}</h3>
+          <p className="text-sm text-gray-500">{card.subtitle}</p>
+
+          <p className="text-xs text-gray-400 mt-1">
+            Powered by {card.provider}
+          </p>
+
+          <a
+            href={card.cta.url}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-block mt-4 px-4 py-2 bg-primary text-white rounded-lg"
+          >
+            {card.cta.label}
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+}
+
   // ------------------------
   // Error icons
   // ------------------------

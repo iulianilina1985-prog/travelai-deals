@@ -407,8 +407,17 @@ if (ai?.intent) {
     const data = await res.json();
 
     if (data?.card) {
-      setOfferCard(data.card);
-    }
+  const offerMsg = {
+    id: Date.now() + 2,
+    sender: "ai",
+    type: "offer",
+    card: data.card,
+    timestamp: new Date().toISOString(),
+  };
+
+  setMessages(prev => [...prev, offerMsg]);
+}
+
   } catch (err) {
     console.error("Eroare offers:", err);
   }
