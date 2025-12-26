@@ -40,9 +40,8 @@ import {
 const AIChatInterface = () => {
   const navigate = useNavigate();
   const messagesEndRef = useRef(null);
-  const [offerCard, setOfferCard] = useState(null);
   const [dbConversationId, setDbConversationId] = useState(null);
-
+  const newMessages = [...prev, aiMsg];
   // ------------------------------------------------------
   // STATE
   // ------------------------------------------------------
@@ -387,7 +386,9 @@ Ai atins limita zilnică de 5 mesaje.
     };    
 
     // 🔥 OFERTE (doar dacă AI a returnat intent)
-if (ai?.intent) {
+let offerCardMsg = null;
+
+if (ai?.intent?.type === "flight") {
   try {
     const { data: auth } = await supabase.auth.getSession();
     const token = auth?.session?.access_token;
@@ -401,25 +402,26 @@ if (ai?.intent) {
           apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
           Authorization: `Bearer ${token || import.meta.env.VITE_SUPABASE_ANON_KEY}`,
         },
-        body: JSON.stringify({
-          intent: ai.intent,
-        }),
+        body: JSON.stringify({ intent: ai.intent }),
       }
     );
 
     const data = await res.json();
 
     if (data?.card) {
-  const offerMsg = {
-    id: Date.now() + 2,
-    sender: "ai",
-    type: "offer",
-    card: data.card,
-    timestamp: new Date().toISOString(),
-  };
-
-  setMessages(prev => [...prev, offerMsg]);
+      offerCardMsg = {
+        id: Date.now() + 2,
+        sender: "ai",
+        type: "offer",
+        card: data.card,
+        timestamp: new Date().toISOString(),
+      };
+    }
+  } catch (err) {
+    console.error("Eroare offers:", err);
+  }
 }
+
 
   } catch (err) {
     console.error("Eroare offers:", err);
