@@ -3,6 +3,12 @@ import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import OpenAI from "https://esm.sh/openai@4.28.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { SYSTEM_PROMPT } from "./system_prompt.ts";
+import {
+  safeJsonParse,
+  isValidAiChatResponse,
+  AiChatResponse,
+} from "./schema.ts";
+
 
 /* ======================================================
    CONFIG
@@ -72,15 +78,6 @@ type ParsedAI = {
 /* ======================================================
    HELPERS
 ====================================================== */
-
-function safeJSONParse<T = any>(text: string): T | null {
-  try {
-    return JSON.parse(text) as T;
-  } catch {
-    return null;
-  }
-}
-
 function normStr(s: unknown): string {
   return String(s ?? "").trim();
 }
@@ -558,12 +555,32 @@ serve(async (req) => {
     });
 
     const raw = completion.choices?.[0]?.message?.content ?? "";
-    const parsedAI = safeJSONParse<ParsedAI>(raw);
+    const parsed = safeJsonParse<AiChatResponse>(raw);
 
-    // If AI response is not valid JSON, we still keep the chat flowing professionally.
-    const aiReply = parsedAI?.reply ? String(parsedAI.reply) : softFallbackReply(prompt);
-    const aiIntent = typeof parsedAI?.intent === "object" ? parsedAI?.intent : {};
-    const aiConfidence = parsedAI?.confidence ?? "medium";
+if (!parsed.ok || !isValidAiChatResponse(parsed.value)) {
+  // AI a răspuns prost → NU stricăm conversația
+  const fallback = softFallbackReply(prompt);
+
+  return new Response(
+    JSON.stringify({
+      reply: fallback,
+      intent: {
+        type: "null",
+        from: state.from ?? null,
+        to: state.to ?? null,
+        depart_date: null,
+        return_date: null,
+      },
+      confidence: "low",
+    }),
+    { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+  );
+}
+
+const aiReply = parsed.value.reply;
+const aiIntent = parsed.value.intent;
+const aiConfidence = "medium";
+
 
     /* ================= FINALIZE + GUARD ================= */
 
