@@ -364,8 +364,6 @@ if (messages.length === 0) {
       conversationId
     );
 
-    console.log("🧠 AI RAW:", ai);
-    console.log("🧠 AI INTENT:", ai?.intent);
 
 
     const aiContent =
