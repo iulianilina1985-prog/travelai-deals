@@ -1,10 +1,10 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 
-// --------------------------------------------------
-// HELPERS
-// --------------------------------------------------
+// ==================================================
+// CONSTANTE
+// ==================================================
 
-const MONTHS: Record<string, string> = {
+const MONTHS_RO: Record<string, string> = {
   ianuarie: "01",
   februarie: "02",
   martie: "03",
@@ -19,70 +19,123 @@ const MONTHS: Record<string, string> = {
   decembrie: "12",
 };
 
+// ==================================================
+// INTENT
+// ==================================================
+
 function detectIntent(text: string) {
-  const lower = text.toLowerCase();
-  if (/\b(zbor|avion|flight)\b/.test(lower)) return "flight";
-  if (/\b(hotel|cazare)\b/.test(lower)) return "hotel";
-  if (/\b(activitati|activități|bilete)\b/.test(lower)) return "activity";
+  const t = text.toLowerCase();
+
+  if (/\b(zbor|avion|flight)\b/.test(t)) return "flight";
+  if (/\b(hotel|cazare)\b/.test(t)) return "hotel";
+  if (/\b(activitati|activități|bilete)\b/.test(t)) return "activity";
+
   return "unknown";
 }
 
-function extractCities(text: string) {
-  const lower = text.toLowerCase();
+// ==================================================
+// CITIES
+// ==================================================
 
-  const from =
-    lower.includes("bucure") ? "București" : null;
+function extractCities(text: string) {
+  const t = text.toLowerCase();
+
+  const from = t.includes("bucure") ? "București" : null;
 
   const to =
-    lower.includes("paris") ? "Paris" :
-    lower.includes("roma") ? "Roma" :
-    lower.includes("londra") ? "Londra" :
+    t.includes("paris") ? "Paris" :
+    t.includes("roma") ? "Roma" :
+    t.includes("londra") ? "Londra" :
+    t.includes("milano") ? "Milano" :
     null;
 
   return { from, to };
 }
 
-/**
- * Acceptă:
- * - 22.02.2026 - 24.02.2026
- * - 22 februarie 2026 - 24 februarie 2026
- */
+// ==================================================
+// DATE PARSING (TOLERANT)
+// ==================================================
+
+function normalizeDate(day: string, month: string, year: string) {
+  return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+}
+
 function extractDates(text: string) {
-  // ISO format
-  const isoMatch = text.match(
-    /(\d{4}-\d{2}-\d{2})\s*(?:-|–|până la)\s*(\d{4}-\d{2}-\d{2})/
+  const t = text.toLowerCase();
+
+  // -----------------------------
+  // ISO RANGE: 2026-02-22 - 2026-02-24
+  // -----------------------------
+  const isoRange = t.match(
+    /(\d{4}-\d{2}-\d{2})\s*(?:-|–|pana la|până la)\s*(\d{4}-\d{2}-\d{2})/
   );
 
-  if (isoMatch) {
+  if (isoRange) {
     return {
-      depart_date: isoMatch[1],
-      return_date: isoMatch[2],
-      dates_human: `${isoMatch[1]} – ${isoMatch[2]}`,
+      depart_date: isoRange[1],
+      return_date: isoRange[2],
+      dates_confidence: "high",
     };
   }
 
-  // Romanian format
-  const roMatch = text.match(
-    /(\d{1,2})\s+(ianuarie|februarie|martie|aprilie|mai|iunie|iulie|august|septembrie|octombrie|noiembrie|decembrie)\s+(\d{4})\s*(?:-|–|până la)\s*(\d{1,2})\s+\2\s+\3/i
+  // -----------------------------
+  // RO RANGE: 22 - 24 februarie 2026
+  // -----------------------------
+  const roRange = t.match(
+    /(\d{1,2})\s*(?:-|–|pana la|până la)\s*(\d{1,2})\s+(ianuarie|februarie|martie|aprilie|mai|iunie|iulie|august|septembrie|octombrie|noiembrie|decembrie)\s+(\d{4})/
   );
 
-  if (!roMatch) return null;
+  if (roRange) {
+    const [, d1, d2, m, y] = roRange;
+    return {
+      depart_date: normalizeDate(d1, MONTHS_RO[m], y),
+      return_date: normalizeDate(d2, MONTHS_RO[m], y),
+      dates_confidence: "high",
+    };
+  }
 
-  const day1 = roMatch[1].padStart(2, "0");
-  const month = MONTHS[roMatch[2].toLowerCase()];
-  const year = roMatch[3];
-  const day2 = roMatch[4].padStart(2, "0");
+  // -----------------------------
+  // SINGLE DATE: 22.02.2026 / 22-02-2026 / 22/02/2026
+  // -----------------------------
+  const numeric = t.match(
+    /(\d{1,2})[.\-/](\d{1,2})[.\-/](\d{4})/
+  );
+
+  if (numeric) {
+    const [, d, m, y] = numeric;
+    return {
+      depart_date: normalizeDate(d, m, y),
+      return_date: null,
+      dates_confidence: "medium",
+    };
+  }
+
+  // -----------------------------
+  // RO SINGLE DATE: 22 februarie 2026
+  // -----------------------------
+  const roSingle = t.match(
+    /(\d{1,2})\s+(ianuarie|februarie|martie|aprilie|mai|iunie|iulie|august|septembrie|octombrie|noiembrie|decembrie)\s+(\d{4})/
+  );
+
+  if (roSingle) {
+    const [, d, m, y] = roSingle;
+    return {
+      depart_date: normalizeDate(d, MONTHS_RO[m], y),
+      return_date: null,
+      dates_confidence: "medium",
+    };
+  }
 
   return {
-    depart_date: `${year}-${month}-${day1}`,
-    return_date: `${year}-${month}-${day2}`,
-    dates_human: `${day1} – ${day2} ${roMatch[2]} ${year}`,
+    depart_date: null,
+    return_date: null,
+    dates_confidence: "low",
   };
 }
 
-// --------------------------------------------------
+// ==================================================
 // SERVER
-// --------------------------------------------------
+// ==================================================
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -97,26 +150,39 @@ serve(async (req) => {
   const body = await req.json();
   const prompt = body?.prompt ?? "";
 
-  const type = detectIntent(prompt);
+  const intentType = detectIntent(prompt);
   const { from, to } = extractCities(prompt);
   const dates = extractDates(prompt);
 
   let reply = "Spune-mi cu ce te pot ajuta 😊";
 
-  if (type === "flight") {
-    reply = `Perfect! ✈️  
-Caut zboruri ${from ? `din ${from}` : ""}${to ? ` spre ${to}` : ""}${
-      dates ? ` (${dates.dates_human})` : ""
-    }.
+  if (intentType === "flight") {
+    if (dates.dates_confidence === "low") {
+      reply = `Am înțeles că vrei un zbor ✈️${from ? ` din ${from}` : ""}${
+        to ? ` spre ${to}` : ""
+      }.
+
+📅 Îmi poți spune **datele exacte**?  
+De exemplu: **22.02.2026 – 24.02.2026**`;
+    } else if (dates.return_date === null) {
+      reply = `Perfect ✈️  
+Am notat plecarea pe **${dates.depart_date}**.
+
+📅 Spune-mi și **data de întoarcere**, dacă este un zbor dus-întors.`;
+    } else {
+      reply = `Perfect! ✈️  
+Caut zboruri ${from ? `din ${from}` : ""}${to ? ` spre ${to}` : ""}  
+📅 **${dates.depart_date} → ${dates.return_date}**
 
 Îți afișez imediat opțiunile disponibile.`;
+    }
   }
 
   return new Response(
     JSON.stringify({
       reply,
       intent: {
-        type,
+        type: intentType,
         from,
         to,
         ...dates,
