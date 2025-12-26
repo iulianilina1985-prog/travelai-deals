@@ -1,134 +1,132 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 
-/**
- * AI-CHAT
- * Rol: interpretează intenția userului
- * NU conține afiliere, provider, prețuri sau CTA
- * Doar conversație + intent
- */
+// --------------------------------------------------
+// HELPERS
+// --------------------------------------------------
 
-// --------------------------------------------------
-// INTENT DETECTION
-// --------------------------------------------------
+const MONTHS: Record<string, string> = {
+  ianuarie: "01",
+  februarie: "02",
+  martie: "03",
+  aprilie: "04",
+  mai: "05",
+  iunie: "06",
+  iulie: "07",
+  august: "08",
+  septembrie: "09",
+  octombrie: "10",
+  noiembrie: "11",
+  decembrie: "12",
+};
+
 function detectIntent(text: string) {
   const lower = text.toLowerCase();
-
-  if (lower.match(/\b(zbor|avion|flight)\b/)) return "flight";
-  if (lower.match(/\b(hotel|cazare)\b/)) return "hotel";
-  if (lower.match(/\b(activitati|activități|bilete|ce pot face)\b/))
-    return "activity";
-
+  if (/\b(zbor|avion|flight)\b/.test(lower)) return "flight";
+  if (/\b(hotel|cazare)\b/.test(lower)) return "hotel";
+  if (/\b(activitati|activități|bilete)\b/.test(lower)) return "activity";
   return "unknown";
 }
 
-// --------------------------------------------------
-// ENTITY EXTRACTION
-// --------------------------------------------------
 function extractCities(text: string) {
   const lower = text.toLowerCase();
 
-  const toCity =
+  const from =
+    lower.includes("bucure") ? "București" : null;
+
+  const to =
     lower.includes("paris") ? "Paris" :
     lower.includes("roma") ? "Roma" :
     lower.includes("londra") ? "Londra" :
     null;
 
-  const fromCity =
-    lower.includes("bucure") ? "București" : null;
-
-  return { fromCity, toCity };
+  return { from, to };
 }
 
+/**
+ * Acceptă:
+ * - 22.02.2026 - 24.02.2026
+ * - 22 februarie 2026 - 24 februarie 2026
+ */
 function extractDates(text: string) {
-  const match = text.match(
-    /(\d{1,2})\s*(?:și|si|-|–|pana la|între)\s*(\d{1,2})\s+(ianuarie|februarie|martie|aprilie|mai|iunie|iulie|august|septembrie|octombrie|noiembrie|decembrie)/i
+  // ISO format
+  const isoMatch = text.match(
+    /(\d{4}-\d{2}-\d{2})\s*(?:-|–|până la)\s*(\d{4}-\d{2}-\d{2})/
   );
 
-  if (!match) return null;
-  return `${match[1]} – ${match[2]} ${match[3]}`;
+  if (isoMatch) {
+    return {
+      depart_date: isoMatch[1],
+      return_date: isoMatch[2],
+      dates_human: `${isoMatch[1]} – ${isoMatch[2]}`,
+    };
+  }
+
+  // Romanian format
+  const roMatch = text.match(
+    /(\d{1,2})\s+(ianuarie|februarie|martie|aprilie|mai|iunie|iulie|august|septembrie|octombrie|noiembrie|decembrie)\s+(\d{4})\s*(?:-|–|până la)\s*(\d{1,2})\s+\2\s+\3/i
+  );
+
+  if (!roMatch) return null;
+
+  const day1 = roMatch[1].padStart(2, "0");
+  const month = MONTHS[roMatch[2].toLowerCase()];
+  const year = roMatch[3];
+  const day2 = roMatch[4].padStart(2, "0");
+
+  return {
+    depart_date: `${year}-${month}-${day1}`,
+    return_date: `${year}-${month}-${day2}`,
+    dates_human: `${day1} – ${day2} ${roMatch[2]} ${year}`,
+  };
 }
 
 // --------------------------------------------------
 // SERVER
 // --------------------------------------------------
-serve(async (req: Request) => {
+
+serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", {
       headers: {
         "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "POST, OPTIONS",
-        "Access-Control-Allow-Headers":
-          "authorization, apikey, content-type",
+        "Access-Control-Allow-Headers": "*",
       },
     });
   }
 
-  let body: any = {};
-  try {
-    body = await req.json();
-  } catch {}
-
+  const body = await req.json();
   const prompt = body?.prompt ?? "";
 
-  const intentType = detectIntent(prompt);
-  const { fromCity, toCity } = extractCities(prompt);
+  const type = detectIntent(prompt);
+  const { from, to } = extractCities(prompt);
   const dates = extractDates(prompt);
 
   let reply = "Spune-mi cu ce te pot ajuta 😊";
 
-  // --------------------------------------------------
-  // CONVERSATIONAL + PROACTIVE REPLIES
-  // --------------------------------------------------
-  if (intentType === "flight") {
+  if (type === "flight") {
     reply = `Perfect! ✈️  
-Caut zboruri ${fromCity ? `din ${fromCity}` : ""}${
-      toCity ? ` spre ${toCity}` : ""
-    }${dates ? ` (${dates})` : ""}.
-
-Îți afișez imediat opțiunile disponibile.  
-Vrei să mă uit și după **cazare**, **mașină de închiriat** sau **activități** la destinație?`;
-  }
-
-  if (intentType === "hotel") {
-    reply = `Super 🏨  
-Mă uit după cazări potrivite pentru tine${
-      toCity ? ` în ${toCity}` : ""
+Caut zboruri ${from ? `din ${from}` : ""}${to ? ` spre ${to}` : ""}${
+      dates ? ` (${dates.dates_human})` : ""
     }.
 
-Îți arăt opțiunile imediat.  
-Dacă vrei, pot verifica și **zboruri** sau **activități** în zonă.`;
+Îți afișez imediat opțiunile disponibile.`;
   }
 
-  if (intentType === "activity") {
-    reply = `Sună bine 🎟  
-Caut activități populare${toCity ? ` în ${toCity}` : ""}.
-
-Îți arăt variantele disponibile.  
-Spune-mi dacă ai nevoie și de **zbor** sau **cazare**.`;
-  }
-
-  if (intentType === "unknown") {
-    reply = `Te ajut cu plăcere 😊  
-Pot căuta pentru tine **zboruri**, **cazare**, **mașini de închiriat** sau **activități**.
-
-Spune-mi ce plan ai.`;
-  }
-
-  const response = {
-    reply,
-    intent: {
-      type: intentType,
-      from: fromCity,
-      to: toCity,
-      dates,
-    },
-  };
-
-  return new Response(JSON.stringify(response), {
-    status: 200,
-    headers: {
-      "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*",
-    },
-  });
+  return new Response(
+    JSON.stringify({
+      reply,
+      intent: {
+        type,
+        from,
+        to,
+        ...dates,
+      },
+    }),
+    {
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+    }
+  );
 });
