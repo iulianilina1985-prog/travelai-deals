@@ -41,6 +41,7 @@ const AIChatInterface = () => {
   const navigate = useNavigate();
   const messagesEndRef = useRef(null);
   const [offerCard, setOfferCard] = useState(null);
+  const [dbConversationId, setDbConversationId] = useState(null);
 
   // ------------------------------------------------------
   // STATE
@@ -323,22 +324,24 @@ Ai atins limita zilnică de 5 mesaje.
     if (prev.length === 0) {
       // prima mesaj → INSERT
       saveChat(userMsg.title, newMessages).then(conv => {
-        if (conv?.id) {
-          setConversationId(conv.id);
-          localStorage.setItem("currentConversationId", conv.id);
-          setAllChats(prevChats => [conv, ...prevChats]);
-        }
-      });
+  if (conv?.id) {
+    setConversationId(conv.id);
+    setDbConversationId(conv.id); // 🔥 IMPORTANT
+    localStorage.setItem("currentConversationId", conv.id);
+    setAllChats(prevChats => [conv, ...prevChats]);
+  }
+});
+
     } else {
       // conversație existentă → UPDATE
-      if (conversationId && !String(conversationId).startsWith("conv-")) {
-        updateChat(
-          conversationId,
-          generateTitle(newMessages[0]?.content),
-          newMessages
-        );
-      }
-    }
+      if (dbConversationId) {
+  updateChat(
+    dbConversationId,
+    generateTitle(newMessages[0]?.content),
+    newMessages
+  );
+}
+
 
     return newMessages;
   });
@@ -428,13 +431,14 @@ if (ai?.intent) {
     setMessages(prev => {
       const newMessages = [...prev, aiMsg];
 
-      if (conversationId && !String(conversationId).startsWith("conv-")) {
-        updateChat(
-          conversationId,
-          generateTitle(newMessages[0]?.content),
-          newMessages
-        );
-      }
+      if (dbConversationId) {
+  updateChat(
+    dbConversationId,
+    generateTitle(newMessages[0]?.content),
+    newMessages
+  );
+}
+
 
       return newMessages;
     });
