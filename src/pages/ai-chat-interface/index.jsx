@@ -316,34 +316,29 @@ Ai atins limita zilnică de 5 mesaje.
     title: generateTitle(content),
   };
 
-  // 6️⃣ Adăugăm la UI + SAVE / UPDATE DB
-  setMessages(prev => {
-    const newMessages = [...prev, userMsg];
+  // 6️⃣ UI update (DOAR sync)
+setMessages(prev => [...prev, userMsg]);
 
-    if (prev.length === 0) {
-      // prima mesaj → INSERT
-      saveChat(userMsg.title, newMessages).then(conv => {
-  if (conv?.id) {
-    setConversationId(conv.id);
-    setDbConversationId(conv.id); // 🔥 IMPORTANT
-    localStorage.setItem("currentConversationId", conv.id);
-    setAllChats(prevChats => [conv, ...prevChats]);
-  }
-});
-
-    } else {
-      // conversație existentă → UPDATE
-      if (dbConversationId) {
+// 7️⃣ DB logic SEPARAT (fără setState înăuntru)
+if (messages.length === 0) {
+  // prima conversație → INSERT
+  saveChat(userMsg.title, [userMsg]).then(conv => {
+    if (conv?.id) {
+      setConversationId(conv.id);
+      setDbConversationId(conv.id);
+      localStorage.setItem("currentConversationId", conv.id);
+      setAllChats(prev => [conv, ...prev]);
+    }
+  });
+} else if (dbConversationId) {
+  // conversație existentă → UPDATE
   updateChat(
     dbConversationId,
-    generateTitle(newMessages[0]?.content),
-    newMessages
+    generateTitle(messages[0]?.content),
+    [...messages, userMsg]
   );
 }
 
-
-    return newMessages;
-  });
 
   if (firstMessage) {
     window.dispatchEvent(
