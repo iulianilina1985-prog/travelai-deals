@@ -1,242 +1,233 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
+import OpenAI from "https://esm.sh/openai@4.28.0";
 
-/* ======================================================
-   TYPES
-====================================================== */
-
-type ConversationState = {
-  topic: "travel" | "other";
-  activeIntent: "flight" | "hotel" | "activity" | null;
-  from?: string | null;
-  to?: string | null;
-  depart_date?: string | null;
-  return_date?: string | null;
-  awaiting?: "dates" | "return_date" | null;
-  discussedCities: string[];
+// ================================
+// CORS
+// ================================
+const corsHeaders: Record<string, string> = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
 };
 
-type ParsedInput = {
-  intent: "flight" | "hotel" | "activity" | "general";
-  from?: string | null;
-  to?: string | null;
-  depart_date?: string | null;
-  return_date?: string | null;
-  hasDates: boolean;
+// ================================
+// OpenAI
+// ================================
+const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
+const client = new OpenAI({ apiKey: OPENAI_API_KEY });
+
+// ================================
+// Helpers: safe JSON parse
+// ================================
+function safeJsonParse<T>(s: string): T | null {
+  try {
+    return JSON.parse(s) as T;
+  } catch {
+    return null;
+  }
+}
+
+// ================================
+// Types
+// ================================
+type ChatMsg = { role: "system" | "user" | "assistant"; content: string };
+
+type Intent =
+  | {
+      type: "flight";
+      from_city?: string | null;
+      to_city?: string | null;
+      depart_date?: string | null; // YYYY-MM-DD
+      return_date?: string | null; // YYYY-MM-DD
+      passengers?: number | null;
+      cabin?: "economy" | "premium_economy" | "business" | "first" | null;
+      is_ready_for_offer: boolean;
+      missing?: string[];
+    }
+  | {
+      type: "hotel";
+      city?: string | null;
+      checkin?: string | null;
+      checkout?: string | null;
+      guests?: number | null;
+      is_ready_for_offer: boolean;
+      missing?: string[];
+    }
+  | {
+      type: "activity";
+      city?: string | null;
+      date?: string | null;
+      is_ready_for_offer: boolean;
+      missing?: string[];
+    }
+  | { type: "none"; is_ready_for_offer: false };
+
+type AIResponse = {
+  reply: string;               // text normal, conversational
+  intent: Intent;              // intent structurat
+  memory_update?: Record<string, any>; // ce vrei să salvezi în conversation_state
 };
 
-/* ======================================================
-   HELPERS
-====================================================== */
+// ================================
+// Prompt (THE BRAIN)
+// ================================
+function buildSystemPrompt() {
+  return `
+You are TravelAI, a friendly Romanian travel buddy.
+Your job: have a natural conversation about travel, like a helpful friend, not a sales bot.
 
-const MONTHS_RO: Record<string, string> = {
-  ianuarie: "01",
-  februarie: "02",
-  martie: "03",
-  aprilie: "04",
-  mai: "05",
-  iunie: "06",
-  iulie: "07",
-  august: "08",
-  septembrie: "09",
-  octombrie: "10",
-  noiembrie: "11",
-  decembrie: "12",
-};
+Hard rules:
+- Speak Romanian, friendly, natural, not robotic.
+- DO NOT output cards or UI markup. Plain text only in "reply".
+- DO NOT invent flight prices, airlines, hotel availability, or activities inventory.
+- You MAY give general travel guidance (best areas, seasons, tips, budget ranges) but be clear it's general.
+- Always keep context: user can change subjects mid-conversation; you must follow.
+- If the user mentions multiple destinations, you can compare them.
+- Extract travel intent when present, but don't force it.
 
-function normalizeDate(d: string, m: string, y: string) {
-  return `${y}-${m.padStart(2, "0")}-${d.padStart(2, "0")}`;
+Dates:
+- Understand dates in many formats: "22.02.2026", "22-02-2026", "2026-02-22", "22 februarie 2026".
+- If user gives a range, output YYYY-MM-DD for depart/return (or checkin/checkout).
+- If ambiguous/missing, ask a short clarifying question.
+- If user wants a flight offer and you have enough info, set intent.is_ready_for_offer=true.
+- "Enough info" for flight offer: to_city + depart_date (and return_date if user clearly wants roundtrip OR user said "dus-intors"). from_city is optional (default Romania/Bucuresti if missing, but mark it in missing if not provided).
+
+Output format:
+Return a single valid JSON object with EXACT keys:
+{
+  "reply": "...",
+  "intent": {...},
+  "memory_update": {...}
 }
 
-/* ======================================================
-   NLP PARSER (tolerant)
-====================================================== */
+Intent rules:
+- If no clear offer request, set intent.type="none".
+- If user asks "zbor", set type="flight".
+- If user asks "cazare/hotel", set type="hotel".
+- If user asks "ce vizitez/activitati", set type="activity".
+- intent.missing should list needed fields in Romanian, e.g. ["perioada", "oras plecare"].
 
-function parseInput(text: string): ParsedInput {
-  const t = text.toLowerCase();
+Memory:
+- memory_update should contain ONLY useful stable facts from the conversation (cities discussed, preferences, budget, travel style, dates).
+- Keep it short.
 
-  let intent: ParsedInput["intent"] = "general";
-  if (/\b(zbor|avion|flight)\b/.test(t)) intent = "flight";
-  if (/\b(hotel|cazare)\b/.test(t)) intent = "hotel";
-  if (/\b(activitati|activități|ce pot vizita)\b/.test(t))
-    intent = "activity";
-
-  const from = t.includes("bucure") ? "București" : null;
-
-  const to =
-    t.includes("paris") ? "Paris" :
-    t.includes("madrid") ? "Madrid" :
-    t.includes("roma") ? "Roma" :
-    t.includes("londra") ? "Londra" :
-    t.includes("milano") ? "Milano" :
-    null;
-
-  // ISO range
-  const iso = t.match(
-    /(\d{4}-\d{2}-\d{2})\s*(?:-|–|până la|pana la)\s*(\d{4}-\d{2}-\d{2})/
-  );
-
-  if (iso) {
-    return {
-      intent,
-      from,
-      to,
-      depart_date: iso[1],
-      return_date: iso[2],
-      hasDates: true,
-    };
-  }
-
-  // RO range
-  const ro = t.match(
-    /(\d{1,2})\s*(?:-|–|până la|pana la)\s*(\d{1,2})\s+(ianuarie|februarie|martie|aprilie|mai|iunie|iulie|august|septembrie|octombrie|noiembrie|decembrie)\s+(\d{4})/
-  );
-
-  if (ro) {
-    return {
-      intent,
-      from,
-      to,
-      depart_date: normalizeDate(ro[1], MONTHS_RO[ro[3]], ro[4]),
-      return_date: normalizeDate(ro[2], MONTHS_RO[ro[3]], ro[4]),
-      hasDates: true,
-    };
-  }
-
-  return { intent, from, to, hasDates: false };
+Be helpful, proactive, but never pushy.
+`.trim();
 }
 
-/* ======================================================
-   STATE ENGINE
-====================================================== */
+// ================================
+// Build messages with memory + history
+// ================================
+function buildMessages(args: {
+  prompt: string;
+  history?: ChatMsg[];
+  memory?: Record<string, any>;
+}) {
+  const memoryText = args.memory
+    ? `MEMORY (json): ${JSON.stringify(args.memory)}`
+    : "MEMORY (json): {}";
 
-function updateState(
-  state: ConversationState,
-  input: ParsedInput
-): ConversationState {
-  const next = { ...state };
+  const sys: ChatMsg = {
+    role: "system",
+    content: `${buildSystemPrompt()}\n\n${memoryText}`,
+  };
 
-  if (input.intent !== "general") {
-    next.activeIntent = input.intent;
-  }
+  // Keep last N turns to reduce token usage
+  const trimmedHistory = (args.history ?? []).slice(-12);
 
-  if (input.from) next.from = input.from;
-  if (input.to) {
-    next.to = input.to;
-    if (!next.discussedCities.includes(input.to)) {
-      next.discussedCities.push(input.to);
-    }
-  }
-
-  if (input.depart_date) next.depart_date = input.depart_date;
-  if (input.return_date) next.return_date = input.return_date;
-
-  if (next.activeIntent === "flight") {
-    if (!next.depart_date || !next.return_date) {
-      next.awaiting = "dates";
-    } else {
-      next.awaiting = null;
-    }
-  }
-
-  return next;
+  return [
+    sys,
+    ...trimmedHistory.filter((m) => m.role !== "system"),
+    { role: "user", content: args.prompt },
+  ] as ChatMsg[];
 }
 
-/* ======================================================
-   DIALOG ENGINE
-====================================================== */
-
-function decideReply(state: ConversationState): string {
-  // GENERAL TRAVEL TALK
-  if (!state.activeIntent) {
-    return `Pot să te ajut cu idei de vacanță 🌍  
-zboruri ✈️, cazare 🏨 sau activități 🎟️.
-
-Spune-mi ce oraș te tentează sau ce vrei să comparăm.`;
-  }
-
-  // ACTIVITY
-  if (state.activeIntent === "activity" && state.to) {
-    return `${state.to} e o alegere super 😊  
-
-Vrei:
-• atracții principale  
-• experiențe locale  
-• sau comparăm cu alt oraș (ex: Roma, Madrid)?`;
-  }
-
-  // FLIGHT – missing data
-  if (state.activeIntent === "flight") {
-    if (!state.to) {
-      return `Unde ai vrea să zbori ✈️?`;
-    }
-
-    if (!state.depart_date) {
-      return `Am notat destinația **${state.to}** ✈️  
-Spune-mi perioada (ex: 22–25 aprilie 2026).`;
-    }
-
-    if (!state.return_date) {
-      return `Perfect ✈️  
-Data plecării: **${state.depart_date}**  
-
-Spune-mi și data de întoarcere.`;
-    }
-
-    return `Super ✈️  
-Caut zboruri **${state.from ?? "din România"} → ${state.to}**  
-📅 ${state.depart_date} → ${state.return_date}
-
-Îți afișez imediat opțiunile.`;
-  }
-
-  return `Spune-mi cum te pot ajuta mai departe 😊`;
-}
-
-/* ======================================================
-   SERVER
-====================================================== */
-
+// ================================
+// Server
+// ================================
 serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response("ok", {
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "*",
-      },
-    });
+    return new Response("ok", { headers: corsHeaders });
   }
 
-  const body = await req.json();
-  const prompt = body?.prompt ?? "";
+  if (!OPENAI_API_KEY) {
+    return new Response(
+      JSON.stringify({
+        reply:
+          "Config lipsă: OPENAI_API_KEY nu e setat pe funcția ai-chat. 🔧",
+        intent: { type: "none", is_ready_for_offer: false },
+      }),
+      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  }
 
-  const prevState: ConversationState =
-    body?.state ?? {
-      topic: "travel",
-      activeIntent: null,
-      discussedCities: [],
-    };
+  let body: any = {};
+  try {
+    body = await req.json();
+  } catch {}
 
-  const parsed = parseInput(prompt);
-  const nextState = updateState(prevState, parsed);
-  const reply = decideReply(nextState);
+  const prompt: string = body?.prompt ?? "";
+  const history: ChatMsg[] = body?.history ?? [];
+  const memory: Record<string, any> = body?.memory ?? body?.state ?? {};
 
-  return new Response(
-    JSON.stringify({
-      reply,
-      state: nextState,
-      intent: {
-        type: nextState.activeIntent,
-        from: nextState.from,
-        to: nextState.to,
-        depart_date: nextState.depart_date,
-        return_date: nextState.return_date,
-      },
-    }),
-    {
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
+  if (!prompt.trim()) {
+    return new Response(
+      JSON.stringify({
+        reply: "Zi-mi ce ai în plan și te ajut imediat 🙂",
+        intent: { type: "none", is_ready_for_offer: false },
+      }),
+      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  }
+
+  const messages = buildMessages({ prompt, history, memory });
+
+  try {
+    const completion = await client.chat.completions.create({
+      model: "gpt-4o-mini",
+      temperature: 0.8,
+      response_format: { type: "json_object" },
+      messages,
+    });
+
+    const raw = completion.choices?.[0]?.message?.content ?? "";
+    const parsed = safeJsonParse<AIResponse>(raw);
+
+    if (!parsed?.reply || !parsed?.intent) {
+      // fallback safe
+      return new Response(
+        JSON.stringify({
+          reply:
+            "Am înțeles. Spune-mi un pic mai clar ce vrei (destinație + perioadă) și îți fac un plan. 🙂",
+          intent: { type: "none", is_ready_for_offer: false },
+        }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
-  );
+
+    // Final guard: ensure no HTML
+    const reply = String(parsed.reply).replace(/<\/?[^>]+(>|$)/g, "");
+
+    return new Response(
+      JSON.stringify({
+        reply,
+        intent: parsed.intent,
+        memory_update: parsed.memory_update ?? {},
+        tokens_in: completion.usage?.prompt_tokens ?? 0,
+        tokens_out: completion.usage?.completion_tokens ?? 0,
+      }),
+      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  } catch (err) {
+    console.error("AI error:", err);
+    return new Response(
+      JSON.stringify({
+        reply:
+          "Am avut o eroare tehnică. Mai încearcă o dată, te rog. 🙏",
+        intent: { type: "none", is_ready_for_offer: false },
+      }),
+      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  }
 });
