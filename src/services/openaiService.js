@@ -72,6 +72,8 @@ export async function getTravelRecommendation(
       id: Date.now(),
       sender: "ai",
       content: data?.reply || "Nu am primit un răspuns valid 😕",
+      intent: data?.intent || null,   // 🔥 AICI ERA CRIMA
+      raw: data,                      // (opțional, debug)
       timestamp: new Date().toISOString(),
       isSupabaseMode: true,
     };
