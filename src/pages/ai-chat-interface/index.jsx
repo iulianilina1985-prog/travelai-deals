@@ -369,6 +369,10 @@ Ai atins limita zilnică de 5 mesaje.
       conversationId
     );
 
+    console.log("🧠 AI RAW:", ai);
+    console.log("🧠 AI INTENT:", ai?.intent);
+
+
     const aiContent =
       ai?.content || ai?.message || ai?.reply || "N-am primit text 😅";
 
