@@ -41,7 +41,7 @@ const AIChatInterface = () => {
   const navigate = useNavigate();
   const messagesEndRef = useRef(null);
   const [dbConversationId, setDbConversationId] = useState(null);
-  const newMessages = [...prev, aiMsg];
+ 
   // ------------------------------------------------------
   // STATE
   // ------------------------------------------------------
@@ -236,7 +236,7 @@ const AIChatInterface = () => {
   // ======================================================
   const handleSendMessage = async (content) => {
   if (!content?.trim()) return;
-    setOfferCard(null);
+    
 
   // 1️⃣ Moderare
   const safe = await moderateUserInput(content).catch(() => true);
@@ -423,27 +423,26 @@ if (ai?.intent?.type === "flight") {
 }
 
 
-  } catch (err) {
-    console.error("Eroare offers:", err);
-  }
-}
-
 
     // Salvare + update UI
     setMessages(prev => {
-      const newMessages = [...prev, aiMsg];
+  const newMessages = [...prev, aiMsg];
 
-      if (dbConversationId) {
-  updateChat(
-    dbConversationId,
-    generateTitle(newMessages[0]?.content),
-    newMessages
-  );
-}
+  if (offerCardMsg) {
+    newMessages.push(offerCardMsg);
+  }
 
+  if (dbConversationId) {
+    updateChat(
+      dbConversationId,
+      generateTitle(newMessages[0]?.content),
+      newMessages
+    );
+  }
 
-      return newMessages;
-    });
+  return newMessages;
+});
+
 
     setConversationHistory(prev => [
       ...prev,
@@ -609,23 +608,7 @@ if (ai?.intent?.type === "flight") {
                   />
                 ))}
 
-                {offerCard && (
-  <div className="mt-4 p-4 border rounded-lg bg-card">
-    <h3 className="font-semibold text-lg">{offerCard.title}</h3>
-    <p className="text-sm text-muted-foreground">
-      {offerCard.subtitle}
-    </p>
-
-    <a
-      href={offerCard.cta.url}
-      target="_blank"
-      rel="noreferrer"
-      className="inline-block mt-3 px-4 py-2 bg-primary text-white rounded"
-    >
-      {offerCard.cta.label}
-    </a>
-  </div>
-)}
+                
 
 
                 {/* TYPING */}
