@@ -48,6 +48,27 @@ const ChatMessage = ({ message, offlineMode = false }) => {
     });
   };
 
+  // ================================
+  // Date formatting (RO, premium)
+  // ================================
+  const formatShortRO = (iso) => {
+    if (!iso) return null;
+    try {
+      const d = new Date(iso);
+      return d.toLocaleDateString("ro-RO", { day: "2-digit", month: "short" });
+    } catch {
+      return iso;
+    }
+  };
+
+  const buildPrettyDateRange = (start, end) => {
+    const a = formatShortRO(start);
+    const b = formatShortRO(end);
+    if (a && b) return `${a} – ${b}`;
+    if (a) return a;
+    return "Date flexibile";
+  };
+
   // =====================================================
   // ✈️ FLIGHT OFFER CARD (Booking style)
   // =====================================================
@@ -61,25 +82,32 @@ const ChatMessage = ({ message, offlineMode = false }) => {
     const providerName = card.provider_meta?.name ?? card.provider ?? "Provider";
     const brandColor = card.provider_meta?.brand_color ?? "#2563eb";
 
-    const dateLabel =
-      card.dates?.label ??
-      card.subtitle ??
-      (card.meta?.depart_date && card.meta?.return_date
-        ? `📅 ${card.meta.depart_date} – ${card.meta.return_date}`
-        : card.meta?.depart_date
-        ? `📅 ${card.meta.depart_date}`
-        : "Date flexibile");
+    // Dates (prefer din backend, dar le facem frumoase aici)
+    const start =
+      card.dates?.start ?? card.meta?.depart_date ?? null;
+    const end =
+      card.dates?.end ?? card.meta?.return_date ?? null;
 
-    // Imagine (momentan poate fi null -> arata fallback)
+    const dateLabelPretty = buildPrettyDateRange(start, end);
+
+    // Imagine (fallback)
     const imageUrl = card.image_url ?? "/assets/flight/flight.jpg";
 
     // ID stabil pt save (prefer card.id)
     const saveId =
       card.id ??
       card.cta?.url ??
-      `flight|${providerName}|${fromLabel}|${toLabel}|${dateLabel}`;
+      `flight|${providerName}|${fromLabel}|${toLabel}|${start ?? ""}|${end ?? ""}`;
 
     const isSaved = !!savedMap[saveId];
+
+    // Extra info “premium”
+    const isRoundTrip = !!end;
+    const passengers =
+      card.passengers ??
+      card.meta?.passengers ??
+      card.meta?.adults ??
+      null;
 
     return (
       <div className="flex justify-start mb-6">
@@ -93,21 +121,16 @@ const ChatMessage = ({ message, offlineMode = false }) => {
           <div className="bg-white border border-gray-200 rounded-2xl shadow-sm w-full overflow-hidden">
             <div className="flex gap-4 p-4">
               {/* IMAGE */}
-              <div className="w-28 h-28 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0">
-                {imageUrl ? (
-                  <img
-                    src={imageUrl}
-                    alt={`${fromLabel} - ${toLabel}`}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.currentTarget.style.display = "none";
-                    }}
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-xs text-gray-400 select-none">
-                    No image
-                  </div>
-                )}
+              <div className="w-28 h-28 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0 ring-1 ring-black/5 shadow-sm">
+                <img
+                  src={imageUrl}
+                  alt={`${fromLabel} - ${toLabel}`}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    // daca nu gaseste imaginea, nu stricam layout-ul
+                    e.currentTarget.style.display = "none";
+                  }}
+                />
               </div>
 
               {/* CONTENT */}
@@ -130,17 +153,15 @@ const ChatMessage = ({ message, offlineMode = false }) => {
                         <span className="text-gray-600">Afiliere</span>
                       </span>
 
-                      {/* Date */}
-                      <span className="text-xs text-gray-500">{dateLabel}</span>
+                      {/* Date (pretty) */}
+                      <span className="text-xs text-gray-500">
+                        {dateLabelPretty}
+                      </span>
                     </div>
 
                     <h3 className="mt-2 font-semibold text-lg text-gray-900 truncate">
                       ✈️ {fromLabel} → {toLabel}
                     </h3>
-
-                    <div className="mt-1 text-xs text-gray-400">
-                      Powered by {providerName}
-                    </div>
                   </div>
 
                   {/* ❤️ Save */}
@@ -185,15 +206,23 @@ const ChatMessage = ({ message, offlineMode = false }) => {
                   </div>
                 ) : null}
 
-                {/* INFO ROW (cu fallback sa nu arate gol) */}
+                {/* INFO ROW (mai “complete”) */}
                 <div className="mt-3 flex flex-wrap gap-6 text-sm text-gray-600">
-                  {card.duration ? (
+                  {/* dus-intors / one-way */}
+                  <div className="flex items-center gap-2">
+                    <Icon name="Repeat" size={14} />
+                    <span>{isRoundTrip ? "Dus-întors" : "One-way"}</span>
+                  </div>
+
+                  {/* pax */}
+                  {passengers ? (
                     <div className="flex items-center gap-2">
-                      <Icon name="Clock" size={14} />
-                      <span>{card.duration}</span>
+                      <Icon name="Users" size={14} />
+                      <span>{passengers} adulți</span>
                     </div>
                   ) : null}
 
+                  {/* price */}
                   {card.priceRange ? (
                     <div className="flex items-center gap-2">
                       <Icon name="Euro" size={14} />
@@ -206,6 +235,7 @@ const ChatMessage = ({ message, offlineMode = false }) => {
                     </div>
                   )}
 
+                  {/* baggage */}
                   <div className="flex items-center gap-2">
                     <Icon name="Briefcase" size={14} />
                     <span>Bagaj opțional</span>
@@ -221,13 +251,18 @@ const ChatMessage = ({ message, offlineMode = false }) => {
                     className="block"
                   >
                     <Button
-                      className="w-full flex items-center justify-center gap-2"
+                      className="w-full flex items-center justify-center gap-2 shadow-sm hover:shadow-md transition"
                       style={{ backgroundColor: brandColor }}
                     >
                       <Icon name="ExternalLink" size={16} />
                       {card.cta?.label ?? "Vezi oferta"}
                     </Button>
                   </a>
+
+                  {/* tiny note (optional) */}
+                  <div className="mt-2 text-[11px] text-gray-400">
+                    Link afiliat • prețurile pot varia în timp real
+                  </div>
                 </div>
               </div>
             </div>
