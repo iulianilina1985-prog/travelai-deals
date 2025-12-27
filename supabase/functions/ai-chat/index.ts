@@ -32,42 +32,105 @@ function norm(v: unknown) {
 /* ---- DETERMINISTIC PARSER (NU AI) ---- */
 
 function extractFlightData(text: string) {
-  const t = text.toLowerCase();
+  const strip = (s: string) =>
+    s
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, ""); // fara diacritice
 
-  const from = t.includes("bucure") || t.includes("otp") ? "București" : null;
+  const t = strip(text);
 
-  const destinations: Record<string, string> = {
+  // --- CITY dictionary (extinzi usor)
+  const CITY_CANON: Record<string, string> = {
+    bucuresti: "București",
+    craiova: "Craiova",
     paris: "Paris",
-    barcelona: "Barcelona",
-    bali: "Bali",
     roma: "Roma",
     milano: "Milano",
-    santorini: "Santorini",
+    londra: "Londra",
+    bruxel: "Bruxelles",
+    bruxelles: "Bruxelles",
+    brussels: "Bruxelles",
   };
 
+  const canonCity = (raw: string) => {
+    const key = strip(raw).trim().replace(/\s+/g, " ");
+    return CITY_CANON[key] ?? raw.trim();
+  };
+
+  // --- route: "craiova - bruxel" / "craiova -> bruxelles"
+  let from: string | null = null;
   let to: string | null = null;
-  for (const k in destinations) {
-    if (t.includes(k)) to = destinations[k];
+
+  const routeMatch =
+    t.match(/(?:zbor|flight)\s+([a-z ]{3,})\s*(?:->|→| - |–|—)\s*([a-z ]{3,})/i) ||
+    t.match(/(?:din|de la)\s+([a-z ]{3,})\s+(?:la|catre|către)\s+([a-z ]{3,})/i);
+
+  if (routeMatch) {
+    from = canonCity(routeMatch[1]);
+    to = canonCity(routeMatch[2]);
+  } else {
+    // fallback: cauta doua orase mentionate
+    for (const key of Object.keys(CITY_CANON)) {
+      if (t.includes(key) && !from) from = CITY_CANON[key];
+      else if (t.includes(key) && from && !to) to = CITY_CANON[key];
+    }
   }
 
-  const dateMatch = t.match(
-    /(\d{2})[.\-/](\d{2})[.\-/](\d{4})\s*-\s*(\d{2})[.\-/](\d{2})[.\-/](\d{4})/
-  );
-
-  const depart =
-    dateMatch && `${dateMatch[3]}-${dateMatch[2]}-${dateMatch[1]}`;
-  const ret =
-    dateMatch && `${dateMatch[6]}-${dateMatch[5]}-${dateMatch[4]}`;
-
-  const paxMatch = t.match(/(\d+)\s*(persoane|adulti|adulți)/);
+  // --- passengers: "2 persoane / 2 adulti"
+  const paxMatch = t.match(/(\d+)\s*(persoane|pers|adulti|adulti|adulți)/);
   const passengers = paxMatch ? Number(paxMatch[1]) : 1;
 
-  if (from && to && depart && ret) {
-    return { from, to, depart, ret, passengers };
+  // --- dates
+  const MONTHS: Record<string, string> = {
+    ianuarie: "01", ian: "01",
+    februarie: "02", feb: "02",
+    martie: "03", mar: "03",
+    aprilie: "04", apr: "04",
+    mai: "05",
+    iunie: "06", iun: "06",
+    iulie: "07", iul: "07",
+    august: "08", aug: "08",
+    septembrie: "09", sept: "09", sep: "09",
+    octombrie: "10", oct: "10",
+    noiembrie: "11", nov: "11",
+    decembrie: "12", dec: "12",
+  };
+
+  const pad2 = (n: string) => (n.length === 1 ? `0${n}` : n);
+
+  let depart: string | null = null;
+  let ret: string | null = null;
+
+  // format: 19.02.2026 - 22.02.2026
+  const dmY = t.match(
+    /(\d{1,2})[.\-/](\d{1,2})[.\-/](\d{4})\s*(?:-|–|—)\s*(\d{1,2})[.\-/](\d{1,2})[.\-/](\d{4})/
+  );
+  if (dmY) {
+    depart = `${dmY[3]}-${pad2(dmY[2])}-${pad2(dmY[1])}`;
+    ret = `${dmY[6]}-${pad2(dmY[5])}-${pad2(dmY[4])}`;
   }
 
-  return null;
+  // format: 19 - 22 februarie 2026
+  if (!depart) {
+    const sameMonth = t.match(
+      /(\d{1,2})\s*(?:-|–|—)\s*(\d{1,2})\s+([a-z]{3,10})\s+(\d{4})/
+    );
+    if (sameMonth) {
+      const m = MONTHS[sameMonth[3]] ?? null;
+      if (m) {
+        depart = `${sameMonth[4]}-${m}-${pad2(sameMonth[1])}`;
+        ret = `${sameMonth[4]}-${m}-${pad2(sameMonth[2])}`;
+      }
+    }
+  }
+
+  // ✅ IMPORTANT: returnam si cand lipseste ceva (dar card il facem doar daca avem minim)
+  if (!from || !to || !depart || !ret) return null;
+
+  return { from, to, depart, ret, passengers };
 }
+
 
 /* ================= SERVER ================= */
 
