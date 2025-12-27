@@ -71,7 +71,7 @@ const ChatMessage = ({ message, offlineMode = false }) => {
         : "Date flexibile");
 
     // Imagine (momentan poate fi null -> arata fallback)
-    const imageUrl = card.image_url ?? null;
+    const imageUrl = card.image_url ?? "/assets/flight/flight.jpg";
 
     // ID stabil pt save (prefer card.id)
     const saveId =
