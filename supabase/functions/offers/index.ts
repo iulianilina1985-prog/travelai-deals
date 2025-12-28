@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { corsHeaders } from "../_shared/cors.ts";
 import { getAviasalesOffer } from "./flights/aviasales.ts";
+import { getKlookActivityCards } from "./activities/klook.ts";
 
 /**
  * OFFERS – ROUTER CENTRAL
@@ -40,7 +41,7 @@ serve(async (req: Request) => {
       break;
 
     case "activity":
-      card = buildActivityCard(intent);
+      card = getKlookActivityCards(intent);
       break;
 
     default:
@@ -48,7 +49,7 @@ serve(async (req: Request) => {
   }
 
   return new Response(
-    JSON.stringify({ card }),
+  JSON.stringify(card?.cards ? { cards: card.cards } : { card }),
     {
       status: 200,
       headers: {
