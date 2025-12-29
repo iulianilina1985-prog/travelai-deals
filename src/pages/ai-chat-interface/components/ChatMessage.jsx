@@ -257,6 +257,72 @@ const ChatMessage = ({ message, offlineMode = false }) => {
   }
 
   // =====================================================
+// 🎟️ ACTIVITY OFFER CARDS (KLOOK – MULTIPLE)
+// =====================================================
+if (Array.isArray(message?.cards) && message.cards.length > 0) {
+  return (
+    <div className="flex justify-start mb-6">
+      <div className="flex w-full max-w-full sm:max-w-[92%] items-start gap-3">
+        {/* Avatar AI */}
+        <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center bg-gradient-to-br from-primary to-secondary shadow flex-shrink-0">
+          <Icon name="MapPin" size={16} color="white" />
+        </div>
+
+        {/* Cards grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
+          {message.cards.map((card, idx) => (
+            <div
+              key={card.id ?? idx}
+              className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden flex flex-col"
+            >
+              {/* Header */}
+              <div
+                className="px-4 py-3 text-sm font-semibold"
+                style={{
+                  background: card.provider_meta?.brand_color ?? "#ff5b00",
+                  color: "white",
+                }}
+              >
+                {card.title}
+              </div>
+
+              {/* Body */}
+              <div className="p-4 flex-1 text-sm text-gray-700">
+                {card.subtitle ?? "Rezervare instant · bilete oficiale"}
+              </div>
+
+              {/* CTA */}
+              <a
+                href={card.cta?.url}
+                target="_blank"
+                rel="noreferrer"
+                className="p-4"
+              >
+                <Button
+                  className="w-full flex items-center justify-center gap-2"
+                  style={{
+                    backgroundColor:
+                      card.provider_meta?.brand_color ?? "#ff5b00",
+                  }}
+                >
+                  <Icon name="ExternalLink" size={16} />
+                  {card.cta?.label ?? "Vezi oferta"}
+                </Button>
+              </a>
+
+              <div className="px-4 pb-3 text-[11px] text-gray-400">
+                Link afiliat • Klook
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+  // =====================================================
   // 💬 NORMAL CHAT MESSAGE
   // =====================================================
   return (

@@ -1,5 +1,4 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
-import OpenAI from "https://esm.sh/openai@4.30.0?target=deno";
 import { SYSTEM_PROMPT } from "./system_prompt.ts";
 
 // Providers
@@ -18,8 +17,6 @@ const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
 if (!OPENAI_API_KEY) {
   throw new Error("Missing OPENAI_API_KEY");
 }
-
-const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 
 /* ================= HELPERS ================= */
 
@@ -41,6 +38,7 @@ function extractFlightData(text: string) {
     roma: "Roma",
     milano: "Milano",
     londra: "Londra",
+    london: "London",
     brussels: "Bruxelles",
     bruxelles: "Bruxelles",
   };
@@ -87,10 +85,14 @@ serve(async (req) => {
     const body = await req.json();
     const prompt = norm(body?.prompt);
 
+    console.log("AI-CHAT PROMPT:", prompt);
+
     /* ---------- 1. ZBOR ---------- */
 
     const flight = extractFlightData(prompt);
     if (flight) {
+      console.log("FLIGHT DETECTED:", flight);
+
       const card = getAviasalesOffer({
         from: flight.from,
         to: flight.to,
@@ -113,44 +115,57 @@ serve(async (req) => {
     /* ---------- 2. ACTIVITY DETERMINIST ---------- */
 
     const t = prompt.toLowerCase();
+    let city: string | null = null;
+
+    if (t.includes("londra") || t.includes("london")) city = "London";
+    if (t.includes("paris")) city = "Paris";
+    if (t.includes("madrid")) city = "Madrid";
+    if (t.includes("tokyo")) city = "Tokyo";
+
     if (
-      t.includes("activit") ||
-      t.includes("things to do") ||
-      t.includes("experien") ||
-      t.includes("cultural")
+      city &&
+      (t.includes("activit") ||
+        t.includes("things to do") ||
+        t.includes("experien") ||
+        t.includes("cultural"))
     ) {
-      let city: string | null = null;
-      if (t.includes("madrid")) city = "Madrid";
-      if (t.includes("paris")) city = "Paris";
-      if (t.includes("tokyo")) city = "Tokyo";
+      const cards = getKlookActivityCards({ to: city });
 
-      if (city) {
-        const cards = getKlookActivityCards({ to: city });
+      console.log("KLOOK CARDS (DETERMINIST):", cards);
 
-        return new Response(
-          JSON.stringify({
-            reply: `Am selectat câteva activități interesante în ${city} 👇`,
-            intent: { type: "activity", to: city },
-            cards,
-            confidence: "high",
-          }),
-          { headers: { ...corsHeaders, "Content-Type": "application/json" } },
-        );
-      }
+      return new Response(
+        JSON.stringify({
+          reply: `Am selectat câteva activități interesante în ${city} 👇`,
+          intent: { type: "activity", to: city },
+          cards,
+          confidence: "high",
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
     }
 
-    /* ---------- 3. AI CONVERSAȚIONAL ---------- */
+    /* ---------- 3. AI CONVERSAȚIONAL (EDGE SAFE, FETCH) ---------- */
 
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [
-        { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: prompt },
-      ],
-      temperature: 0.8,
+    const aiRes = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${OPENAI_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "gpt-4o-mini",
+        messages: [
+          { role: "system", content: SYSTEM_PROMPT },
+          { role: "user", content: prompt },
+        ],
+        temperature: 0.8,
+      }),
     });
 
-    const raw = completion.choices?.[0]?.message?.content ?? "";
+    const aiJson = await aiRes.json();
+    const raw = aiJson?.choices?.[0]?.message?.content ?? "";
+
+    console.log("AI RAW RESPONSE:", raw);
 
     let reply = "Spune-mi ce tip de vacanță îți dorești 🙂";
     let intent: any = null;
@@ -166,8 +181,12 @@ serve(async (req) => {
       reply = raw || reply;
     }
 
-    if (intent?.type === "activity" && intent?.to) {
-      cards = getKlookActivityCards({ to: intent.to });
+    console.log("AI PARSED INTENT:", intent);
+
+    // 🔥 FALLBACK FINAL — business logic > AI
+    if (!cards && city) {
+      cards = getKlookActivityCards({ to: city });
+      console.log("KLOOK CARDS (FINAL FALLBACK):", cards);
     }
 
     return new Response(
