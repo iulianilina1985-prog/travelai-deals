@@ -3,7 +3,6 @@ import { SYSTEM_PROMPT } from "./system_prompt.ts";
 
 // Providers
 import { getAviasalesOffer } from "../offers/flights/aviasales.ts";
-import { getKlookActivityCards } from "../offers/activities/klook.ts";
 
 /* ================= CONFIG ================= */
 
@@ -34,13 +33,12 @@ function extractFlightData(text: string) {
 
   const CITY_CANON: Record<string, string> = {
     bucuresti: "București",
+    london: "London",
+    londra: "London",
     paris: "Paris",
     roma: "Roma",
     milano: "Milano",
-    londra: "Londra",
-    london: "London",
     brussels: "Bruxelles",
-    bruxelles: "Bruxelles",
   };
 
   const canonCity = (raw: string) => CITY_CANON[strip(raw)] ?? raw;
@@ -84,15 +82,14 @@ serve(async (req) => {
   try {
     const body = await req.json();
     const prompt = norm(body?.prompt);
+    const t = prompt.toLowerCase();
 
     console.log("AI-CHAT PROMPT:", prompt);
 
-    /* ---------- 1. ZBOR ---------- */
+    /* ---------- 1. ZBOR (AVIASALES) ---------- */
 
     const flight = extractFlightData(prompt);
     if (flight) {
-      console.log("FLIGHT DETECTED:", flight);
-
       const card = getAviasalesOffer({
         from: flight.from,
         to: flight.to,
@@ -103,6 +100,7 @@ serve(async (req) => {
 
       return new Response(
         JSON.stringify({
+          type: "offer",
           reply: "Perfect ✈️ Am găsit o opțiune bună pentru tine 👇",
           intent: { type: "flight", ...flight },
           card,
@@ -112,9 +110,8 @@ serve(async (req) => {
       );
     }
 
-    /* ---------- 2. ACTIVITY DETERMINIST ---------- */
+    /* ---------- 2. ACTIVITĂȚI (KLOOK – GENERAL) ---------- */
 
-    const t = prompt.toLowerCase();
     let city: string | null = null;
 
     if (t.includes("londra") || t.includes("london")) city = "London";
@@ -122,34 +119,44 @@ serve(async (req) => {
     if (t.includes("madrid")) city = "Madrid";
     if (t.includes("tokyo")) city = "Tokyo";
 
-    if (
-      city &&
-      (t.includes("activit") ||
-        t.includes("things to do") ||
-        t.includes("experien") ||
-        t.includes("cultural"))
-    ) {
-      const cards = getKlookActivityCards({ to: city });
+    const isActivityQuestion =
+      t.includes("activit") ||
+      t.includes("things to do") ||
+      t.includes("experien") ||
+      t.includes("cultural");
 
-      console.log("KLOOK CARDS (DETERMINIST):", cards);
-
+    if (city && isActivityQuestion) {
       return new Response(
         JSON.stringify({
-          reply: `Am selectat câteva activități interesante în ${city} 👇`,
+          type: "offer",
+          reply: `În ${city} găsești o mulțime de experiențe interesante, de la tururi ghidate la atracții populare 👇`,
           intent: { type: "activity", to: city },
-          cards,
+          card: {
+            type: "activity",
+            provider: "Klook",
+            city,
+            image_url: "/assets/activities/klook.jpg",
+            provider_meta: {
+              name: "Klook",
+              brand_color: "#ff5b00",
+            },
+            cta: {
+              label: "Vezi activitățile",
+              url: "https://klook.tpx.lt/REPLACE_ME",
+            },
+          },
           confidence: "high",
         }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
 
-    /* ---------- 3. AI CONVERSAȚIONAL (EDGE SAFE, FETCH) ---------- */
+    /* ---------- 3. AI TEXT ONLY ---------- */
 
     const aiRes = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${OPENAI_API_KEY}`,
+        Authorization: `Bearer ${OPENAI_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
@@ -165,36 +172,13 @@ serve(async (req) => {
     const aiJson = await aiRes.json();
     const raw = aiJson?.choices?.[0]?.message?.content ?? "";
 
-    console.log("AI RAW RESPONSE:", raw);
-
-    let reply = "Spune-mi ce tip de vacanță îți dorești 🙂";
-    let intent: any = null;
-    let confidence = "medium";
-    let cards: any[] | null = null;
-
-    try {
-      const parsed = JSON.parse(raw);
-      reply = parsed.reply ?? reply;
-      intent = parsed.intent ?? null;
-      confidence = parsed.confidence ?? confidence;
-    } catch {
-      reply = raw || reply;
-    }
-
-    console.log("AI PARSED INTENT:", intent);
-
-    // 🔥 FALLBACK FINAL — business logic > AI
-    if (!cards && city) {
-      cards = getKlookActivityCards({ to: city });
-      console.log("KLOOK CARDS (FINAL FALLBACK):", cards);
-    }
+    let reply = raw || "Spune-mi ce plan de călătorie ai 🙂";
 
     return new Response(
       JSON.stringify({
         reply,
-        intent,
-        confidence,
-        ...(cards && cards.length ? { cards } : {}),
+        intent: null,
+        confidence: "medium",
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );

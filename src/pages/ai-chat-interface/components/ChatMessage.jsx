@@ -256,10 +256,91 @@ const ChatMessage = ({ message, offlineMode = false }) => {
     );
   }
 
+  /* =====================================================
+   🎟️ KLOOK – ACTIVITY CARD (GENERAL)
+  ===================================================== */
+  if (
+    message?.type === "offer" &&
+    message?.card?.type === "activity" &&
+    message?.card?.provider === "Klook"
+  ) {
+    const card = message.card;
+    const city = card.city ?? "orașul tău";
+    const color = card.provider_meta?.brand_color ?? "#ff5b00";
+
+    const saveId = card.cta?.url ?? `klook-${city}`;
+    const isSaved = !!savedMap[saveId];
+
+    return (
+      <div className="flex justify-start mb-6">
+        <div className="flex w-full max-w-[92%] gap-3">
+          <div className="w-9 h-9 rounded-full flex items-center justify-center bg-gradient-to-br from-primary to-secondary">
+            <Icon name="Map" size={16} color="white" />
+          </div>
+
+          <div className="bg-white border rounded-2xl w-full p-4">
+            <div className="flex justify-between items-start">
+              <div>
+                <span
+                  className="text-xs px-3 py-1 rounded-full border"
+                  style={{ color, borderColor: `${color}33`, background: `${color}0D` }}
+                >
+                  Klook • Afiliere
+                </span>
+
+                <h3 className="mt-2 font-semibold text-lg">
+                  🎟️ Activități în {city}
+                </h3>
+
+                <p className="mt-1 text-sm text-gray-600">
+                  Tururi, atracții, experiențe locale și bilete oficiale
+                </p>
+              </div>
+
+              <button onClick={() => toggleSave(saveId)}>
+                <Icon
+                  name="Heart"
+                  size={18}
+                  color={isSaved ? "#E11D48" : "#94A3B8"}
+                />
+              </button>
+            </div>
+
+            <a href={card.cta?.url} target="_blank" rel="noreferrer">
+              <Button
+                className="w-full mt-4"
+                style={{ backgroundColor: color }}
+              >
+                <Icon name="ExternalLink" size={16} />
+                Vezi activitățile
+              </Button>
+            </a>
+
+            <div className="text-[11px] text-gray-400 mt-2">
+              Link afiliat • disponibilitatea poate varia
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // =====================================================
-// 🎟️ ACTIVITY OFFER CARDS (KLOOK – MULTIPLE)
+// 🎟️ KLOOK ACTIVITY CARD (GENERAL, SINGLE)
 // =====================================================
-if (Array.isArray(message?.cards) && message.cards.length > 0) {
+if (message?.type === "offer" && message?.card?.type === "activity") {
+  const card = message.card;
+
+  const providerName = card.provider_meta?.name ?? "Klook";
+  const brandColor = card.provider_meta?.brand_color ?? "#ff5b00";
+  const city = card.city ?? "destinație";
+  const imageUrl = card.image_url ?? "/assets/activities/klook.jpg";
+
+  const saveId =
+    card.id ?? card.cta?.url ?? `klook|${city}`;
+
+  const isSaved = !!savedMap[saveId];
+
   return (
     <div className="flex justify-start mb-6">
       <div className="flex w-full max-w-full sm:max-w-[92%] items-start gap-3">
@@ -268,53 +349,84 @@ if (Array.isArray(message?.cards) && message.cards.length > 0) {
           <Icon name="MapPin" size={16} color="white" />
         </div>
 
-        {/* Cards grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
-          {message.cards.map((card, idx) => (
-            <div
-              key={card.id ?? idx}
-              className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden flex flex-col"
-            >
-              {/* Header */}
-              <div
-                className="px-4 py-3 text-sm font-semibold"
-                style={{
-                  background: card.provider_meta?.brand_color ?? "#ff5b00",
-                  color: "white",
-                }}
-              >
-                {card.title}
-              </div>
+        {/* Card */}
+        <div className="bg-white border border-gray-200 rounded-2xl shadow-sm w-full overflow-hidden">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 p-3 sm:p-4">
+            {/* IMAGE */}
+            <div className="w-full sm:w-28 sm:h-28 h-40 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0 ring-1 ring-black/5 shadow-sm">
+              <img
+                src={imageUrl}
+                alt={`Activități în ${city}`}
+                className="w-full h-full object-cover"
+                onError={(e) => (e.currentTarget.style.display = "none")}
+              />
+            </div>
 
-              {/* Body */}
-              <div className="p-4 flex-1 text-sm text-gray-700">
-                {card.subtitle ?? "Rezervare instant · bilete oficiale"}
+            {/* CONTENT */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <span
+                    className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs border"
+                    style={{
+                      borderColor: `${brandColor}33`,
+                      color: brandColor,
+                      background: `${brandColor}0D`,
+                    }}
+                  >
+                    <strong>{providerName}</strong>
+                    <span className="text-gray-400">•</span>
+                    Afiliere
+                  </span>
+
+                  <h3 className="mt-2 font-semibold text-lg text-gray-900">
+                    🎟️ Activități în {city}
+                  </h3>
+
+                  <p className="mt-1 text-sm text-gray-600">
+                    Tururi, atracții, experiențe locale și bilete oficiale
+                  </p>
+                </div>
+
+                {/* ❤️ Save */}
+                <button
+                  onClick={() => toggleSave(saveId)}
+                  className={`w-10 h-10 rounded-full border flex items-center justify-center transition ${
+                    isSaved
+                      ? "bg-red-50 border-red-200"
+                      : "bg-white border-gray-200 hover:bg-gray-50"
+                  }`}
+                >
+                  <Icon
+                    name="Heart"
+                    size={18}
+                    color={isSaved ? "#E11D48" : "#94A3B8"}
+                  />
+                </button>
               </div>
 
               {/* CTA */}
-              <a
-                href={card.cta?.url}
-                target="_blank"
-                rel="noreferrer"
-                className="p-4"
-              >
-                <Button
-                  className="w-full flex items-center justify-center gap-2"
-                  style={{
-                    backgroundColor:
-                      card.provider_meta?.brand_color ?? "#ff5b00",
-                  }}
+              <div className="mt-4">
+                <a
+                  href={card.cta?.url}
+                  target="_blank"
+                  rel="noreferrer"
                 >
-                  <Icon name="ExternalLink" size={16} />
-                  {card.cta?.label ?? "Vezi oferta"}
-                </Button>
-              </a>
+                  <Button
+                    className="w-full flex items-center justify-center gap-2"
+                    style={{ backgroundColor: brandColor }}
+                  >
+                    <Icon name="ExternalLink" size={16} />
+                    {card.cta?.label ?? "Vezi activitățile"}
+                  </Button>
+                </a>
 
-              <div className="px-4 pb-3 text-[11px] text-gray-400">
-                Link afiliat • Klook
+                <div className="mt-2 text-[11px] text-gray-400">
+                  Link afiliat • Klook
+                </div>
               </div>
             </div>
-          ))}
+          </div>
         </div>
       </div>
     </div>
