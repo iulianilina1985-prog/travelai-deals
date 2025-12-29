@@ -41,5 +41,6 @@ export function getKlookActivityCards(intent: ActivityIntent) {
     },
   }));
 
-  return { cards };
+  return cards; // ✅ în loc de { cards }
 }
+

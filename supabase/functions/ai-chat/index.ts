@@ -1,10 +1,10 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
-import OpenAI from "https://esm.sh/openai@4.28.0";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import OpenAI from "https://esm.sh/openai@4.30.0?target=deno";
 import { SYSTEM_PROMPT } from "./system_prompt.ts";
 
-// ✅ PROVIDER DEDICAT AVIASALES
+// Providers
 import { getAviasalesOffer } from "../offers/flights/aviasales.ts";
+import { getKlookActivityCards } from "../offers/activities/klook.ts";
 
 /* ================= CONFIG ================= */
 
@@ -14,14 +14,12 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
-const supabase = createClient(
-  Deno.env.get("SUPABASE_URL")!,
-  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
-);
+const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
+if (!OPENAI_API_KEY) {
+  throw new Error("Missing OPENAI_API_KEY");
+}
 
-const openai = new OpenAI({
-  apiKey: Deno.env.get("OPENAI_API_KEY"),
-});
+const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 
 /* ================= HELPERS ================= */
 
@@ -29,113 +27,58 @@ function norm(v: unknown) {
   return String(v ?? "").trim();
 }
 
-/* ---- DETERMINISTIC PARSER (NU AI) ---- */
+/* ================= FLIGHT PARSER ================= */
 
 function extractFlightData(text: string) {
   const strip = (s: string) =>
-    s
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, ""); // fara diacritice
+    s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
   const t = strip(text);
 
-  // --- CITY dictionary (extinzi usor)
   const CITY_CANON: Record<string, string> = {
     bucuresti: "București",
-    craiova: "Craiova",
     paris: "Paris",
     roma: "Roma",
     milano: "Milano",
     londra: "Londra",
-    bruxel: "Bruxelles",
-    bruxelles: "Bruxelles",
     brussels: "Bruxelles",
+    bruxelles: "Bruxelles",
   };
 
-  const canonCity = (raw: string) => {
-    const key = strip(raw).trim().replace(/\s+/g, " ");
-    return CITY_CANON[key] ?? raw.trim();
-  };
+  const canonCity = (raw: string) => CITY_CANON[strip(raw)] ?? raw;
 
-  // --- route: "craiova - bruxel" / "craiova -> bruxelles"
   let from: string | null = null;
   let to: string | null = null;
 
   const routeMatch =
-    t.match(/(?:zbor|flight)\s+([a-z ]{3,})\s*(?:->|→| - |–|—)\s*([a-z ]{3,})/i) ||
-    t.match(/(?:din|de la)\s+([a-z ]{3,})\s+(?:la|catre|către)\s+([a-z ]{3,})/i);
+    t.match(/din\s+([a-z ]+)\s+la\s+([a-z ]+)/) ||
+    t.match(/([a-z ]+)\s*(?:->|→|-)\s*([a-z ]+)/);
 
   if (routeMatch) {
-    from = canonCity(routeMatch[1]);
-    to = canonCity(routeMatch[2]);
-  } else {
-    // fallback: cauta doua orase mentionate
-    for (const key of Object.keys(CITY_CANON)) {
-      if (t.includes(key) && !from) from = CITY_CANON[key];
-      else if (t.includes(key) && from && !to) to = CITY_CANON[key];
-    }
+    from = canonCity(routeMatch[1].trim());
+    to = canonCity(routeMatch[2].trim());
   }
 
-  // --- passengers: "2 persoane / 2 adulti"
-  const paxMatch = t.match(/(\d+)\s*(persoane|pers|adulti|adulti|adulți)/);
-  const passengers = paxMatch ? Number(paxMatch[1]) : 1;
-
-  // --- dates
-  const MONTHS: Record<string, string> = {
-    ianuarie: "01", ian: "01",
-    februarie: "02", feb: "02",
-    martie: "03", mar: "03",
-    aprilie: "04", apr: "04",
-    mai: "05",
-    iunie: "06", iun: "06",
-    iulie: "07", iul: "07",
-    august: "08", aug: "08",
-    septembrie: "09", sept: "09", sep: "09",
-    octombrie: "10", oct: "10",
-    noiembrie: "11", nov: "11",
-    decembrie: "12", dec: "12",
-  };
-
-  const pad2 = (n: string) => (n.length === 1 ? `0${n}` : n);
-
-  let depart: string | null = null;
-  let ret: string | null = null;
-
-  // format: 19.02.2026 - 22.02.2026
-  const dmY = t.match(
-    /(\d{1,2})[.\-/](\d{1,2})[.\-/](\d{4})\s*(?:-|–|—)\s*(\d{1,2})[.\-/](\d{1,2})[.\-/](\d{4})/
+  const dateMatch = t.match(
+    /(\d{1,2})[.\-/](\d{1,2})[.\-/](\d{4}).*?(\d{1,2})[.\-/](\d{1,2})[.\-/](\d{4})/
   );
-  if (dmY) {
-    depart = `${dmY[3]}-${pad2(dmY[2])}-${pad2(dmY[1])}`;
-    ret = `${dmY[6]}-${pad2(dmY[5])}-${pad2(dmY[4])}`;
-  }
 
-  // format: 19 - 22 februarie 2026
-  if (!depart) {
-    const sameMonth = t.match(
-      /(\d{1,2})\s*(?:-|–|—)\s*(\d{1,2})\s+([a-z]{3,10})\s+(\d{4})/
-    );
-    if (sameMonth) {
-      const m = MONTHS[sameMonth[3]] ?? null;
-      if (m) {
-        depart = `${sameMonth[4]}-${m}-${pad2(sameMonth[1])}`;
-        ret = `${sameMonth[4]}-${m}-${pad2(sameMonth[2])}`;
-      }
-    }
-  }
+  if (!from || !to || !dateMatch) return null;
 
-  // ✅ IMPORTANT: returnam si cand lipseste ceva (dar card il facem doar daca avem minim)
-  if (!from || !to || !depart || !ret) return null;
+  const pad = (n: string) => (n.length === 1 ? `0${n}` : n);
 
-  return { from, to, depart, ret, passengers };
+  return {
+    from,
+    to,
+    depart: `${dateMatch[3]}-${pad(dateMatch[2])}-${pad(dateMatch[1])}`,
+    ret: `${dateMatch[6]}-${pad(dateMatch[5])}-${pad(dateMatch[4])}`,
+    passengers: 1,
+  };
 }
-
 
 /* ================= SERVER ================= */
 
 serve(async (req) => {
-  // ✅ CORS PRE-FLIGHT
   if (req.method === "OPTIONS") {
     return new Response(null, { status: 200, headers: corsHeaders });
   }
@@ -144,10 +87,9 @@ serve(async (req) => {
     const body = await req.json();
     const prompt = norm(body?.prompt);
 
-    /* ---------- 1. PARSARE ZBOR (DET) ---------- */
+    /* ---------- 1. ZBOR ---------- */
 
     const flight = extractFlightData(prompt);
-
     if (flight) {
       const card = getAviasalesOffer({
         from: flight.from,
@@ -157,25 +99,10 @@ serve(async (req) => {
         passengers: flight.passengers,
       });
 
-      const reply = `Perfect ✈️  
-Am găsit configurația completă pentru zbor:
-
-🛫 **${flight.from} → ${flight.to}**  
-📅 **${flight.depart} → ${flight.ret}**  
-👥 **${flight.passengers} persoane**
-
-Poți vedea zborurile mai jos 👇`;
-
       return new Response(
         JSON.stringify({
-          reply,
-          intent: {
-            type: "flight",
-            from: flight.from,
-            to: flight.to,
-            depart_date: flight.depart,
-            return_date: flight.ret,
-          },
+          reply: "Perfect ✈️ Am găsit o opțiune bună pentru tine 👇",
+          intent: { type: "flight", ...flight },
           card,
           confidence: "high",
         }),
@@ -183,7 +110,36 @@ Poți vedea zborurile mai jos 👇`;
       );
     }
 
-    /* ---------- 2. MOD CONVERSAȚIE (AI) ---------- */
+    /* ---------- 2. ACTIVITY DETERMINIST ---------- */
+
+    const t = prompt.toLowerCase();
+    if (
+      t.includes("activit") ||
+      t.includes("things to do") ||
+      t.includes("experien") ||
+      t.includes("cultural")
+    ) {
+      let city: string | null = null;
+      if (t.includes("madrid")) city = "Madrid";
+      if (t.includes("paris")) city = "Paris";
+      if (t.includes("tokyo")) city = "Tokyo";
+
+      if (city) {
+        const cards = getKlookActivityCards({ to: city });
+
+        return new Response(
+          JSON.stringify({
+            reply: `Am selectat câteva activități interesante în ${city} 👇`,
+            intent: { type: "activity", to: city },
+            cards,
+            confidence: "high",
+          }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        );
+      }
+    }
+
+    /* ---------- 3. AI CONVERSAȚIONAL ---------- */
 
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
@@ -196,19 +152,22 @@ Poți vedea zborurile mai jos 👇`;
 
     const raw = completion.choices?.[0]?.message?.content ?? "";
 
-    // ✅ FIXUL CRITIC: PARSARE JSON
     let reply = "Spune-mi ce tip de vacanță îți dorești 🙂";
     let intent: any = null;
     let confidence = "medium";
+    let cards: any[] | null = null;
 
     try {
       const parsed = JSON.parse(raw);
-      if (typeof parsed.reply === "string") reply = parsed.reply;
-      if (parsed.intent) intent = parsed.intent;
-      if (parsed.confidence) confidence = parsed.confidence;
+      reply = parsed.reply ?? reply;
+      intent = parsed.intent ?? null;
+      confidence = parsed.confidence ?? confidence;
     } catch {
-      // fallback dacă AI răspunde liber
       reply = raw || reply;
+    }
+
+    if (intent?.type === "activity" && intent?.to) {
+      cards = getKlookActivityCards({ to: intent.to });
     }
 
     return new Response(
@@ -216,6 +175,7 @@ Poți vedea zborurile mai jos 👇`;
         reply,
         intent,
         confidence,
+        ...(cards && cards.length ? { cards } : {}),
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
