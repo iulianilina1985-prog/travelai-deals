@@ -3,10 +3,10 @@ import Icon from "../../../components/AppIcon";
 import Button from "../../../components/ui/Button";
 
 /**
- * ChatMessage – versiune stabilă
+ * ChatMessage – versiune FINALĂ și STABILĂ
  * - flight offer (Aviasales)
- * - activity offer (Klook, generic)
- * - normal chat
+ * - activity offer (Klook – link simplu)
+ * - normal chat message
  */
 
 const ChatMessage = ({ message }) => {
@@ -28,7 +28,9 @@ const ChatMessage = ({ message }) => {
   const toggleSave = (id) => {
     setSavedMap((prev) => {
       const next = { ...prev, [id]: !prev[id] };
-      localStorage.setItem(SAVED_KEY, JSON.stringify(next));
+      try {
+        localStorage.setItem(SAVED_KEY, JSON.stringify(next));
+      } catch {}
       return next;
     });
   };
@@ -55,6 +57,7 @@ const ChatMessage = ({ message }) => {
 
     const from = card.from ?? card.destination?.from ?? "București";
     const to = card.to ?? card.destination?.to ?? "Paris";
+
     const provider = card.provider_meta?.name ?? "Aviasales";
     const color = card.provider_meta?.brand_color ?? "#2563eb";
 
@@ -115,13 +118,13 @@ const ChatMessage = ({ message }) => {
   }
 
   /* =====================================================
-   🎟️ ACTIVITY OFFER CARD (Klook / generic)
+   🎟️ ACTIVITY OFFER CARD (Klook – SIMPLU)
   ===================================================== */
   if (message?.type === "offer" && message?.card?.type === "activity") {
     const card = message.card;
 
     const city = card.city ?? "destinație";
-    const provider = card.provider_meta?.name ?? "Klook";
+    const provider = card.provider ?? "Klook";
     const color = card.provider_meta?.brand_color ?? "#ff5b00";
 
     const saveId = card.id ?? card.cta?.url ?? `activity|${city}`;
@@ -157,7 +160,7 @@ const ChatMessage = ({ message }) => {
             </div>
 
             <h3 className="mt-2 font-semibold text-lg">
-              🎟️ Activități în {city}
+              🎟️ {card.title ?? `Activități în ${city}`}
             </h3>
 
             <p className="mt-1 text-sm text-gray-600">

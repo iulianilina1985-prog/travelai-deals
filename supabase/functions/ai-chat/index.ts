@@ -23,7 +23,7 @@ function norm(v: unknown) {
   return String(v ?? "").trim();
 }
 
-/* ================= FLIGHT PARSER (AVIASALES) ================= */
+/* ================= FLIGHT PARSER ================= */
 
 function extractFlightData(text: string) {
   const strip = (s: string) =>
@@ -85,7 +85,7 @@ serve(async (req) => {
 
     console.log("AI-CHAT PROMPT:", prompt);
 
-    /* ---------- 1. ZBOR (AVIASALES – SAFE) ---------- */
+    /* ---------- 1. FLIGHT (AVIASALES) ---------- */
 
     const flight = extractFlightData(prompt);
     if (flight) {
@@ -109,7 +109,7 @@ serve(async (req) => {
       );
     }
 
-    /* ---------- 2. AI INTENT (ACTIVITY / CHAT) ---------- */
+    /* ---------- 2. AI (INTENT DETECTION) ---------- */
 
     const aiRes = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
@@ -130,12 +130,9 @@ serve(async (req) => {
     const aiJson = await aiRes.json();
     const raw = aiJson?.choices?.[0]?.message?.content ?? "";
 
-    console.log("AI RAW:", raw);
-
-    let reply = "Spune-mi ce plan ai 🙂";
+    let reply = raw || "Spune-mi ce plan ai 🙂";
     let intent: any = null;
-    let confidence: string = "medium";
-    let card: any = null;
+    let confidence = "medium";
 
     try {
       const parsed = JSON.parse(raw);
@@ -143,59 +140,52 @@ serve(async (req) => {
       intent = parsed.intent ?? null;
       confidence = parsed.confidence ?? confidence;
     } catch {
-      reply = raw || reply;
+      // răspuns text simplu
     }
 
-    /* ---------- 3. ACTIVITY CARD (KLOOK – GENERAL) ---------- */
+    /* ---------- 3. ACTIVITY (KLOOK – SIMPLE LINK CARD) ---------- */
 
-    let cards: any[] | null = null;
+    if (intent?.type === "activity" && intent?.to) {
+      return new Response(
+        JSON.stringify({
+          type: "offer",
+          reply,
+          intent,
+          confidence,
+          card: {
+            type: "activity",
+            provider: "Klook",
+            city: intent.to,
+            provider_meta: {
+              name: "Klook",
+              brand_color: "#ff5b00",
+            },
+            cta: {
+              label: "Vezi activitățile",
+              url: "https://klook.tpx.lt/jnEi9ZtF",
+            },
+          },
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
 
-if (intent?.type === "activity" && intent?.to) {
-  return new Response(
-    JSON.stringify({
-      type: "offer",
-      reply,
-      intent,
-      confidence,
-      card: {
-        type: "activity",
-        provider: "Klook",
-        city: intent.to,
-        image_url: "/assets/activities/klook.jpg",
-        provider_meta: {
-          id: "klook",
-          name: "Klook",
-          brand_color: "#ff5b00",
-        },
-        cta: {
-          label: "Vezi activitățile",
-          url: "https://klook.tpx.lt/jnEi9ZtF", // afiliat REAL
-        },
-      },
-    }),
-    { headers: { ...corsHeaders, "Content-Type": "application/json" } },
-  );
-}
-
-
-
-    return new Response(
-  JSON.stringify({
-    reply,
-    intent,
-    confidence,
-    ...(cards ? { cards } : {}),
-  }),
-  { headers: { ...corsHeaders, "Content-Type": "application/json" } },
-);
-
-  } catch (err) {
-    console.error("AI-CHAT ERROR:", err);
+    /* ---------- 4. NORMAL CHAT ---------- */
 
     return new Response(
       JSON.stringify({
+        reply,
+        intent,
+        confidence,
+      }),
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+    );
+
+  } catch (err) {
+    console.error("AI-CHAT ERROR:", err);
+    return new Response(
+      JSON.stringify({
         reply: "Hai să o luăm pas cu pas 🙂",
-        intent: null,
         confidence: "low",
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } },
