@@ -176,22 +176,40 @@ serve(async (req) => {
         /* ---------- 1.5 CAR RENTAL (LOCALRENT – SAFE) ---------- */
 
     const car = extractCarRentalData(prompt);
-    if (car) {
-      return new Response(
-        JSON.stringify({
-          reply: "Perfect 🚗 Am găsit opțiuni de închiriere auto pentru tine 👇",
-          intent: {
-            type: "car_rental",
-            from: null,
-            to: car.to,
-            depart_date: car.depart_date,
-            return_date: car.return_date,
-          },
-          confidence: "high",
-        }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
-      );
+if (car) {
+  const intent = {
+    type: "car_rental",
+    from: null,
+    to: car.to,
+    depart_date: car.depart_date,
+    return_date: car.return_date,
+  };
+
+  const offersRes = await fetch(
+    `${Deno.env.get("SUPABASE_URL")}/functions/v1/offers`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: req.headers.get("Authorization") ?? "",
+      },
+      body: JSON.stringify({ intent }),
     }
+  );
+
+  const offersJson = await offersRes.json();
+
+  return new Response(
+    JSON.stringify({
+      reply: "Perfect 🚗 Am găsit opțiuni de închiriere auto pentru tine 👇",
+      intent,
+      confidence: "high",
+      ...offersJson, // 👈 AICI apare cardul
+    }),
+    { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+  );
+}
+
 
 
     /* ---------- 2. AI INTENT (ACTIVITY / CHAT) ---------- */
