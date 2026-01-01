@@ -380,20 +380,7 @@ if (messages.length === 0) {
         out: ai?.tokens_out || 0,
       },
       isSupabaseMode: ai?.isSupabaseMode || supabaseMode,
-    };   
-    
-    let offerMsgFromAI = null;
-
-if (ai?.card) {
-  offerMsgFromAI = {
-    id: Date.now() + 2,
-    sender: "ai",
-    type: "offer",
-    card: ai.card,
-    timestamp: new Date().toISOString(),
-  };
-}
-
+    };    
 
     // 🔥 OFERTE (doar dacă AI a returnat intent)
 let offerCardMsg = null;
@@ -432,32 +419,26 @@ if (ai?.intent?.type === "flight") {
   }
 }
 
-setMessages(prev => {
-  const newMessages = [...prev];
 
-  // 1️⃣ mesaj text AI
-  newMessages.push({
-    id: Date.now() + 1,
-    sender: "ai",
-    content: aiContent,
-    timestamp: new Date().toISOString(),
-  });
 
-  // 2️⃣ CARD – mesaj SEPARAT
-  if (ai?.card) {
-    newMessages.push({
-      id: Date.now() + 2,
-      sender: "ai",
-      type: "offer",
-      card: ai.card,
-      timestamp: new Date().toISOString(),
-    });
+    // Salvare + update UI
+    setMessages(prev => {
+  const newMessages = [...prev, aiMsg];
+
+  if (offerCardMsg) {
+    newMessages.push(offerCardMsg);
+  }
+
+  if (dbConversationId) {
+    updateChat(
+      dbConversationId,
+      generateTitle(newMessages[0]?.content),
+      newMessages
+    );
   }
 
   return newMessages;
 });
-
-
 
 
     setConversationHistory(prev => [

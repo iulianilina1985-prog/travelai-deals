@@ -72,70 +72,6 @@ function extractFlightData(text: string) {
   };
 }
 
-/* ================= CAR RENTAL PARSER (LOCALRENT) ================= */
-
-function extractCarRentalData(text: string) {
-  const strip = (s: string) =>
-    s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-
-  const t = strip(text);
-
-  // keywords clare, fara AI
-  const CAR_KEYWORDS = [
-    "inchiriere masina",
-    "inchiriez masina",
-    "masina de inchiriat",
-    "rent a car",
-    "car rental",
-  ];
-
-  const hasCarIntent = CAR_KEYWORDS.some(k => t.includes(k));
-  if (!hasCarIntent) return null;
-
-  const CITY_CANON: Record<string, string> = {
-    bucuresti: "București",
-    london: "London",
-    londra: "London",
-    paris: "Paris",
-    roma: "Roma",
-    milano: "Milano",
-    dublin: "Dublin",
-    madrid: "Madrid",
-    barcelona: "Barcelona",
-  };
-
-  let city: string | null = null;
-
-  for (const [k, v] of Object.entries(CITY_CANON)) {
-    if (t.includes(k)) {
-      city = v;
-      break;
-    }
-  }
-
-  // date (optional)
-  const dateMatch = t.match(
-    /(\d{1,2})[.\-/](\d{1,2})[.\-/](\d{4}).*?(\d{1,2})[.\-/](\d{1,2})[.\-/](\d{4})/
-  );
-
-  const pad = (n: string) => (n.length === 1 ? `0${n}` : n);
-
-  let depart_date: string | null = null;
-  let return_date: string | null = null;
-
-  if (dateMatch) {
-    depart_date = `${dateMatch[3]}-${pad(dateMatch[2])}-${pad(dateMatch[1])}`;
-    return_date = `${dateMatch[6]}-${pad(dateMatch[5])}-${pad(dateMatch[4])}`;
-  }
-
-  return {
-    to: city,
-    depart_date,
-    return_date,
-  };
-}
-
-
 /* ================= SERVER ================= */
 
 serve(async (req) => {
@@ -173,46 +109,6 @@ serve(async (req) => {
       );
     }
 
-        /* ---------- 1.5 CAR RENTAL (LOCALRENT – SAFE) ---------- */
-
-    const car = extractCarRentalData(prompt);
-if (car) {
-  const intent = {
-    type: "car_rental",
-    from: null,
-    to: car.to,
-    depart_date: car.depart_date,
-    return_date: car.return_date,
-  };
-
-  const offersRes = await fetch(
-    `${Deno.env.get("SUPABASE_URL")}/functions/v1/offers`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: req.headers.get("Authorization") ?? "",
-      },
-      body: JSON.stringify({ intent }),
-    }
-  );
-
-  const offersJson = await offersRes.json();
-
-  return new Response(
-    JSON.stringify({
-      type: "offer",
-      reply: "Perfect 🚗 Am găsit opțiuni de închiriere auto pentru tine 👇",
-      intent,
-      confidence: "high",
-      ...offersJson, // 👈 AICI apare cardul
-    }),
-    { headers: { ...corsHeaders, "Content-Type": "application/json" } },
-  );
-}
-
-
-
     /* ---------- 2. AI INTENT (ACTIVITY / CHAT) ---------- */
 
     const aiRes = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -249,35 +145,6 @@ if (car) {
     } catch {
       reply = raw || reply;
     }
-
-        /* ---------- 2.5 OFFERS ROUTER (CAR RENTAL) ---------- */
-
-    if (intent?.type === "car_rental") {
-      const offersRes = await fetch(
-        `${Deno.env.get("SUPABASE_URL")}/functions/v1/offers`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: req.headers.get("Authorization") ?? "",
-          },
-          body: JSON.stringify({ intent }),
-        },
-      );
-
-      const offersJson = await offersRes.json();
-
-      return new Response(
-        JSON.stringify({
-          reply,
-          intent,
-          confidence,
-          ...offersJson, // { card }
-        }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
-      );
-    }
-
 
     /* ---------- 3. ACTIVITY CARD (KLOOK – GENERAL) ---------- */
 
@@ -321,8 +188,7 @@ if (intent?.type === "activity" && intent?.to) {
 
     return new Response(
       JSON.stringify({
-        type: "offer",
-        reply: " ",
+        reply: "Hai să o luăm pas cu pas 🙂",
         intent: null,
         confidence: "low",
       }),
