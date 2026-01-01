@@ -380,7 +380,20 @@ if (messages.length === 0) {
         out: ai?.tokens_out || 0,
       },
       isSupabaseMode: ai?.isSupabaseMode || supabaseMode,
-    };    
+    };   
+    
+    let offerMsgFromAI = null;
+
+if (ai?.type === "offer" && ai?.card) {
+  offerMsgFromAI = {
+    id: Date.now() + 2,
+    sender: "ai",
+    type: "offer",
+    card: ai.card,
+    timestamp: new Date().toISOString(),
+  };
+}
+
 
     // 🔥 OFERTE (doar dacă AI a returnat intent)
 let offerCardMsg = null;
@@ -421,12 +434,11 @@ if (ai?.intent?.type === "flight") {
 
 
 
-    // Salvare + update UI
     setMessages(prev => {
   const newMessages = [...prev, aiMsg];
 
-  if (offerCardMsg) {
-    newMessages.push(offerCardMsg);
+  if (offerMsgFromAI) {
+    newMessages.push(offerMsgFromAI);
   }
 
   if (dbConversationId) {
@@ -439,6 +451,7 @@ if (ai?.intent?.type === "flight") {
 
   return newMessages;
 });
+
 
 
     setConversationHistory(prev => [

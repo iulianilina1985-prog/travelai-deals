@@ -201,6 +201,7 @@ if (car) {
 
   return new Response(
     JSON.stringify({
+      type: "offer",
       reply: "Perfect 🚗 Am găsit opțiuni de închiriere auto pentru tine 👇",
       intent,
       confidence: "high",
@@ -320,7 +321,8 @@ if (intent?.type === "activity" && intent?.to) {
 
     return new Response(
       JSON.stringify({
-        reply: "Hai să o luăm pas cu pas 🙂",
+        type: "offer",
+        reply: " ",
         intent: null,
         confidence: "low",
       }),
