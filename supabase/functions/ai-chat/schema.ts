@@ -1,7 +1,7 @@
 // supabase/functions/ai-chat/schema.ts
 
 export type TravelIntent = {
-  type: "flight" | "hotel" | "activity" | null;
+  type: "flight" | "hotel" | "activity" | "car_rental" | null;
   from: string | null;
   to: string | null;
   depart_date: string | null; // YYYY-MM-DD
@@ -29,7 +29,13 @@ export function isValidAiChatResponse(x: any): x is AiChatResponse {
   if (!x.intent || typeof x.intent !== "object") return false;
 
   const t = x.intent.type;
-  const okType = t === null || t === "flight" || t === "hotel" || t === "activity";
+  const okType =
+  t === null ||
+  t === "flight" ||
+  t === "hotel" ||
+  t === "activity" ||
+  t === "car_rental";
+
   if (!okType) return false;
 
   for (const k of ["from", "to", "depart_date", "return_date"] as const) {

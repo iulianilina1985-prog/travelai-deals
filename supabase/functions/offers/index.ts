@@ -2,6 +2,8 @@ import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { corsHeaders } from "../_shared/cors.ts";
 import { getAviasalesOffer } from "./flights/aviasales.ts";
 import { getKlookActivityCards } from "./activities/klook.ts";
+export * from "./cars/localrent.ts";
+import { getLocalrentOffer } from "./cars/localrent.ts";
 
 /**
  * OFFERS – ROUTER CENTRAL
@@ -44,6 +46,10 @@ serve(async (req: Request) => {
       card = getKlookActivityCards(intent);
       break;
 
+    case "car_rental":
+      card = getLocalrentOffer(intent);
+      break;
+  
     default:
       return jsonError("Unsupported intent type");
   }
