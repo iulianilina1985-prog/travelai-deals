@@ -49,7 +49,7 @@ JSON FORMAT:
 {
   "reply": string,
   "intent": {
-    "type": "flight" | "hotel" | "activity" | null,
+    "type": "flight" | "hotel" | "activity" | "car_rental" null,
     "from": string | null,
     "to": string | null,
     "depart_date": string | null,

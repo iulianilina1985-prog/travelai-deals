@@ -39,9 +39,7 @@ const IATA_MAP: Record<string, string> = {
 
 const AVIASALES_MARKER = "688834";
 
-// fallback doar daca chiar lipsesc datele
-const DEFAULT_ORIGIN = "OTP";
-const DEFAULT_DESTINATION = "PAR";
+
 
 function normKey(v?: string) {
   return String(v ?? "").trim();
@@ -53,8 +51,8 @@ function makeCardId(intent: FlightIntent, origin: string, destination: string) {
 }
 
 export function getAviasalesOffer(intent: FlightIntent) {
-  const fromLabel = normKey(intent.from) || "București";
-  const toLabel = normKey(intent.to) || "Paris";
+  const fromLabel = normKey(intent.from);
+  const toLabel = normKey(intent.to);
 
   // IMPORTANT: folosim label-urile reale ca sa cautam in map
   const origin = IATA_MAP[fromLabel] ?? DEFAULT_ORIGIN;
