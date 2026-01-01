@@ -384,7 +384,7 @@ if (messages.length === 0) {
     
     let offerMsgFromAI = null;
 
-if (ai?.type === "offer" && ai?.card) {
+if (ai?.card) {
   offerMsgFromAI = {
     id: Date.now() + 2,
     sender: "ai",
