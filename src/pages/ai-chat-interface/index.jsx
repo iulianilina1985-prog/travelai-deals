@@ -398,7 +398,39 @@ if (ai?.card) {
     // 🔥 OFERTE (doar dacă AI a returnat intent)
 let offerCardMsg = null;
 
+if (ai?.intent?.type === "flight") {
+  try {
+    const { data: auth } = await supabase.auth.getSession();
+    const token = auth?.session?.access_token;
 
+    const res = await fetch(
+      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/offers`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${token || import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({ intent: ai.intent }),
+      }
+    );
+
+    const data = await res.json();
+
+    if (data?.card) {
+      offerCardMsg = {
+        id: Date.now() + 2,
+        sender: "ai",
+        type: "offer",
+        card: data.card,
+        timestamp: new Date().toISOString(),
+      };
+    }
+  } catch (err) {
+    console.error("Eroare offers:", err);
+  }
+}
 
 setMessages(prev => {
   const newMessages = [...prev];
