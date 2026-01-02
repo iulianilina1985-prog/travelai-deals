@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { SYSTEM_PROMPT } from "./system_prompt.ts";
+import { resolveToIata } from "./airport_resolver.ts";
 
 // Providers
 import { getAviasalesOffer } from "../offers/flights/aviasales.ts";
@@ -23,25 +24,30 @@ function norm(v: unknown) {
   return String(v ?? "").trim();
 }
 
-/* ================= FLIGHT PARSER (AVIASALES) ================= */
+function strip(s: string) {
+  return s
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
+}
+
+function isIata(v: string) {
+  return /^[A-Z]{3}$/.test(v);
+}
+
+/* ================= CITY → IATA (TEMP RESOLVER) =================
+   IMPORTANT:
+   - user NU vede IATA
+   - Aviasales PRIMEȘTE IATA
+   - asta va fi înlocuit cu dataset global
+*/
+
+
+/* ================= FLIGHT PARSER ================= */
 
 function extractFlightData(text: string) {
-  const strip = (s: string) =>
-    s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-
   const t = strip(text);
-
-  const CITY_CANON: Record<string, string> = {
-    bucuresti: "București",
-    london: "London",
-    londra: "London",
-    paris: "Paris",
-    roma: "Roma",
-    milano: "Milano",
-    brussels: "Bruxelles",
-  };
-
-  const canonCity = (raw: string) => CITY_CANON[strip(raw)] ?? raw;
 
   let from: string | null = null;
   let to: string | null = null;
@@ -51,8 +57,8 @@ function extractFlightData(text: string) {
     t.match(/([a-z ]+)\s*(?:->|→|-)\s*([a-z ]+)/);
 
   if (routeMatch) {
-    from = canonCity(routeMatch[1].trim());
-    to = canonCity(routeMatch[2].trim());
+    from = routeMatch[1].trim();
+    to = routeMatch[2].trim();
   }
 
   const dateMatch = t.match(
@@ -64,10 +70,10 @@ function extractFlightData(text: string) {
   const pad = (n: string) => (n.length === 1 ? `0${n}` : n);
 
   return {
-    from,
-    to,
-    depart: `${dateMatch[3]}-${pad(dateMatch[2])}-${pad(dateMatch[1])}`,
-    ret: `${dateMatch[6]}-${pad(dateMatch[5])}-${pad(dateMatch[4])}`,
+    from_city: from,
+    to_city: to,
+    depart_date: `${dateMatch[3]}-${pad(dateMatch[2])}-${pad(dateMatch[1])}`,
+    return_date: `${dateMatch[6]}-${pad(dateMatch[5])}-${pad(dateMatch[4])}`,
     passengers: 1,
   };
 }
@@ -82,34 +88,57 @@ serve(async (req) => {
   try {
     const body = await req.json();
     const prompt = norm(body?.prompt);
+    console.log("TEST Craiova:", resolveToIata("Craiova"));
+    console.log("TEST Madrid:", resolveToIata("Madrid"));
+    console.log("TEST Paris:", resolveToIata("Paris"));
+    console.log("TEST CRA:", resolveToIata("CRA"));
+
 
     console.log("AI-CHAT PROMPT:", prompt);
 
-    /* ---------- 1. ZBOR (AVIASALES – SAFE) ---------- */
+    /* ---------- 1. FLIGHT FLOW ---------- */
 
     const flight = extractFlightData(prompt);
-    if (flight) {
-      const card = getAviasalesOffer({
-        from: flight.from,
-        to: flight.to,
-        depart_date: flight.depart,
-        return_date: flight.ret,
-        passengers: flight.passengers,
-      });
 
-      return new Response(
-        JSON.stringify({
-          type: "offer",
-          reply: "Perfect ✈️ Am găsit o opțiune bună pentru tine 👇",
-          intent: { type: "flight", ...flight },
-          card,
-          confidence: "high",
-        }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
-      );
+    if (flight) {
+      const fromIata = await resolveToIata(flight.from_city);
+      const toIata = await resolveToIata(flight.to_city);
+
+
+      // 🔒 dacă nu putem rezolva sigur → NU dăm card
+      if (fromIata && toIata) {
+        const card = getAviasalesOffer({
+          from: fromIata,
+          to: toIata,
+          depart_date: flight.depart_date,
+          return_date: flight.return_date,
+          passengers: flight.passengers,
+        });
+
+        if (card) {
+          return new Response(
+            JSON.stringify({
+              type: "offer",
+              reply: "✈️ Perfect! Am găsit o opțiune bună pentru tine 👇",
+              intent: {
+                type: "flight",
+                from: flight.from_city,
+                to: flight.to_city,
+                from_iata: fromIata,
+                to_iata: toIata,
+                depart_date: flight.depart_date,
+                return_date: flight.return_date,
+              },
+              card,
+              confidence: "high",
+            }),
+            { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+          );
+        }
+      }
     }
 
-    /* ---------- 2. AI INTENT (ACTIVITY / CHAT) ---------- */
+    /* ---------- 2. AI GENERAL ---------- */
 
     const aiRes = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
@@ -130,12 +159,9 @@ serve(async (req) => {
     const aiJson = await aiRes.json();
     const raw = aiJson?.choices?.[0]?.message?.content ?? "";
 
-    console.log("AI RAW:", raw);
-
     let reply = "Spune-mi ce plan ai 🙂";
     let intent: any = null;
-    let confidence: string = "medium";
-    let card: any = null;
+    let confidence = "medium";
 
     try {
       const parsed = JSON.parse(raw);
@@ -146,43 +172,10 @@ serve(async (req) => {
       reply = raw || reply;
     }
 
-    /* ---------- 3. ACTIVITY CARD (KLOOK – GENERAL) ---------- */
-
-    let cards: any[] | null = null;
-
-if (intent?.type === "activity" && intent?.to) {
-  cards = [
-    {
-      id: `activity|klook|${intent.to.toLowerCase()}`,
-      type: "activity",
-      title: `Activități în ${intent.to}`,
-      subtitle: "Tururi, bilete, experiențe locale",
-      provider: "Klook",
-      provider_meta: {
-        id: "klook",
-        name: "Klook",
-        brand_color: "#ff5b00",
-      },
-      image_url: "/assets/activities/klook.jpg",
-      cta: {
-        label: "Vezi activitățile",
-        url: "https://klook.tpx.lt/jnEi9ZtF", // link afiliat general
-      },
-    },
-  ];
-}
-
-
     return new Response(
-  JSON.stringify({
-    reply,
-    intent,
-    confidence,
-    ...(cards ? { cards } : {}),
-  }),
-  { headers: { ...corsHeaders, "Content-Type": "application/json" } },
-);
-
+      JSON.stringify({ reply, intent, confidence }),
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+    );
   } catch (err) {
     console.error("AI-CHAT ERROR:", err);
 
