@@ -366,68 +366,41 @@ if (messages.length === 0) {
 
 
 
-    const aiContent =
-      ai?.content || ai?.message || ai?.reply || "N-am primit text 😅";
+    let aiMsg = null;
 
-    const aiMsg = {
-      id: Date.now() + 1,
-      sender: "ai",
-      content: aiContent,
-      timestamp: new Date().toISOString(),
-      isError: !!ai?.errorType,
-      tokens: {
-        in: ai?.tokens_in || 0,
-        out: ai?.tokens_out || 0,
-      },
-      isSupabaseMode: ai?.isSupabaseMode || supabaseMode,
-    };    
+// CAZ 1: AI a trimis CARD (ofertă)
+if (ai?.type === "offer" && ai?.card) {
+  aiMsg = {
+    id: Date.now() + 1,
+    sender: "ai",
+    type: "offer",
+    card: ai.card,
+    timestamp: new Date().toISOString(),
+    isSupabaseMode: true,
+  };
+}
+// CAZ 2: AI a trimis text normal
+else {
+  aiMsg = {
+    id: Date.now() + 1,
+    sender: "ai",
+    content: ai?.reply || ai?.content || "N-am primit text 😅",
+    timestamp: new Date().toISOString(),
+    isSupabaseMode: true,
+  };
+}
+    
 
     // 🔥 OFERTE (doar dacă AI a returnat intent)
 let offerCardMsg = null;
 
-if (ai?.intent?.type === "flight") {
-  try {
-    const { data: auth } = await supabase.auth.getSession();
-    const token = auth?.session?.access_token;
-
-    const res = await fetch(
-      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/offers`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
-          Authorization: `Bearer ${token || import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-        },
-        body: JSON.stringify({ intent: ai.intent }),
-      }
-    );
-
-    const data = await res.json();
-
-    if (data?.card) {
-      offerCardMsg = {
-        id: Date.now() + 2,
-        sender: "ai",
-        type: "offer",
-        card: data.card,
-        timestamp: new Date().toISOString(),
-      };
-    }
-  } catch (err) {
-    console.error("Eroare offers:", err);
-  }
-}
 
 
 
-    // Salvare + update UI
-    setMessages(prev => {
+
+    // Salvare + update UI (CORECT)
+setMessages(prev => {
   const newMessages = [...prev, aiMsg];
-
-  if (offerCardMsg) {
-    newMessages.push(offerCardMsg);
-  }
 
   if (dbConversationId) {
     updateChat(
@@ -439,6 +412,7 @@ if (ai?.intent?.type === "flight") {
 
   return newMessages;
 });
+
 
 
     setConversationHistory(prev => [
