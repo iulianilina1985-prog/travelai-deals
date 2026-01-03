@@ -69,14 +69,21 @@ export async function getTravelRecommendation(
     const data = await response.json();
 
     return {
-      id: Date.now(),
-      sender: "ai",
-      content: data?.reply || "Nu am primit un răspuns valid 😕",
-      intent: data?.intent || null,   // 🔥 AICI ERA CRIMA
-      raw: data,                      // (opțional, debug)
-      timestamp: new Date().toISOString(),
-      isSupabaseMode: true,
-    };
+  id: Date.now(),
+  sender: "ai",
+
+  // 🔥 ESENȚIAL
+  type: data?.type || null,
+  card: data?.card || null,
+
+  content: data?.reply || "",
+  intent: data?.intent || null,
+
+  raw: data,
+  timestamp: new Date().toISOString(),
+  isSupabaseMode: true,
+};
+
   } catch (err) {
     console.error("🔥 Fatal error in getTravelRecommendation:", err);
 
