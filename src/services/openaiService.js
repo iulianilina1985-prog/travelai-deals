@@ -5,6 +5,7 @@
 
 import { supabase } from "../lib/supabase";
 
+
 /**
  * Trimite mesajul către Supabase Edge Function `ai-chat`
  * - folosește session.access_token
@@ -34,6 +35,9 @@ export async function getTravelRecommendation(
       };
     }
 
+    const LOCALRENT_AFFILIATE_URL = "https://localrent.tpx.lt/BDajXZeJ";
+    const KLOOK_AFFILIATE_URL = "https://klook.tpx.lt/jnEi9ZtF";
+    const AVIASALES_AFFILIATE_URL = "https://aviasales.tpx.lt/688834";
     /* ===================================================== 
        CLIENT-SIDE INTEGRATION & FALLBACK LOGIC
        (Allows testing without deploying backend or real OpenAI key)
@@ -134,7 +138,10 @@ export async function getTravelRecommendation(
             provider: "Localrent",
             location: destination,
             image_url: "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=1000&auto=format&fit=crop",
-            cta: { url: "https://localrent.com", label: "Vezi mașini" },
+            cta: {
+                  url: `${LOCALRENT_AFFILIATE_URL}?pickup=${encodeURIComponent(destination)}`,
+                  label: "Vezi mașini"
+                },
             provider_meta: { name: "Localrent", brand_color: "#00A859" }
           },
           isSupabaseMode: true
@@ -166,7 +173,11 @@ export async function getTravelRecommendation(
             title: `Top Activități în ${destination}`,
             city: destination,
             image_url: "https://images.unsplash.com/photo-1499856870642-4784ac368124?q=80&w=1000&auto=format&fit=crop",
-            cta: { url: "https://klook.com", label: "Vezi activități" },
+            cta: {
+              url: `${KLOOK_AFFILIATE_URL}?keyword=${encodeURIComponent(destination)}`,
+              label: "Vezi activități"
+            },
+
             provider_meta: { name: "Klook", brand_color: "#ff5b00" }
           },
           isSupabaseMode: true
