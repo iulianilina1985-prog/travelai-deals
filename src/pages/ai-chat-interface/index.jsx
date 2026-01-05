@@ -41,7 +41,7 @@ const AIChatInterface = () => {
   const navigate = useNavigate();
   const messagesEndRef = useRef(null);
   const [dbConversationId, setDbConversationId] = useState(null);
- 
+
   // ------------------------------------------------------
   // STATE
   // ------------------------------------------------------
@@ -73,7 +73,7 @@ const AIChatInterface = () => {
     !text
       ? "Conversație nouă"
       : text.split(" ").slice(0, 3).join(" ") +
-        (text.split(" ").length > 3 ? "..." : "");
+      (text.split(" ").length > 3 ? "..." : "");
 
   // ------------------------------------------------------
   // 📌 Citire subscription (doar plan)
@@ -235,56 +235,56 @@ const AIChatInterface = () => {
   // ✉️ TRIMITERE MESAJ — FĂRĂ CREDITE, FĂRĂ LIMITĂ CUVINTE
   // ======================================================
   const handleSendMessage = async (content) => {
-  if (!content?.trim()) return;
-    
+    if (!content?.trim()) return;
 
-  // 1️⃣ Moderare
-  const safe = await moderateUserInput(content).catch(() => true);
-  if (!safe) {
-    setMessages(prev => [
-      ...prev,
-      {
-        id: Date.now(),
-        sender: "ai",
-        content: "Mesaj nepotrivit. 🙏",
-        isError: true,
-      }
-    ]);
-    return;
-  }
 
-  // 2️⃣ User logat?
-  const { data: auth } = await supabase.auth.getUser();
-  const user = auth?.user;
-  if (!user) {
-    setMessages(prev => [
-      ...prev,
-      {
-        id: Date.now(),
-        sender: "ai",
-        content: "Trebuie să fii logat pentru a folosi TravelAI. 🔐",
-        isError: true,
-      }
-    ]);
-    return;
-  }
+    // 1️⃣ Moderare
+    const safe = await moderateUserInput(content).catch(() => true);
+    if (!safe) {
+      setMessages(prev => [
+        ...prev,
+        {
+          id: Date.now(),
+          sender: "ai",
+          content: "Mesaj nepotrivit. 🙏",
+          isError: true,
+        }
+      ]);
+      return;
+    }
 
-  // 3️⃣ Planul utilizatorului
-  const sub = await getUserSubscription(user.id);
-  const userPlan = sub?.plan_name?.toLowerCase() || "free";
-  setPlan(userPlan);
+    // 2️⃣ User logat?
+    const { data: auth } = await supabase.auth.getUser();
+    const user = auth?.user;
+    if (!user) {
+      setMessages(prev => [
+        ...prev,
+        {
+          id: Date.now(),
+          sender: "ai",
+          content: "Trebuie să fii logat pentru a folosi TravelAI. 🔐",
+          isError: true,
+        }
+      ]);
+      return;
+    }
 
-  // 4️⃣ Limita zilnică — doar FREE
-  if (userPlan === "free") {
-  const limit = await checkDailyLimit();
+    // 3️⃣ Planul utilizatorului
+    const sub = await getUserSubscription(user.id);
+    const userPlan = sub?.plan_name?.toLowerCase() || "free";
+    setPlan(userPlan);
 
-  if (!limit.allowed) {
-    setMessages(prev => [
-      ...prev,
-      {
-        id: Date.now(),
-        sender: "ai",
-        content: `
+    // 4️⃣ Limita zilnică — doar FREE
+    if (userPlan === "free") {
+      const limit = await checkDailyLimit();
+
+      if (!limit.allowed) {
+        setMessages(prev => [
+          ...prev,
+          {
+            id: Date.now(),
+            sender: "ai",
+            content: `
 Ai atins limita zilnică de 5 mesaje.  
 
 🚀 Poți reveni mâine sau poți trece la PRO pentru acces nelimitat.  
@@ -293,173 +293,175 @@ Ai atins limita zilnică de 5 mesaje.
 
 👉 <a href="/my-offers-dashboard" class="text-blue-500 underline">Deschide Ofertele Mele</a>
         `,
-        isError: true,
-        isHtml: true
+            isError: true,
+            isHtml: true
+          }
+        ]);
+        setShowUpgradeModal(true); // 👉 deschide modalul PRO
+        return;
       }
-    ]);
-    setShowUpgradeModal(true); // 👉 deschide modalul PRO
-    return;
-  }
 
-  await incrementDailyUsage();
-}
-
-
-  const firstMessage = messages.length === 0;
-
-  // 5️⃣ Construire mesaj user
-  const userMsg = {
-    id: Date.now(),
-    sender: "user",
-    content,
-    timestamp: new Date().toISOString(),
-    title: generateTitle(content),
-  };
-
-  // 6️⃣ UI update (DOAR sync)
-setMessages(prev => [...prev, userMsg]);
-
-// 7️⃣ DB logic SEPARAT (fără setState înăuntru)
-if (messages.length === 0) {
-  // prima conversație → INSERT
-  saveChat(userMsg.title, [userMsg]).then(conv => {
-    if (conv?.id) {
-      setConversationId(conv.id);
-      setDbConversationId(conv.id);
-      localStorage.setItem("currentConversationId", conv.id);
-      setAllChats(prev => [conv, ...prev]);
+      await incrementDailyUsage();
     }
-  });
-} else if (dbConversationId) {
-  // conversație existentă → UPDATE
-  updateChat(
-    dbConversationId,
-    generateTitle(messages[0]?.content),
-    [...messages, userMsg]
-  );
-}
 
 
-  if (firstMessage) {
-    window.dispatchEvent(
-      new CustomEvent("conversationCreated", {
-        detail: {
-          id: conversationId,
-          title: generateTitle(content),
-          created_at: new Date().toISOString(),
-          messages: [userMsg],
-        },
-      })
-    );
-  }
+    const firstMessage = messages.length === 0;
 
-  setConversationHistory(prev => [...prev, { role: "user", content }]);
-  setIsTyping(true);
-
-  try {
-    // 7️⃣ AI
-    const ai = await getTravelRecommendation(
+    // 5️⃣ Construire mesaj user
+    const userMsg = {
+      id: Date.now(),
+      sender: "user",
       content,
-      conversationHistory,
-      conversationId
-    );
-
-
-
-    const aiContent =
-      ai?.content || ai?.message || ai?.reply || "N-am primit text 😅";
-
-    const aiMsg = {
-      id: Date.now() + 1,
-      sender: "ai",
-      content: aiContent,
       timestamp: new Date().toISOString(),
-      isError: !!ai?.errorType,
-      tokens: {
-        in: ai?.tokens_in || 0,
-        out: ai?.tokens_out || 0,
-      },
-      isSupabaseMode: ai?.isSupabaseMode || supabaseMode,
-    };    
+      title: generateTitle(content),
+    };
 
-    // 🔥 OFERTE (doar dacă AI a returnat intent)
-let offerCardMsg = null;
+    // 6️⃣ UI update (DOAR sync)
+    setMessages(prev => [...prev, userMsg]);
 
-if (ai?.intent?.type === "flight") {
-  try {
-    const { data: auth } = await supabase.auth.getSession();
-    const token = auth?.session?.access_token;
-
-    const res = await fetch(
-      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/offers`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
-          Authorization: `Bearer ${token || import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-        },
-        body: JSON.stringify({ intent: ai.intent }),
-      }
-    );
-
-    const data = await res.json();
-
-    if (data?.card) {
-      offerCardMsg = {
-        id: Date.now() + 2,
-        sender: "ai",
-        type: "offer",
-        card: data.card,
-        timestamp: new Date().toISOString(),
-      };
+    // 7️⃣ DB logic SEPARAT (fără setState înăuntru)
+    if (messages.length === 0) {
+      // prima conversație → INSERT
+      saveChat(userMsg.title, [userMsg]).then(conv => {
+        if (conv?.id) {
+          setConversationId(conv.id);
+          setDbConversationId(conv.id);
+          localStorage.setItem("currentConversationId", conv.id);
+          setAllChats(prev => [conv, ...prev]);
+        }
+      });
+    } else if (dbConversationId) {
+      // conversație existentă → UPDATE
+      updateChat(
+        dbConversationId,
+        generateTitle(messages[0]?.content),
+        [...messages, userMsg]
+      );
     }
-  } catch (err) {
-    console.error("Eroare offers:", err);
-  }
-}
+
+
+    if (firstMessage) {
+      window.dispatchEvent(
+        new CustomEvent("conversationCreated", {
+          detail: {
+            id: conversationId,
+            title: generateTitle(content),
+            created_at: new Date().toISOString(),
+            messages: [userMsg],
+          },
+        })
+      );
+    }
+
+    setConversationHistory(prev => [...prev, { role: "user", content }]);
+    setIsTyping(true);
+
+    try {
+      // 7️⃣ AI
+      const ai = await getTravelRecommendation(
+        content,
+        conversationHistory,
+        conversationId
+      );
 
 
 
-    // Salvare + update UI
-    setMessages(prev => {
-  const newMessages = [...prev, aiMsg];
+      const aiContent =
+        ai?.content || ai?.message || ai?.reply || "N-am primit text 😅";
 
-  if (offerCardMsg) {
-    newMessages.push(offerCardMsg);
-  }
-
-  if (dbConversationId) {
-    updateChat(
-      dbConversationId,
-      generateTitle(newMessages[0]?.content),
-      newMessages
-    );
-  }
-
-  return newMessages;
-});
-
-
-    setConversationHistory(prev => [
-      ...prev,
-      { role: "assistant", content: aiContent },
-    ]);
-  } catch (error) {
-    console.error("Eroare AI:", error);
-    setMessages(prev => [
-      ...prev,
-      {
-        id: Date.now(),
+      const aiMsg = {
+        id: Date.now() + 1,
         sender: "ai",
-        content: "Eroare tehnică. Încearcă din nou.",
-        isError: true,
-      },
-    ]);
-  } finally {
-    setIsTyping(false);
-  }
-};
+        content: aiContent,
+        timestamp: new Date().toISOString(),
+        isError: !!ai?.errorType,
+        tokens: {
+          in: ai?.tokens_in || 0,
+          out: ai?.tokens_out || 0,
+        },
+        isSupabaseMode: ai?.isSupabaseMode || supabaseMode,
+        type: ai?.type || null,
+        card: ai?.card || null,
+      };
+
+      // 🔥 OFERTE (doar dacă AI a returnat intent)
+      let offerCardMsg = null;
+
+      if (ai?.intent?.type === "flight") {
+        try {
+          const { data: auth } = await supabase.auth.getSession();
+          const token = auth?.session?.access_token;
+
+          const res = await fetch(
+            `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/offers`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+                Authorization: `Bearer ${token || import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+              },
+              body: JSON.stringify({ intent: ai.intent }),
+            }
+          );
+
+          const data = await res.json();
+
+          if (data?.card) {
+            offerCardMsg = {
+              id: Date.now() + 2,
+              sender: "ai",
+              type: "offer",
+              card: data.card,
+              timestamp: new Date().toISOString(),
+            };
+          }
+        } catch (err) {
+          console.error("Eroare offers:", err);
+        }
+      }
+
+
+
+      // Salvare + update UI
+      setMessages(prev => {
+        const newMessages = [...prev, aiMsg];
+
+        if (offerCardMsg) {
+          newMessages.push(offerCardMsg);
+        }
+
+        if (dbConversationId) {
+          updateChat(
+            dbConversationId,
+            generateTitle(newMessages[0]?.content),
+            newMessages
+          );
+        }
+
+        return newMessages;
+      });
+
+
+      setConversationHistory(prev => [
+        ...prev,
+        { role: "assistant", content: aiContent },
+      ]);
+    } catch (error) {
+      console.error("Eroare AI:", error);
+      setMessages(prev => [
+        ...prev,
+        {
+          id: Date.now(),
+          sender: "ai",
+          content: "Eroare tehnică. Încearcă din nou.",
+          isError: true,
+        },
+      ]);
+    } finally {
+      setIsTyping(false);
+    }
+  };
 
 
   // ======================================================
@@ -605,7 +607,7 @@ if (ai?.intent?.type === "flight") {
                   />
                 ))}
 
-                
+
 
 
                 {/* TYPING */}
@@ -648,7 +650,7 @@ if (ai?.intent?.type === "flight") {
           <div className="hidden lg:block w-80 border-l border-border">
             <ChatSidebar
               isOpen={true}
-              onClose={() => {}}
+              onClose={() => { }}
               messages={messages}
               history={allChats}
             />

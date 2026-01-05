@@ -1,34 +1,32 @@
-// supabase/functions/offers/cars/localrent.ts
+// ================================
+// Localrent Car Provider
+// ================================
 
-type LocalrentParams = {
-  city?: string;
-  country?: string;
-  startDate?: string; // YYYY-MM-DD
-  endDate?: string;   // YYYY-MM-DD
+export type CarIntent = {
+  location: string;
 };
 
-export function getLocalrentOffer(params: LocalrentParams) {
-  const baseUrl = "https://localrent.tpx.lt/BDajXZeJ";
+const LOCALRENT_AFFILIATE_BASE = "https://localrent.tpx.lt/BDajXZeJ";
 
-  // Params optional: nu stricam tracking-ul daca Localrent ignora query
-  const qs = new URLSearchParams();
+export function getLocalrentOffer(intent: CarIntent) {
+  const location = intent.location;
+  if (!location) return null;
 
-  if (params.city) qs.set("city", params.city);
-  if (params.country) qs.set("country", params.country);
-
-  // (denumirile pickup/dropoff sunt “best guess”; le ajustam daca vrei)
-  if (params.startDate) qs.set("pickup", params.startDate);
-  if (params.endDate) qs.set("dropoff", params.endDate);
-
-  const url = qs.toString() ? `${baseUrl}?${qs.toString()}` : baseUrl;
+  const url = `${LOCALRENT_AFFILIATE_BASE}?pickup=${encodeURIComponent(location)}`;
 
   return {
-    type: "car_rental" as const,
+    type: "car_rental",
     provider: "Localrent",
-    title: `Închirieri auto în ${params.city ?? "destinația ta"}`,
-    // imagine default (poți schimba oricând)
-    image:
-      "https://images.unsplash.com/photo-1549924231-f129b911e442?auto=format&fit=crop&w=1200&q=60",
+    title: `Închirieri auto în ${location}`,
+    subtitle: "Oferte locale verificate, fără surprize",
+    location,
+    id: `localrent|${location.toLowerCase()}`,
+    image_url: "/assets/cars/localrent.jpg",
+    provider_meta: {
+      id: "localrent",
+      name: "Localrent",
+      brand_color: "#00A859",
+    },
     cta: {
       label: "Vezi mașini",
       url,
