@@ -4,7 +4,7 @@ import { resolveToIata } from "./airport_resolver.ts";
 import { getAviasalesOffer } from "../offers/flights/aviasales.ts";
 
 /* ================= CONFIG ================= */
-
+console.log("🔥 AI-CHAT ACTIVE VERSION");
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, apikey, content-type",
@@ -105,13 +105,13 @@ serve(async (req) => {
        Potențială optimizare pentru zboruri clare
        ========================================= */
     const flight = extractFlightData(prompt);
-
+    console.log("✈️ FLIGHT PARSED:", flight);
     if (flight) {
       const fromIata = await resolveToIata(flight.from_city);
       const toIata = await resolveToIata(flight.to_city);
 
       if (fromIata && toIata) {
-        const card = getAviasalesOffer({
+        const card = await getAviasalesOffer({
           from_iata: fromIata,
           to_iata: toIata,
           depart_date: flight.depart_date,
@@ -119,23 +119,21 @@ serve(async (req) => {
           passengers: flight.passengers,
         });
 
-        if (card) {
-          return new Response(
-            JSON.stringify({
-              message: {
-                text: `✈️ Am găsit zboruri din ${flight.from_city} spre ${flight.to_city}!`,
-                confidence: 1,
-              },
-              offer: {
-                type: "flight",
-                card,
-              },
-            }),
-            { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-          );
-        }
+        console.log("✅ AVIASALES CARD:", card);
+
+        // 🔥 OPREȘTE TOT
+        return new Response(
+          JSON.stringify({
+            reply: `✈️ Am găsit zboruri din ${flight.from_city} spre ${flight.to_city}.`,
+            type: "flight",
+            card,
+          }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
       }
     }
+
+
 
     /* =========================================
        2. AI GENERATION & FALLBACK
@@ -280,24 +278,19 @@ serve(async (req) => {
     // (Implementation logic normally here, reusing existing simplified regex flow for now 
     // or could expand to use AI's extracted cities)
     // For stricter control, we often rely on the REGEX step above for flights.
-    if (intent.type === "flight" && intent.from && intent.to) {
-      // Resolve IATA again if AI inferred cities
-      // (Implementation logic normally here, reusing existing simplified regex flow for now 
-      // or could expand to use AI's extracted cities)
-      // For stricter control, we often rely on the REGEX step above for flights.
-    }
+    if (intent.type === "flight" && intent.from && intent.to)
 
-    // B. ACTIVITY (Klook)
-    if (intent.type === "activity" && intent.to) {
-      const { getKlookOffer } = await import("../offers/activities/klook.ts");
-      const klookCard = getKlookOffer({ city: intent.to });
-      if (klookCard) {
-        offer = {
-          type: "offer",
-          card: klookCard
-        };
+      // B. ACTIVITY (Klook)
+      if (intent.type === "activity" && intent.to) {
+        const { getKlookOffer } = await import("../offers/activities/klook.ts");
+        const klookCard = getKlookOffer({ city: intent.to });
+        if (klookCard) {
+          offer = {
+            type: "offer",
+            card: klookCard
+          };
+        }
       }
-    }
 
     // C. CAR RENTAL (Localrent)
     if (intent.type === "car_rental" && intent.to) {

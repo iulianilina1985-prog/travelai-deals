@@ -35,7 +35,7 @@ serve(async (req: Request) => {
 
   switch (intent.type) {
     case "flight":
-      card = getAviasalesOffer(intent);
+      card = await getAviasalesOffer(intent);
       break;
 
     case "hotel":
@@ -49,13 +49,13 @@ serve(async (req: Request) => {
     case "car_rental":
       card = getLocalrentOffer(intent);
       break;
-  
+
     default:
       return jsonError("Unsupported intent type");
   }
 
   return new Response(
-  JSON.stringify(card?.cards ? { cards: card.cards } : { card }),
+    JSON.stringify(card?.cards ? { cards: card.cards } : { card }),
     {
       status: 200,
       headers: {

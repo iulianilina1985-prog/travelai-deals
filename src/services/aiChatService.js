@@ -15,5 +15,6 @@ export async function askAI({ userId, conversationId, prompt }) {
   }
 
   return data; 
-  // { reply, tokens_in, tokens_out, remaining_credits }
+  // { reply, type, card, confidence }
+
 }
