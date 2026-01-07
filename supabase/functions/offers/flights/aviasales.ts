@@ -84,50 +84,7 @@ function buildDeepLink(from: string, to: string, depart?: string, ret?: string, 
 /**
  * Fetch price from TravelPayouts "cheap" API
  */
-async function fetchPrice(from: string, to: string, depart?: string, ret?: string): Promise<string | null> {
-  if (!TOKEN) return null;
-  if (!depart) return null;
 
-  try {
-    // Format: YYYY-MM-DD
-    // API wants YYYY-MM
-    const month = depart.slice(0, 7);
-    let url = `https://api.travelpayouts.com/v1/prices/cheap?origin=${from}&destination=${to}&depart_date=${month}&currency=EUR`;
-
-    if (ret) {
-      const retMonth = ret.slice(0, 7);
-      url += `&return_date=${retMonth}`;
-    }
-
-    const res = await fetch(url, {
-      headers: {
-        "x-access-token": TOKEN,
-        "Accept-Encoding": "gzip, deflate",
-      },
-    });
-
-    if (!res.ok) return null;
-
-    const data = await res.json();
-    // Structure: { success: true, data: { [IATA]: { "0": { price: 100, ... } } } }
-
-    const destData = data?.data?.[to];
-    if (!destData) return null;
-
-    // Find first valid offer
-    const offers = Object.values(destData) as any[];
-    if (offers.length > 0) {
-      // Sort by price just in case
-      offers.sort((a, b) => a.price - b.price);
-      return `de la ${offers[0].price} €`;
-    }
-
-  } catch (err) {
-    console.error("Price fetch failed:", err);
-  }
-
-  return null;
-}
 
 /* ================= PROVIDER ================= */
 
@@ -147,8 +104,7 @@ export async function getAviasalesOffer(intent: FlightIntent) {
   // 1. Build Better Link
   const link = buildDeepLink(from, to, intent.depart_date, intent.return_date, passengers);
 
-  // 2. Fetch Price (Async)
-  const price = await fetchPrice(from, to, intent.depart_date, intent.return_date);
+
 
   const fromLabel = intent.from_city
     ? `${intent.from_city} (${from})`
@@ -173,7 +129,7 @@ export async function getAviasalesOffer(intent: FlightIntent) {
     from,
     to,
     passengers,
-    price, // 🔥 NEW FIELD
+
 
     dates: {
       start: intent.depart_date,
@@ -190,8 +146,9 @@ export async function getAviasalesOffer(intent: FlightIntent) {
     },
 
     cta: {
-      label: price ? `Vezi oferte (${price})` : "Vezi zboruri",
+      label: "Vezi zboruri pe Aviasales",
       url: link,
     },
+
   };
 }

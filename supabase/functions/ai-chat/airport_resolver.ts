@@ -21,6 +21,38 @@ export async function resolveToIata(input: string): Promise<string | null> {
   if (isIata(upper)) return upper;
 
   const key = strip(raw);
+
+  // ⚡ MANUAL OVERRIDES (common variations)
+  const OVERRIDES: Record<string, string> = {
+    "bucuresti": "OTP",
+    "bucharest": "OTP",
+    "otopeni": "OTP",
+    "cluj": "CLJ",
+    "timisoara": "TSR",
+    "iasi": "IAS",
+    "londra": "LON",
+    "london": "LON",
+    "paris": "PAR",
+    "roma": "ROM",
+    "rome": "ROM",
+    "milano": "MIL",
+    "milan": "MIL",
+    "barcelona": "BCN",
+    "madrid": "MAD",
+    "dubai": "DXB",
+    "amsterdam": "AMS",
+    "iena": "VIE",
+    "viena": "VIE",
+    "vienna": "VIE",
+    "budapesta": "BUD",
+    "budapest": "BUD",
+    "istambul": "IST",
+    "istanbul": "IST",
+    "antalya": "AYT"
+  };
+
+  if (OVERRIDES[key]) return OVERRIDES[key];
+
   const hits = AIRPORT_INDEX[key];
 
   if (!hits || hits.length === 0) return null;

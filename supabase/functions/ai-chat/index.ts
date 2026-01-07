@@ -38,7 +38,7 @@ function extractFlightData(text: string) {
 
   // 🔹 RUTA – doar orașe (se oprește înainte de cifre)
   const routeMatch =
-    t.match(/din\s+([a-z ]+?)\s+la\s+([a-z ]+?)(?=\s+\d|\s*$)/) ||
+    t.match(/din\s+([a-z ]+?)\s+(?:la|spre|catre)\s+([a-z ]+?)(?=\s+\d|\s*$)/) ||
     t.match(/zbor\s+([a-z ]+?)\s+([a-z ]+?)(?=\s+\d|\s*$)/) ||
     t.match(/([a-z ]+?)\s*(?:->|→|-)\s*([a-z ]+?)(?=\s+\d|\s*$)/);
 
@@ -50,7 +50,7 @@ function extractFlightData(text: string) {
 
   // 🔹 DATE
   const dateMatch = t.match(
-    /(\d{1,2})\s*[-–]\s*(\d{1,2})\s*(ianuarie|februarie|martie|aprilie|mai|iunie|iulie|august|septembrie|octombrie|noiembrie|decembrie)\s*(\d{4})/
+    /(\d{1,2})(?:\s*[-–]\s*(\d{1,2}))?\s+(ianuarie|februarie|martie|aprilie|mai|iunie|iulie|august|septembrie|octombrie|noiembrie|decembrie)\s+(\d{4})/
   );
 
   if (!dateMatch) return null;
@@ -75,12 +75,22 @@ function extractFlightData(text: string) {
   };
 
   const pad = (n: string) => (n.length === 1 ? `0${n}` : n);
+  const year = dateMatch[4]; // Group 4 because group 2 is optional now, wait. 
+  // Groups: 
+  // 1: start day
+  // 2: end day (optional)
+  // 3: month
+  // 4: year
+
+  const month = monthMap[dateMatch[3]];
+  const startDay = pad(dateMatch[1]);
+  const endDay = dateMatch[2] ? pad(dateMatch[2]) : null;
 
   return {
     from_city: from,
     to_city: to,
-    depart_date: `${dateMatch[4]}-${monthMap[dateMatch[3]]}-${pad(dateMatch[1])}`,
-    return_date: `${dateMatch[4]}-${monthMap[dateMatch[3]]}-${pad(dateMatch[2])}`,
+    depart_date: `${year}-${month}-${startDay}`,
+    return_date: endDay ? `${year}-${month}-${endDay}` : undefined,
     passengers,
   };
 }
@@ -274,23 +284,19 @@ serve(async (req) => {
     let offer = null;
     const intent = parsed.intent || {};
 
-    // A. FLIGHT (Aviasales) - handled by parsing intent IATA (if needed)
-    // (Implementation logic normally here, reusing existing simplified regex flow for now 
-    // or could expand to use AI's extracted cities)
-    // For stricter control, we often rely on the REGEX step above for flights.
-    if (intent.type === "flight" && intent.from && intent.to)
 
-      // B. ACTIVITY (Klook)
-      if (intent.type === "activity" && intent.to) {
-        const { getKlookOffer } = await import("../offers/activities/klook.ts");
-        const klookCard = getKlookOffer({ city: intent.to });
-        if (klookCard) {
-          offer = {
-            type: "offer",
-            card: klookCard
-          };
-        }
+
+    // B. ACTIVITY (Klook)
+    if (intent.type === "activity" && intent.to) {
+      const { getKlookOffer } = await import("../offers/activities/klook.ts");
+      const klookCard = getKlookOffer({ city: intent.to });
+      if (klookCard) {
+        offer = {
+          type: "offer",
+          card: klookCard
+        };
       }
+    }
 
     // C. CAR RENTAL (Localrent)
     if (intent.type === "car_rental" && intent.to) {
@@ -301,6 +307,34 @@ serve(async (req) => {
           type: "offer",
           card: localrentCard
         };
+      }
+    }
+
+    // A. FLIGHT (Aviasales) - Fix integration
+    if (intent.type === "flight" && intent.from && intent.to) {
+      const fromIata = await resolveToIata(intent.from);
+      const toIata = await resolveToIata(intent.to);
+
+      if (fromIata && toIata) {
+        intent.from_iata = fromIata;
+        intent.to_iata = toIata;
+
+        const aviasalesCard = await getAviasalesOffer({
+          from_iata: fromIata,
+          to_iata: toIata,
+          depart_date: intent.depart_date, // AI might return YYYY-MM-DD
+          return_date: intent.return_date,
+          passengers: Number(intent.passengers) || 1,
+          from_city: intent.from,
+          to_city: intent.to
+        });
+
+        if (aviasalesCard) {
+          offer = {
+            type: "offer",
+            card: aviasalesCard
+          };
+        }
       }
     }
 

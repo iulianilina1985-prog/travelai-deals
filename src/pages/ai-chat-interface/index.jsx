@@ -384,10 +384,10 @@ Ai atins limita zilnică de 5 mesaje.
         card: ai?.card || null,
       };
 
-      // 🔥 OFERTE (doar dacă AI a returnat intent)
+      // 🔥 OFERTE (doar dacă AI a returnat intent SI nu avem deja card)
       let offerCardMsg = null;
 
-      if (ai?.intent?.type === "flight") {
+      if (ai?.intent?.type === "flight" && !ai.card) {
         try {
           const { data: auth } = await supabase.auth.getSession();
           const token = auth?.session?.access_token;
