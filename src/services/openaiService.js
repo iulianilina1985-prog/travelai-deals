@@ -31,7 +31,7 @@ export async function getTravelRecommendation(
       };
     }
 
-    // 2️⃣ Call backend AI (INTENT + optional REAL CARD)
+    // 2️⃣ Call backend AI (INTENT + REAL CARDS)
     const response = await fetch(
       `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-chat`,
       {
@@ -54,81 +54,15 @@ export async function getTravelRecommendation(
 
     const data = await response.json();
 
-    // 3️⃣ Dacă backend-ul a trimis CARD REAL (ex: Aviasales) → îl folosim
-    if (data?.card) {
-      return {
-        id: Date.now(),
-        sender: "ai",
-        content: data.reply,
-        type: data.card.type,
-        card: data.card,
-        isSupabaseMode: true,
-      };
-    }
-
-    // 4️⃣ FALLBACK FRONTEND – affiliate-only cards (NO API)
-    const lower = userMessage.toLowerCase();
-
-    // 🚗 LOCALRENT – PRIORITATE MAXIMĂ
-    if (
-      lower.includes("masina") ||
-      lower.includes("mașină") ||
-      lower.includes("auto") ||
-      lower.includes("inchiri")
-    ) {
-      return {
-        id: Date.now(),
-        sender: "ai",
-        content: "Pentru flexibilitate maximă, îți recomand o mașină 👇",
-        type: "car_rental",
-        card: {
-          type: "car_rental",
-          provider: "Localrent",
-          image_url: "/assets/images/car-default.jpg",
-          cta: {
-            label: "Vezi mașini disponibile",
-            url: LOCALRENT_AFFILIATE_URL,
-          },
-          provider_meta: {
-            name: "Localrent",
-            brand_color: "#00A859",
-          },
-        },
-      };
-    }
-
-    // 🎟️ KLOOK – doar dacă NU e mașină
-    if (
-      lower.includes("activ") ||
-      lower.includes("ce pot face") ||
-      lower.includes("atract")
-    ) {
-      return {
-        id: Date.now(),
-        sender: "ai",
-        content: "Am găsit activități populare pentru destinația ta 👇",
-        type: "activity",
-        card: {
-          type: "activity",
-          provider: "Klook",
-          image_url: "/assets/images/activity-default.jpg",
-          cta: {
-            label: "Vezi activități",
-            url: KLOOK_AFFILIATE_URL,
-          },
-          provider_meta: {
-            name: "Klook",
-            brand_color: "#ff5b00",
-          },
-        },
-      };
-    }
-
-    // 5️⃣ Default fallback text (IMPORTANT!)
+    // 3️⃣ Use response from backend (including multiple cards if present)
     return {
       id: Date.now(),
       sender: "ai",
-      content: data?.reply ?? "Spune-mi cu ce te pot ajuta mai departe 😊",
+      content: data.reply || data.message?.text || "Spune-mi cu ce te pot ajuta mai departe 😊",
+      type: data.type || null,
+      card: data.card || null, // legacy support
+      cards: data.cards || [], // modern multi-card support
+      isSupabaseMode: true,
     };
 
   } catch (err) {

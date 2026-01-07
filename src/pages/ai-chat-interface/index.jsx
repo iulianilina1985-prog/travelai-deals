@@ -382,12 +382,13 @@ Ai atins limita zilnică de 5 mesaje.
         isSupabaseMode: ai?.isSupabaseMode || supabaseMode,
         type: ai?.type || null,
         card: ai?.card || null,
+        cards: ai?.cards || [],
       };
 
       // 🔥 OFERTE (doar dacă AI a returnat intent SI nu avem deja card)
       let offerCardMsg = null;
 
-      if (ai?.intent?.type === "flight" && !ai.card) {
+      if (ai?.intent?.type && !ai.card && (!ai.cards || ai.cards.length === 0)) {
         try {
           const { data: auth } = await supabase.auth.getSession();
           const token = auth?.session?.access_token;
@@ -407,7 +408,15 @@ Ai atins limita zilnică de 5 mesaje.
 
           const data = await res.json();
 
-          if (data?.card) {
+          if (data?.cards && data.cards.length > 0) {
+            offerCardMsg = {
+              id: Date.now() + 2,
+              sender: "ai",
+              type: "offer",
+              cards: data.cards,
+              timestamp: new Date().toISOString(),
+            };
+          } else if (data?.card) {
             offerCardMsg = {
               id: Date.now() + 2,
               sender: "ai",

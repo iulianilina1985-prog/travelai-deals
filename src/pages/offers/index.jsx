@@ -1,9 +1,59 @@
 // src/pages/offers/index.jsx
-import React from "react";
+import React, { useState } from "react";
 import SearchOffers from "./components/SearchOffers";
 import OffersList from "./components/OffersList";
+import { supabase } from "../../lib/supabase";
 
 const OffersPage = () => {
+  const [searchResults, setSearchResults] = useState([]);
+  const [hasSearched, setHasSearched] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const handleSearch = async (query, offerType) => {
+    setLoading(true);
+
+    try {
+      // Get current session
+      const { data: { session } } = await supabase.auth.getSession();
+
+      // Call AI chat to get offers
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-chat`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${session?.access_token || import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+            "apikey": import.meta.env.VITE_SUPABASE_ANON_KEY,
+          },
+          body: JSON.stringify({
+            prompt: query,
+            user_id: session?.user?.id || null,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch offers');
+      }
+
+      const data = await response.json();
+
+      // Extract cards from response
+      const cards = data.cards || [];
+
+      setSearchResults(cards);
+      setHasSearched(true);
+    } catch (error) {
+      console.error('Search error:', error);
+      alert('A apărut o eroare la căutare. Te rog încearcă din nou.');
+      setSearchResults([]);
+      setHasSearched(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 pt-24 pb-20">
       <div className="max-w-6xl mx-auto px-4">
@@ -14,15 +64,19 @@ const OffersPage = () => {
             Caută oferte de călătorie
           </h1>
           <p className="text-slate-600 mt-3 max-w-xl mx-auto">
-            Folosește filtre avansate și descoperă cele mai bune prețuri de pe platformele partenere.
+            Folosește AI-ul nostru pentru a găsi cele mai bune oferte de la partenerii verificați.
           </p>
         </div>
 
         {/* FORMULAR */}
-        <SearchOffers />
+        <SearchOffers onSearch={handleSearch} />
 
-        {/* LISTĂ OFERTE MOCK */}
-        <OffersList />
+        {/* LISTĂ OFERTE */}
+        <OffersList
+          offers={searchResults}
+          hasSearched={hasSearched}
+          loading={loading}
+        />
 
       </div>
     </div>

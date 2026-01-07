@@ -3,43 +3,33 @@ import { Link } from 'react-router-dom';
 import Header from '../../components/ui/Header';
 import Icon from '../../components/AppIcon';
 import Button from '../../components/ui/Button';
-import DealCard from './components/DealCard';
+import OfferCard from '../../components/OfferCard';
 import SavedSearchCard from './components/SavedSearchCard';
 import FilterPanel from './components/FilterPanel';
-import DealDetailsModal from './components/DealDetailsModal';
 import SubscriptionBanner from './components/SubscriptionBanner';
 import { useAuth } from '../../contexts/AuthContext';
 
-import dealsService from '../../services/dealsService';
+import favoritesService from '../../services/favoritesService';
 import savedSearchesService from '../../services/savedSearchesService';
 import userService from '../../services/userService';
-
-import { MOCK_DEALS, MOCK_SAVED_SEARCHES } from "./mockData";
 
 const MyOffersDashboard = () => {
   const { user, loading: authLoading } = useAuth();
 
-  const [activeTab, setActiveTab] = useState('deals'); // deals | favorites | searches
+  const [activeTab, setActiveTab] = useState('favorites'); // favorites | searches
   const [filters, setFilters] = useState({
     search: '',
     destination: '',
     dealType: 'all',
-    minPrice: '',
-    maxPrice: '',
-    startDate: '',
-    endDate: '',
     sortBy: 'newest'
   });
 
   const [isFilterCollapsed, setIsFilterCollapsed] = useState(true);
 
-  const [deals, setDeals] = useState([]);
-  const [favorites, setFavorites] = useState([]); // ❤️ NOU
+  const [favorites, setFavorites] = useState([]);
   const [savedSearches, setSavedSearches] = useState([]);
 
   const [userStats, setUserStats] = useState({});
-  const [selectedDeal, setSelectedDeal] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -58,32 +48,25 @@ const MyOffersDashboard = () => {
       setLoading(true);
       setError(null);
 
-      const [dealsResult, searchesResult, statsResult] = await Promise.all([
-        dealsService?.getSavedDeals?.(),
+      const [favoritesResult, searchesResult, statsResult] = await Promise.all([
+        favoritesService.getFavorites(),
         savedSearchesService?.getSavedSearches?.(),
         userService?.getUserDashboardStats?.()
       ]);
 
-      // Oferte (fallback pe mock)
-      const realDeals = dealsResult?.data || [];
-      const finalDeals = realDeals.length > 0 ? realDeals : MOCK_DEALS;
+      // Favorites from Supabase
+      setFavorites(favoritesResult?.data || []);
 
-      setDeals(finalDeals);
+      // Saved searches
+      setSavedSearches(searchesResult?.data || []);
 
-      // extragem favoritele
-      setFavorites(finalDeals.filter((d) => d.is_saved));
-
-      // Căutări salvate
-      const realSearches = searchesResult?.data || [];
-      setSavedSearches(realSearches.length > 0 ? realSearches : MOCK_SAVED_SEARCHES);
-
+      // User stats
       setUserStats(statsResult?.data || {});
     } catch (err) {
       console.error(err);
       setError("Failed to load dashboard.");
-      setDeals(MOCK_DEALS);
-      setFavorites(MOCK_DEALS.filter(d => d.is_saved));
-      setSavedSearches(MOCK_SAVED_SEARCHES);
+      setFavorites([]);
+      setSavedSearches([]);
     } finally {
       setLoading(false);
     }
@@ -92,64 +75,47 @@ const MyOffersDashboard = () => {
   // -----------------------------------------------------------
   //  FILTER & SORT
   // -----------------------------------------------------------
-  const filteredDeals = deals.filter((deal) => {
-    if (filters.search && !deal.title.toLowerCase().includes(filters.search.toLowerCase())) {
+  const filteredFavorites = favorites.filter((offer) => {
+    if (filters.search && !offer.title?.toLowerCase().includes(filters.search.toLowerCase())) {
       return false;
     }
     if (filters.destination && filters.destination !== "all") {
-      if (!deal.destination.toLowerCase().includes(filters.destination.toLowerCase())) return false;
+      if (!offer.title?.toLowerCase().includes(filters.destination.toLowerCase())) return false;
     }
-    if (filters.minPrice && deal.current_price < parseInt(filters.minPrice)) return false;
-    if (filters.maxPrice && deal.current_price > parseInt(filters.maxPrice)) return false;
-
-    if (filters.startDate && new Date(deal.departure_date) < new Date(filters.startDate)) return false;
-    if (filters.endDate && new Date(deal.departure_date) > new Date(filters.endDate)) return false;
-
+    if (filters.dealType && filters.dealType !== "all") {
+      if (offer.type !== filters.dealType) return false;
+    }
     return true;
   });
 
-  const sortedDeals = [...filteredDeals].sort((a, b) => {
+  const sortedFavorites = [...filteredFavorites].sort((a, b) => {
     switch (filters.sortBy) {
-      case "price_low":
-        return a.current_price - b.current_price;
-      case "price_high":
-        return b.current_price - a.current_price;
-      case "expiry":
-        return new Date(a.expiry_date) - new Date(b.expiry_date);
-      case "rating":
-        return b.rating - a.rating;
       case "newest":
       default:
-        return (b.is_new ? 1 : 0) - (a.is_new ? 1 : 0);
+        return new Date(b.created_at || 0) - new Date(a.created_at || 0);
     }
   });
 
   // -----------------------------------------------------------
   //  FAVORITE TOGGLE ❤️
   // -----------------------------------------------------------
-  const handleToggleSave = (deal) => {
-    const updated = deals.map((d) =>
-      d.id === deal.id ? { ...d, is_saved: !d.is_saved } : d
-    );
-
-    setDeals(updated);
-    setFavorites(updated.filter((d) => d.is_saved));
-  };
-
-  // -----------------------------------------------------------
-  //  REMOVE (for saved deals)
-  // -----------------------------------------------------------
-  const handleRemoveDeal = (dealId) => {
-    setDeals(prev => prev.filter(d => d.id !== dealId));
-    setFavorites(prev => prev.filter(d => d.id !== dealId));
-  };
-
-  // -----------------------------------------------------------
-  //  VIEW DETAILS
-  // -----------------------------------------------------------
-  const handleViewDetails = (deal) => {
-    setSelectedDeal(deal);
-    setIsModalOpen(true);
+  const handleToggleFavorite = async (offer) => {
+    try {
+      if (offer.isFavorite) {
+        // Remove from favorites
+        await favoritesService.removeFavorite(offer.id);
+        setFavorites(prev => prev.filter(f => f.id !== offer.id));
+      } else {
+        // Add to favorites
+        await favoritesService.addFavorite(offer);
+        // Reload favorites to get the updated list
+        const { data } = await favoritesService.getFavorites();
+        setFavorites(data || []);
+      }
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+      alert('A apărut o eroare. Te rog încearcă din nou.');
+    }
   };
 
   if (authLoading) return (
@@ -165,6 +131,7 @@ const MyOffersDashboard = () => {
         <div className="text-center py-12">
           <Icon name="Lock" size={48} className="text-muted-foreground mx-auto mb-4" />
           <h2 className="text-2xl font-bold">Te rog autentifică-te</h2>
+          <p className="text-muted-foreground mb-4">Această pagină este disponibilă doar pentru utilizatori autentificați.</p>
           <Link to="/login"><Button>Login</Button></Link>
         </div>
       </main>
@@ -185,7 +152,7 @@ const MyOffersDashboard = () => {
           <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
               <h1 className="text-3xl font-bold">Ofertele mele</h1>
-              <p className="text-muted-foreground">Favorite, oferte active și căutări monitorizate</p>
+              <p className="text-muted-foreground">Favorite și căutări monitorizate</p>
             </div>
 
             <Link to="/ai-chat-interface">
@@ -204,28 +171,7 @@ const MyOffersDashboard = () => {
 
           {/* TABS */}
           <div className="border-b mb-6">
-            <nav className="
-              flex 
-              space-x-6 
-              overflow-x-auto 
-              no-scrollbar 
-              py-2
-              sm:justify-start
-            ">
-              {/* ACTIVE DEALS */}
-              <button
-                onClick={() => setActiveTab("deals")}
-                className={`py-2 px-1 border-b-2 ${activeTab === "deals" ? "border-primary text-primary" : "border-transparent text-muted-foreground"}`}
-              >
-                <div className="flex items-center gap-2">
-                  <Icon name="Gift" size={18} />
-                  <span>Oferte active</span>
-                  <span className="bg-primary text-primary-foreground px-2 py-1 rounded-full text-xs">
-                    {deals.length}
-                  </span>
-                </div>
-              </button>
-
+            <nav className="flex space-x-6 overflow-x-auto no-scrollbar py-2 sm:justify-start">
               {/* FAVORITE ❤️ */}
               <button
                 onClick={() => setActiveTab("favorites")}
@@ -260,7 +206,7 @@ const MyOffersDashboard = () => {
           <div className="grid lg:grid-cols-4 gap-6">
 
             {/* FILTERS */}
-            {activeTab === "deals" && (
+            {activeTab === "favorites" && (
               <div className="lg:col-span-1">
                 <FilterPanel
                   filters={filters}
@@ -272,10 +218,6 @@ const MyOffersDashboard = () => {
                       search: '',
                       destination: 'all',
                       dealType: 'all',
-                      minPrice: '',
-                      maxPrice: '',
-                      startDate: '',
-                      endDate: '',
                       sortBy: 'newest'
                     })
                   }
@@ -284,7 +226,7 @@ const MyOffersDashboard = () => {
             )}
 
             {/* CONTENT */}
-            <div className={activeTab === "deals" ? "lg:col-span-3" : "lg:col-span-4"}>
+            <div className={activeTab === "favorites" ? "lg:col-span-3" : "lg:col-span-4"}>
 
               {/* LOADING */}
               {loading && (
@@ -305,51 +247,32 @@ const MyOffersDashboard = () => {
               {!loading && !error && (
                 <>
 
-                  {/* ░░░ TAB 1: DEALS ACTIVE ░░░ */}
-                  {activeTab === "deals" && (
-                    <>
-                      <div className="text-sm text-muted-foreground mb-4">
-                        {sortedDeals.length} rezultate
-                      </div>
-
-                      <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
-                        {sortedDeals.map((deal) => (
-                          <DealCard
-                            key={deal.id}
-                            deal={deal}
-                            onViewDetails={handleViewDetails}
-                            onToggleSave={handleToggleSave}
-                            onRemove={handleRemoveDeal}
-                          />
-                        ))}
-                      </div>
-                    </>
-                  )}
-
-                  {/* ░░░ TAB 2: FAVORITE ❤️ ░░░ */}
+                  {/* ░░░ TAB 1: FAVORITE ❤️ ░░░ */}
                   {activeTab === "favorites" && (
                     <>
                       <div className="text-sm text-muted-foreground mb-4">
-                        {favorites.length} favorite
+                        {sortedFavorites.length} favorite
                       </div>
 
-                      {favorites.length === 0 ? (
+                      {sortedFavorites.length === 0 ? (
                         <div className="text-center py-12">
                           <Icon name="HeartOff" size={48} className="text-muted-foreground mx-auto mb-4" />
                           <h3 className="text-lg font-semibold">Nicio ofertă favorită</h3>
                           <p className="text-muted-foreground mb-4">
                             Salvează ofertele pentru a le regăsi aici
                           </p>
+                          <Link to="/cauta-oferte">
+                            <Button>Caută oferte</Button>
+                          </Link>
                         </div>
                       ) : (
                         <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
-                          {favorites.map((deal) => (
-                            <DealCard
-                              key={deal.id}
-                              deal={deal}
-                              onViewDetails={handleViewDetails}
-                              onToggleSave={handleToggleSave}
-                              onRemove={handleRemoveDeal}
+                          {sortedFavorites.map((offer) => (
+                            <OfferCard
+                              key={offer.id}
+                              offer={offer}
+                              isFavorite={true}
+                              onToggleFavorite={handleToggleFavorite}
                             />
                           ))}
                         </div>
@@ -357,18 +280,28 @@ const MyOffersDashboard = () => {
                     </>
                   )}
 
-                  {/* ░░░ TAB 3: SEARCHES ░░░ */}
+                  {/* ░░░ TAB 2: SEARCHES ░░░ */}
                   {activeTab === "searches" && (
                     <div className="space-y-4">
-                      {savedSearches.map((search) => (
-                        <SavedSearchCard
-                          key={search.id}
-                          search={search}
-                          onEdit={() => {}}
-                          onDelete={() => {}}
-                          onToggleMonitoring={() => {}}
-                        />
-                      ))}
+                      {savedSearches.length === 0 ? (
+                        <div className="text-center py-12">
+                          <Icon name="SearchX" size={48} className="text-muted-foreground mx-auto mb-4" />
+                          <h3 className="text-lg font-semibold">Nicio căutare salvată</h3>
+                          <p className="text-muted-foreground mb-4">
+                            Salvează căutările pentru a le monitoriza
+                          </p>
+                        </div>
+                      ) : (
+                        savedSearches.map((search) => (
+                          <SavedSearchCard
+                            key={search.id}
+                            search={search}
+                            onEdit={() => { }}
+                            onDelete={() => { }}
+                            onToggleMonitoring={() => { }}
+                          />
+                        ))
+                      )}
                     </div>
                   )}
 
@@ -378,16 +311,6 @@ const MyOffersDashboard = () => {
           </div>
         </div>
       </main>
-
-      {/* MODAL */}
-      <DealDetailsModal
-        deal={selectedDeal}
-        isOpen={isModalOpen}
-        onClose={() => {
-          setIsModalOpen(false);
-          setSelectedDeal(null);
-        }}
-      />
     </div>
   );
 };

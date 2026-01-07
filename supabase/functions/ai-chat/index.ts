@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { SYSTEM_PROMPT } from "./system_prompt.ts";
 import { resolveToIata } from "./airport_resolver.ts";
-import { getAviasalesOffer } from "../offers/flights/aviasales.ts";
+import { getAIProvidersByCategory, AffiliateProvider } from "../_shared/affiliates/registry.ts";
 
 /* ================= CONFIG ================= */
 console.log("🔥 AI-CHAT ACTIVE VERSION");
@@ -75,12 +75,7 @@ function extractFlightData(text: string) {
   };
 
   const pad = (n: string) => (n.length === 1 ? `0${n}` : n);
-  const year = dateMatch[4]; // Group 4 because group 2 is optional now, wait. 
-  // Groups: 
-  // 1: start day
-  // 2: end day (optional)
-  // 3: month
-  // 4: year
+  const year = dateMatch[4];
 
   const month = monthMap[dateMatch[3]];
   const startDay = pad(dateMatch[1]);
@@ -96,6 +91,28 @@ function extractFlightData(text: string) {
 }
 
 
+function buildGenericCard(p: AffiliateProvider, intent: any) {
+  const link = p.buildLink(intent);
+  return {
+    id: `${p.id}|${intent.to || intent.to_city || "gen"}`,
+    type: intent.type,
+    provider: p.name,
+    title: intent.type === "flight"
+      ? `Zbor ${intent.from_city || intent.from || ""} → ${intent.to_city || intent.to || ""}`
+      : `${p.name} - ${intent.to || intent.to_city || "Destinație"}`,
+    description: p.description,
+    image_url: p.image_url,
+    provider_meta: {
+      id: p.id,
+      name: p.name,
+      brand_color: p.brandColor
+    },
+    cta: {
+      label: p.ctaLabel,
+      url: link
+    }
+  };
+}
 
 /* ================= SERVER ================= */
 
@@ -112,134 +129,93 @@ serve(async (req) => {
 
     /* =========================================
        1. QUICK INTENT (REGEX) - OPTIONAL
-       Potențială optimizare pentru zboruri clare
        ========================================= */
     const flight = extractFlightData(prompt);
-    console.log("✈️ FLIGHT PARSED:", flight);
     if (flight) {
       const fromIata = await resolveToIata(flight.from_city);
       const toIata = await resolveToIata(flight.to_city);
 
       if (fromIata && toIata) {
-        const card = await getAviasalesOffer({
+        const intent = {
+          type: "flight",
+          ...flight,
           from_iata: fromIata,
-          to_iata: toIata,
-          depart_date: flight.depart_date,
-          return_date: flight.return_date,
-          passengers: flight.passengers,
-        });
+          to_iata: toIata
+        };
+        const providers = getAIProvidersByCategory("flight");
+        const cards = providers.map(p => buildGenericCard(p, intent));
 
-        console.log("✅ AVIASALES CARD:", card);
-
-        // 🔥 OPREȘTE TOT
         return new Response(
           JSON.stringify({
             reply: `✈️ Am găsit zboruri din ${flight.from_city} spre ${flight.to_city}.`,
             type: "flight",
-            card,
+            cards,
           }),
           { headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
     }
 
-
-
     /* =========================================
        2. AI GENERATION & FALLBACK
        ========================================= */
 
-    // 🛡️ SUPER-MOCK MODE (Pseudo-AI)
-    // If we don't have an OpenAI key, OR if the request fails, 
-    // we use this logic to generate "natural" responses and offers.
     if (!OPENAI_API_KEY || OPENAI_API_KEY === "YOUR_OPENAI_KEY") {
       console.warn("⚠️ OPENAI_API_KEY missing - Using Pseudo-AI");
 
       const lowerPrompt = prompt.toLowerCase();
       let replyText = "Sunt aici să te ajut cu planurile tale de vacanță! Spune-mi unde vrei să mergi. 🌍";
-      let offer = null;
-      let intent = { type: null };
-
-      // --- LOGICĂ SIMPLĂ DE "CONVERSAȚIE" ---
+      let cards: any[] = [];
+      let intent: any = { type: null };
 
       // 1. SALUT
       if (lowerPrompt.match(/^(buna|salut|hello|hi|neata)/)) {
-        replyText = "Salut! 👋 Unde călătorim astăzi? Caut zboruri, cazări sau inspirație pentru tine?";
+        replyText = "Salut! 👋 Unde călătorim astăzi? Caut zboruri, căzări sau inspirație pentru tine?";
       }
 
-      // 2. ACTIVITĂȚI (KLOOK)
-      // ex: "ce pot face in paris", "activitati roma"
-      if (lowerPrompt.includes("activitat") || lowerPrompt.includes("ce pot face") || lowerPrompt.includes("tururi")) {
-        // Extragem orașul simplist
+      // 2. ACTIVITĂȚI
+      else if (lowerPrompt.includes("activitat") || lowerPrompt.includes("ce pot face") || lowerPrompt.includes("tururi")) {
         const cities = ["paris", "roma", "londra", "barcelona", "dubai", "tokyo", "amsterdam", "bucuresti"];
         const foundCity = cities.find(c => lowerPrompt.includes(c));
 
         if (foundCity) {
           const capitalized = foundCity.charAt(0).toUpperCase() + foundCity.slice(1);
-          replyText = `Oh, ${capitalized} este o alegere minunată! 🎨\n\nAm găsit câteva experiențe de neuitat pentru tine. De la tururi ghidate la bilete skip-the-line, iată ce recomand:`;
-
-          const { getKlookOffer } = await import("../offers/activities/klook.ts");
-          const klookCard = getKlookOffer({ city: capitalized });
-          if (klookCard) {
-            offer = { type: "offer", card: klookCard };
-            intent = { type: "activity", to: capitalized };
-          }
+          replyText = `Oh, ${capitalized} este o alegere minunată! 🎨\n\nAm găsit câteva experiențe de neuitat pentru tine.`;
+          intent = { type: "activity", to: capitalized };
+          cards = getAIProvidersByCategory("activity").map(p => buildGenericCard(p, intent));
         } else {
           replyText = "Sună distractiv! În ce oraș te interesează activitățile? 🏙️";
         }
       }
 
-      // 3. MASINI (LOCALRENT)
-      // ex: "vreau masina in dubai", "inchiriere auto"
+      // 3. MASINI
       else if (lowerPrompt.includes("masina") || lowerPrompt.includes("auto") || lowerPrompt.includes("inchiriere")) {
         const cities = ["dubai", "otopeni", "bucuresti", "milano", "cipru", "grecia"];
         const foundCity = cities.find(c => lowerPrompt.includes(c));
 
         if (foundCity) {
           const capitalized = foundCity.charAt(0).toUpperCase() + foundCity.slice(1);
-          replyText = `Pentru ${capitalized} îți recomand să închiriezi o mașină pentru libertate deplină de mișcare. 🚗\n\nAm verificat partenerii locali și am găsit aceste opțiuni:`;
-
-          const { getLocalrentOffer } = await import("../offers/cars/localrent.ts");
-          const localrentCard = getLocalrentOffer({ location: capitalized });
-          if (localrentCard) {
-            offer = { type: "offer", card: localrentCard };
-            intent = { type: "car_rental", to: capitalized };
-          }
+          replyText = `Pentru ${capitalized} îți recomand să închiriezi o mașină pentru libertate deplină de mișcare. 🚗`;
+          intent = { type: "car_rental", to: capitalized };
+          cards = getAIProvidersByCategory("car_rental").map(p => buildGenericCard(p, intent));
         } else {
           replyText = "Sigur! În ce destinație ai nevoie de mașină? 🏎️";
         }
       }
 
-      // 4. ZBORURI (AVIASALES)
-      // ex: "zbor paris", "bilet avion londra"
-      else if (lowerPrompt.includes("zbor") || lowerPrompt.includes("avion")) {
-        // Logică simplă fallback dacă regex-ul de sus nu a prins
-        replyText = "Vrei să zburăm? ✈️ Spune-mi de unde pleci și unde vrei să ajungi (ex: 'zbor București Londra').";
-      }
-
-      // 5. GENERIC DESTINATION TALK
-      else if (lowerPrompt.includes("paris")) {
-        replyText = "Parisul este mereu o idee bună! 🥐 Turnul Eiffel, Luvru, plimbările pe Sena... Te interesează zboruri sau activități acolo?";
-      }
-
-
       return new Response(
         JSON.stringify({
-          // Frontend-ul caută 'reply' în openaiService.js
           reply: replyText,
-          message: {
-            text: replyText,
-            confidence: 1,
-          },
+          message: { text: replyText, confidence: 1 },
           intent,
-          offer
+          cards,
+          type: intent.type ? "offer" : null
         }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // ... restul logicii OpenAI reale (dacă cheia există) ...
-
+    // REAL AI PATH
     const aiRes = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -247,7 +223,7 @@ serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "gpt-4o-mini", // Cost efficient
+        model: "gpt-4o-mini",
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
           { role: "user", content: prompt },
@@ -256,86 +232,36 @@ serve(async (req) => {
       }),
     });
 
-    if (!aiRes.ok) {
-      const errText = await aiRes.text();
-      console.error("OpenAI Error:", aiRes.status, errText);
-      throw new Error(`OpenAI API Error: ${aiRes.status}`);
-    }
+    if (!aiRes.ok) throw new Error(`OpenAI API Error: ${aiRes.status}`);
 
     const aiJson = await aiRes.json();
     const rawContent = aiJson?.choices?.[0]?.message?.content ?? "";
-    console.log("AI RAW CONTENT:", rawContent);
-
-    // Parse JSON from AI
     let parsed: any = {};
     try {
       parsed = JSON.parse(rawContent);
-    } catch (e) {
-      console.warn("AI returned non-JSON text. Wrapping...", e);
-      parsed = {
-        reply: rawContent,
-        intent: { type: null }
-      };
+    } catch {
+      parsed = { reply: rawContent, intent: { type: null } };
     }
 
     /* =========================================
-       3. INTENT PROCESSING (New Integrations)
+       3. INTENT PROCESSING
        ========================================= */
-    let offer = null;
+    let cards: any[] = [];
     const intent = parsed.intent || {};
 
-
-
-    // B. ACTIVITY (Klook)
-    if (intent.type === "activity" && intent.to) {
-      const { getKlookOffer } = await import("../offers/activities/klook.ts");
-      const klookCard = getKlookOffer({ city: intent.to });
-      if (klookCard) {
-        offer = {
-          type: "offer",
-          card: klookCard
-        };
-      }
-    }
-
-    // C. CAR RENTAL (Localrent)
-    if (intent.type === "car_rental" && intent.to) {
-      const { getLocalrentOffer } = await import("../offers/cars/localrent.ts");
-      const localrentCard = getLocalrentOffer({ location: intent.to });
-      if (localrentCard) {
-        offer = {
-          type: "offer",
-          card: localrentCard
-        };
-      }
-    }
-
-    // A. FLIGHT (Aviasales) - Fix integration
-    if (intent.type === "flight" && intent.from && intent.to) {
-      const fromIata = await resolveToIata(intent.from);
-      const toIata = await resolveToIata(intent.to);
-
-      if (fromIata && toIata) {
-        intent.from_iata = fromIata;
-        intent.to_iata = toIata;
-
-        const aviasalesCard = await getAviasalesOffer({
-          from_iata: fromIata,
-          to_iata: toIata,
-          depart_date: intent.depart_date, // AI might return YYYY-MM-DD
-          return_date: intent.return_date,
-          passengers: Number(intent.passengers) || 1,
-          from_city: intent.from,
-          to_city: intent.to
-        });
-
-        if (aviasalesCard) {
-          offer = {
-            type: "offer",
-            card: aviasalesCard
-          };
+    if (intent.type) {
+      // Resolve IATA for flights if needed
+      if (intent.type === "flight" && intent.from && intent.to) {
+        const fromIata = await resolveToIata(intent.from);
+        const toIata = await resolveToIata(intent.to);
+        if (fromIata && toIata) {
+          intent.from_iata = fromIata;
+          intent.to_iata = toIata;
         }
       }
+
+      const providers = getAIProvidersByCategory(intent.type);
+      cards = providers.map(p => buildGenericCard(p, intent));
     }
 
     return new Response(
@@ -344,19 +270,10 @@ serve(async (req) => {
           text: parsed.reply || "Nu am înțeles exact, poți reformula?",
           confidence: parsed.confidence || 0.8,
         },
-        // We structure it to match frontend expectation
-        // Frontend looks for 'type', 'card', etc. in the root response usually? 
-        // Checking frontend code: 
-        // const data = await response.json(); 
-        // return { ... type: data?.type || null, card: data?.card || null, content: data?.reply ... }
-        // So we should map our output closely.
-
         reply: parsed.reply,
         intent: parsed.intent,
-        offer: offer || null, // Ensure offer is passed
-        type: offer?.type || null,
-        card: offer?.card || null
-
+        cards,
+        type: cards.length > 0 ? "offer" : null
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
@@ -366,7 +283,6 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({
         reply: "Am întâmpinat o eroare internă. Te rog încearcă din nou.",
-        message: { text: "Eroare internă." },
         error: String(err)
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }

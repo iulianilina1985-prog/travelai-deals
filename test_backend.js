@@ -1,7 +1,7 @@
 const https = require('https');
 
 const data = JSON.stringify({
-    prompt: "zbor din Bucuresti spre Londra pe 20 martie 2026"
+    prompt: "activitati in Paris"
 });
 
 const options = {
