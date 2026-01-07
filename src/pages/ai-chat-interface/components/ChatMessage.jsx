@@ -144,10 +144,7 @@ const ChatMessage = ({ message, offlineMode = false }) => {
                     <span>{passengers} adulți</span>
                   </div>
                 )}
-                <div className="flex items-center gap-2">
-                  <Icon name="Euro" size={14} />
-                  <span>{card.priceRange || card.price || "Prețuri disponibile"}</span>
-                </div>
+
               </div>
 
               {/* CTA */}
@@ -283,8 +280,8 @@ const ChatMessage = ({ message, offlineMode = false }) => {
           {message.content && (
             <div
               className={`px-4 py-3 rounded-2xl shadow-sm whitespace-pre-wrap ${isUser
-                  ? "bg-blue-600 text-white rounded-br-md self-end"
-                  : "bg-white border border-gray-200 text-gray-800 rounded-bl-md self-start"
+                ? "bg-blue-600 text-white rounded-br-md self-end"
+                : "bg-white border border-gray-200 text-gray-800 rounded-bl-md self-start"
                 }`}
               dangerouslySetInnerHTML={{ __html: message.content }}
             />
