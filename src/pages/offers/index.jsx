@@ -9,14 +9,12 @@ const OffersPage = () => {
   const [hasSearched, setHasSearched] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleSearch = async (query, offerType) => {
+  const handleSearch = async (query, offerType, payload) => {
     setLoading(true);
 
     try {
-      // Get current session
       const { data: { session } } = await supabase.auth.getSession();
 
-      // Call AI chat to get offers
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-chat`,
         {
@@ -28,31 +26,31 @@ const OffersPage = () => {
           },
           body: JSON.stringify({
             prompt: query,
+            offerType,
+            payload,
             user_id: session?.user?.id || null,
           }),
         }
       );
 
       if (!response.ok) {
-        throw new Error('Failed to fetch offers');
+        throw new Error("Failed to fetch offers");
       }
 
       const data = await response.json();
 
-      // Extract cards from response
-      const cards = data.cards || [];
-
-      setSearchResults(cards);
+      setSearchResults(data.cards || []);
       setHasSearched(true);
     } catch (error) {
-      console.error('Search error:', error);
-      alert('A apărut o eroare la căutare. Te rog încearcă din nou.');
+      console.error("Search error:", error);
+      alert("A apărut o eroare la căutare.");
       setSearchResults([]);
       setHasSearched(true);
     } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="min-h-screen bg-slate-50 pt-24 pb-20">

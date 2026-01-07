@@ -15,7 +15,28 @@ import { AFFILIATES } from "../../../affiliates/registry";
 // ==============================
 // 1) Offer types + form config
 // ==============================
-const OFFER_TYPES = ["vacation", "flight", "hotel", "car", "transfer", "taxi", "esim", "activities", "insurance", "flight_compensation"];
+const OFFER_TYPES = [
+  "vacation",
+  "flight",
+  "hotel",
+  "car",
+
+  "taxi",
+  "transfer",
+  "shuttle",
+  "intercity",
+
+  "activities",
+  "tickets",
+  "events",
+
+  "yacht",
+
+  "esim",
+  "insurance",
+  "flight_compensation",
+];
+
 
 // ce câmpuri afișează formularul, în funcție de tip
 const FORM_CONFIG = {
@@ -52,15 +73,26 @@ function normalizeOperatorName(s) {
 const TYPE_TO_CATEGORIES = {
   hotel: ["hotels"],
   vacation: ["hotels", "flights"],
+
   flight: ["flights"],
   car: ["cars"],
+
+  taxi: ["transfers"],
   transfer: ["transfers"],
-  taxi: ["transfers", "transport"],
+  shuttle: ["transfers"],
+  intercity: ["transport", "transfers"],
+
+  activities: ["activities", "tours", "food"],
+  tickets: ["tickets"],
+  events: ["events"],
+
+  yacht: ["yacht"],
+
   esim: ["esim"],
-  activities: ["activities", "tickets", "tours", "food"],
   insurance: ["insurance"],
   flight_compensation: ["compensation"],
 };
+
 
 // Extrage operatorii din registry pe baza categoriilor
 function getOperatorsFromRegistry(offerType) {
@@ -284,24 +316,12 @@ const SearchOffers = ({ onSearch }) => {
       {/* Tip ofertă */}
       <OfferTypesSelector offerType={offerType} setOfferType={setOfferType} />
 
-      {/* Airports OR Destination (config-driven) */}
-      {fields.includes("airports") && (
-        <AirportInput
-          formData={formData}
-          handleChange={handleChange}
-          offerType={offerType}
-        />
-      )}
+      <AirportInput
+        formData={formData}
+        handleChange={handleChange}
+        offerType={offerType}
+      />
 
-      {fields.includes("destination") && (
-        // Refolosim AirportInput dacă el știe să randăm "destination"
-        // (la tine pare că AirportInput deja tratează și destination în funcție de offerType)
-        <AirportInput
-          formData={formData}
-          handleChange={handleChange}
-          offerType={offerType}
-        />
-      )}
 
       {/* Calendar (date fields apar la multe tipuri) */}
       {fields.includes("dates") && (

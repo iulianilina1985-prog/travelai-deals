@@ -1,136 +1,60 @@
 import React, { useState, useMemo } from "react";
 import Icon from "../../../components/AppIcon";
 
-const AirportInput = ({ formData, handleChange }) => {
-  const [query, setQuery] = useState("");
-  const [activeField, setActiveField] = useState(null);
-
-  const AIRPORTS = [
-    { city: "București", airport: "Henri Coandă", code: "OTP", country: "România" },
-    { city: "Cluj-Napoca", airport: "Avram Iancu", code: "CLJ", country: "România" },
-    { city: "Timișoara", airport: "Traian Vuia", code: "TSR", country: "România" },
-    { city: "Roma", airport: "Fiumicino", code: "FCO", country: "Italia" },
-    { city: "Roma", airport: "Ciampino", code: "CIA", country: "Italia" },
-    { city: "Paris", airport: "Charles de Gaulle", code: "CDG", country: "Franța" },
-    { city: "Paris", airport: "Orly", code: "ORY", country: "Franța" },
-    { city: "Londra", airport: "Heathrow", code: "LHR", country: "Marea Britanie" },
-    { city: "Londra", airport: "Gatwick", code: "LGW", country: "Marea Britanie" },
-  ];
-
-  const filtered = useMemo(() => {
-    if (!query.trim()) return [];
-    const q = query.toLowerCase();
-
-    return AIRPORTS.filter(
-      (a) =>
-        a.city.toLowerCase().includes(q) ||
-        a.airport.toLowerCase().includes(q) ||
-        a.code.toLowerCase().includes(q)
-    ).slice(0, 8);
-  }, [query]);
-
-  const selectAirport = (a) => {
-    const label = `${a.city} – ${a.airport} (${a.code})`;
-
-    if (activeField === "from") {
-      handleChange("fromAirport", label);
-    } else if (activeField === "to") {
-      handleChange("toAirport", label);
-    }
-
-    setQuery("");
-    setActiveField(null);
-  };
+const AirportInput = ({ formData, handleChange, offerType }) => {
+  const isFlight = offerType === "flight" || offerType === "vacation";
 
   return (
     <section className="space-y-4">
       <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
-        Aeroporturi
+        {isFlight ? "Aeroporturi" : "Destinație"}
       </h2>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        {/* FROM */}
-        <div className="relative space-y-1">
-          <label className="text-xs font-medium text-slate-600">
-            Aeroport plecare
-          </label>
+      {isFlight ? (
+        /* ======================
+           ZBOR / VACANȚĂ
+           ====================== */
+        <div className="grid gap-4 md:grid-cols-2">
+          <div>
+            <label className="text-xs font-medium text-slate-600">
+              Aeroport plecare
+            </label>
+            <input
+              value={formData.fromAirport}
+              onChange={(e) => handleChange("fromAirport", e.target.value)}
+              placeholder="Ex: București OTP"
+              className="w-full rounded-xl border px-3 py-2.5 text-sm"
+            />
+          </div>
 
-          <input
-            type="text"
-            placeholder="Ex: București OTP"
-            value={activeField === "from" ? query : formData.fromAirport}
-            onChange={(e) => {
-              setActiveField("from");
-              setQuery(e.target.value);
-            }}
-            onFocus={() => {
-              setActiveField("from");
-              setQuery("");
-            }}
-            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500"
-          />
-
-          {activeField === "from" && filtered.length > 0 && (
-            <div className="absolute w-full z-30 mt-1 bg-white border rounded-xl shadow-lg max-h-60 overflow-auto text-sm">
-              {filtered.map((a, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  onClick={() => selectAirport(a)}
-                  className="w-full text-left px-3 py-2 hover:bg-slate-100 flex items-center gap-2"
-                >
-                  <Icon name="Plane" size={14} />
-                  <div className="flex flex-col">
-                    <span>{a.city} – {a.airport} ({a.code})</span>
-                    <span className="text-xs text-slate-500">{a.country}</span>
-                  </div>
-                </button>
-              ))}
-            </div>
-          )}
+          <div>
+            <label className="text-xs font-medium text-slate-600">
+              Aeroport destinație
+            </label>
+            <input
+              value={formData.toAirport}
+              onChange={(e) => handleChange("toAirport", e.target.value)}
+              placeholder="Ex: FCO, CDG, LHR"
+              className="w-full rounded-xl border px-3 py-2.5 text-sm"
+            />
+          </div>
         </div>
-
-        {/* TO */}
-        <div className="relative space-y-1">
+      ) : (
+        /* ======================
+           HOTEL / CAR / ESIM / ETC
+           ====================== */
+        <div>
           <label className="text-xs font-medium text-slate-600">
-            Aeroport destinație
+            Oraș / țară
           </label>
-
           <input
-            type="text"
-            placeholder="Ex: FCO, CDG, LHR..."
-            value={activeField === "to" ? query : formData.toAirport}
-            onChange={(e) => {
-              setActiveField("to");
-              setQuery(e.target.value);
-            }}
-            onFocus={() => {
-              setActiveField("to");
-              setQuery("");
-            }}
-            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500"
+            value={formData.destination}
+            onChange={(e) => handleChange("destination", e.target.value)}
+            placeholder="Ex: Paris, Italia, Spania"
+            className="w-full rounded-xl border px-3 py-2.5 text-sm"
           />
-
-          {activeField === "to" && filtered.length > 0 && (
-            <div className="absolute w-full z-30 mt-1 bg-white border rounded-xl shadow-lg max-h-60 overflow-auto text-sm">
-              {filtered.map((a, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  onClick={() => selectAirport(a)}
-                  className="w-full text-left px-3 py-2 hover:bg-slate-100 flex items-center gap-2"
-                >
-                  <Icon name="Plane" size={14} />
-                  <div className="flex flex-col">
-                    <span>{a.city} – {a.airport} ({a.code})</span>
-                    <span className="text-xs text-slate-500">{a.country}</span>
-                  </div>
-                </button>
-              ))}
-            </div>
-          )}
         </div>
-      </div>
+      )}
     </section>
   );
 };
