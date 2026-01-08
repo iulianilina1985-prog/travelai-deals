@@ -558,7 +558,7 @@ Ai atins limita zilnică de 5 mesaje.
     };
 
   return (
-    <div className="bg-background pt-16">
+    <div className="bg-background pt-16 h-screen flex flex-col overflow-hidden">
       <Header />
 
       <UpgradeModal
