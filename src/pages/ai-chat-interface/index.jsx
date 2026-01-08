@@ -56,6 +56,32 @@ const AIChatInterface = () => {
   const [allChats, setAllChats] = useState([]);
   const [plan, setPlan] = useState("free");
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  useEffect(() => {
+    if (!messages.length) return;
+
+    const last = messages[messages.length - 1];
+
+    // 🔥 doar când AI răspunde
+    if (last.sender !== "ai") return;
+
+    // dacă AI trimite text + carduri, ne ducem la TEXT
+    let target = document.getElementById(`msg-${last.id}`);
+
+    // fallback: caută ultimul mesaj AI cu text
+    if (!last.content && messages.length > 1) {
+      for (let i = messages.length - 2; i >= 0; i--) {
+        if (messages[i].sender === "ai" && messages[i].content) {
+          target = document.getElementById(`msg-${messages[i].id}`);
+          break;
+        }
+      }
+    }
+
+    target?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }, [messages]);
 
   // ------------------------------------------------------
   // 📌 Conversație ID (UUID din DB sau fallback local)
@@ -153,9 +179,7 @@ const AIChatInterface = () => {
   }, []);
 
   // Scroll la ultimul mesaj
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+
 
   // ======================================================
   // EVENTS — încarcă conversație din sidebar

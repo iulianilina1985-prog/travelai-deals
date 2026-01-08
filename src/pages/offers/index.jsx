@@ -1,5 +1,5 @@
 // src/pages/offers/index.jsx
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import SearchOffers from "./components/SearchOffers";
 import OffersList from "./components/OffersList";
 import { supabase } from "../../lib/supabase";
@@ -8,6 +8,17 @@ const OffersPage = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [hasSearched, setHasSearched] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const resultsRef = useRef(null);
+
+  useEffect(() => {
+    if (hasSearched && resultsRef.current) {
+      resultsRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  }, [hasSearched, loading]);
 
   const handleSearch = async (query, offerType, payload) => {
     setLoading(true);
@@ -68,6 +79,9 @@ const OffersPage = () => {
 
         {/* FORMULAR */}
         <SearchOffers onSearch={handleSearch} />
+
+        {/* ⬇️ ANCORA */}
+        <div ref={resultsRef} />
 
         {/* LISTĂ OFERTE */}
         <OffersList
