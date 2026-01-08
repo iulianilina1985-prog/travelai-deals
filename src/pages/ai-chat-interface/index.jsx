@@ -558,7 +558,7 @@ Ai atins limita zilnică de 5 mesaje.
     };
 
   return (
-    <div className="min-h-screen bg-background pt-16">
+    <div className="bg-background pt-16">
       <Header />
 
       <UpgradeModal
@@ -566,7 +566,7 @@ Ai atins limita zilnică de 5 mesaje.
         onClose={() => setShowUpgradeModal(false)}
       />
 
-      <div className="flex h-[calc(100vh-4rem)]">
+      <div className="flex min-h-[calc(100vh-4rem)]">
         {/* CHAT ZONE */}
         <div className="flex-1 flex flex-col">
           <div className="flex items-center justify-between p-4 border-b border-border bg-card">
@@ -620,7 +620,7 @@ Ai atins limita zilnică de 5 mesaje.
           </div>
 
           {/* MESAJE */}
-          <div className="flex-1 overflow-y-auto p-4">
+          <div className="flex-1 overflow-y-auto px-4 py-3">
             {messages.length === 0 ? (
               <WelcomeScreen
                 onStartChat={(txt) => handleSendMessage(txt)}

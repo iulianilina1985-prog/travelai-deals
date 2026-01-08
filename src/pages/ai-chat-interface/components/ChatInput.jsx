@@ -51,7 +51,7 @@ const ChatInput = ({
     : "Întreabă-mă orice despre călătorii…";
 
   return (
-    <div className="p-4 sm:p-6 border-t bg-white">
+    <div className="px-3 py-2 border-t bg-white sticky bottom-0">
       <form
         onSubmit={handleSubmit}
         className="flex items-center gap-3 w-full"
