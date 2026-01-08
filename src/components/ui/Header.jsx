@@ -16,103 +16,82 @@ const Header = () => {
     navigate("/login");
   };
 
+  // 🔥 MENIU UNIFICAT
   const navigationItems = [
-    { label: "Chat", path: "/ai-chat-interface", icon: "MessageCircle" },
-    { label: "Ofertele mele", path: "/my-offers-dashboard", icon: "Gift" },
+    { label: "Caută oferte", path: "/cauta-oferte", icon: "Search" },
+    { label: "Chat AI", path: "/ai-chat-interface", icon: "MessageCircle" },
     { label: "Profil", path: "/user-profile", icon: "User" },
-    { label: "Hoteluri", path: "/hotels", icon: "Building2" },
   ];
 
   const isActivePath = (path) => location?.pathname === path;
-  const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
+  const toggleMobileMenu = () => setIsMobileMenuOpen((p) => !p);
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
   return (
     <header className="fixed top-0 left-0 right-0 z-100 bg-background/95 backdrop-blur-sm border-b border-border">
       <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          
+
           {/* LOGO */}
-          <div className="flex-shrink-0">
-            <Link to="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <Icon name="Plane" size={20} color="white" />
-              </div>
-              <span className="text-xl font-bold text-foreground">
-                TravelAI Deals
-              </span>
-            </Link>
-          </div>
+          <Link to="/" className="flex items-center space-x-2">
+            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+              <Icon name="Plane" size={20} color="white" />
+            </div>
+            <span className="text-xl font-bold text-foreground">
+              TravelAI Deals
+            </span>
+          </Link>
 
           {/* DESKTOP NAV */}
           <nav className="hidden md:flex items-center space-x-1">
+            {navigationItems.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`nav-item ${isActivePath(item.path) ? "active" : ""
+                  }`}
+              >
+                <div className="flex items-center space-x-2">
+                  <Icon name={item.icon} size={18} />
+                  <span>{item.label}</span>
+                </div>
+              </Link>
+            ))}
+
+            {userProfile?.roles?.includes("admin") && (
+              <Link
+                to="/admin-dashboard"
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition ${isActivePath("/admin-dashboard")
+                  ? "bg-primary text-white"
+                  : "text-foreground hover:bg-muted"
+                  }`}
+              >
+                <Icon name="Shield" size={18} />
+                <span>Panou Admin</span>
+              </Link>
+            )}
+
             {isAuthenticated ? (
-              <>
-                {navigationItems.map((item) => (
-                  <Link
-                    key={item.path}
-                    to={item.path}
-                    className={`nav-item ${
-                      isActivePath(item.path) ? "active" : ""
-                    }`}
-                  >
-                    <div className="flex items-center space-x-2">
-                      <Icon name={item.icon} size={18} />
-                      <span>{item.label}</span>
-                    </div>
-                  </Link>
-                ))}
-
-                {/* ADMIN BUTTON */}
-                {userProfile?.roles?.includes("admin") && (
-                  <Link
-                    to="/admin-dashboard"
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition ${
-                      isActivePath("/admin-dashboard")
-                        ? "bg-primary text-white"
-                        : "text-foreground hover:bg-muted"
-                    }`}
-                  >
-                    <Icon name="Shield" size={18} />
-                    <span>Panou Admin</span>
-                  </Link>
-                )}
-
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleLogout}
-                  className="ml-2"
-                  title="Delogare"
-                >
-                  <Icon name="LogOut" size={20} />
-                </Button>
-              </>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleLogout}
+                className="ml-2"
+                title="Delogare"
+              >
+                <Icon name="LogOut" size={20} />
+              </Button>
             ) : (
               <>
-                {/* PENTRU NELOGAȚI — CAUTĂ OFERTE */}
-                <Link
-                  to="/cauta-oferte"
-                  className={`nav-item ${
-                    isActivePath("/cauta-oferte") ? "active" : ""
-                  }`}
-                >
-                  <div className="flex items-center space-x-2">
-                    <Icon name="Search" size={18} />
-                    <span>Caută oferte</span>
-                  </div>
-                </Link>
-
                 <button
                   onClick={() => navigate("/login")}
                   className="ml-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
                 >
                   Autentificare
                 </button>
-
                 <button
                   onClick={() => navigate("/register")}
-                  className="ml-2 bg-transparent border border-blue-600 text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-600 hover:text-white transition"
+                  className="ml-2 border border-blue-600 text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-600 hover:text-white transition"
                 >
                   Înregistrare
                 </button>
@@ -120,14 +99,9 @@ const Header = () => {
             )}
           </nav>
 
-          {/* MOBILE MENU BUTTON */}
+          {/* MOBILE BUTTON */}
           <div className="md:hidden">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleMobileMenu}
-              className="relative"
-            >
+            <Button variant="ghost" size="icon" onClick={toggleMobileMenu}>
               <Icon name={isMobileMenuOpen ? "X" : "Menu"} size={24} />
             </Button>
           </div>
@@ -136,81 +110,51 @@ const Header = () => {
 
       {/* MOBILE NAV */}
       {isMobileMenuOpen && (
-        <div className="md:hidden absolute top-16 left-0 right-0 bg-background border-b border-border shadow-elevated animate-slide-down">
+        <div className="md:hidden absolute top-16 left-0 right-0 bg-background border-b border-border shadow">
           <nav className="px-4 py-4 space-y-2">
+            {navigationItems.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                onClick={closeMobileMenu}
+                className={`flex items-center space-x-3 px-4 py-3 rounded-lg ${isActivePath(item.path)
+                  ? "bg-primary text-primary-foreground"
+                  : "hover:bg-muted"
+                  }`}
+              >
+                <Icon name={item.icon} size={20} />
+                <span>{item.label}</span>
+              </Link>
+            ))}
 
             {isAuthenticated ? (
-              <>
-                {navigationItems.map((item) => (
-                  <Link
-                    key={item.path}
-                    to={item.path}
-                    onClick={closeMobileMenu}
-                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
-                      isActivePath(item.path)
-                        ? "bg-primary text-primary-foreground"
-                        : "text-foreground hover:bg-muted"
-                    }`}
-                  >
-                    <Icon name={item.icon} size={20} />
-                    <span className="font-medium">{item.label}</span>
-                  </Link>
-                ))}
-
-                {userProfile?.roles?.includes("admin") && (
-                  <Link
-                    to="/admin-dashboard"
-                    onClick={closeMobileMenu}
-                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition ${
-                      isActivePath("/admin-dashboard")
-                        ? "bg-primary text-white"
-                        : "text-foreground hover:bg-muted"
-                    }`}
-                  >
-                    <Icon name="Shield" size={20} />
-                    <span className="font-medium">Panou Admin</span>
-                  </Link>
-                )}
-
-                <button
-                  onClick={() => {
-                    closeMobileMenu();
-                    handleLogout();
-                  }}
-                  className="flex items-center space-x-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-600 hover:text-white transition"
-                >
-                  <Icon name="LogOut" size={20} />
-                  <span className="font-medium">Delogare</span>
-                </button>
-              </>
+              <button
+                onClick={() => {
+                  closeMobileMenu();
+                  handleLogout();
+                }}
+                className="flex items-center space-x-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-600 hover:text-white transition"
+              >
+                <Icon name="LogOut" size={20} />
+                <span>Delogare</span>
+              </button>
             ) : (
               <>
-                {/* MOBILE — PENTRU NELOGAȚI */}
-                <Link
-                  to="/cauta-oferte"
-                  onClick={closeMobileMenu}
-                  className="flex items-center space-x-3 px-4 py-3 rounded-lg text-foreground hover:bg-muted transition"
-                >
-                  <Icon name="Search" size={20} />
-                  <span className="font-medium">Caută oferte</span>
-                </Link>
-
                 <button
                   onClick={() => {
                     closeMobileMenu();
                     navigate("/login");
                   }}
-                  className="w-full text-center bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition"
+                  className="w-full bg-blue-600 text-white py-3 rounded-lg"
                 >
                   Autentificare
                 </button>
-
                 <button
                   onClick={() => {
                     closeMobileMenu();
                     navigate("/register");
                   }}
-                  className="w-full text-center border border-blue-600 text-blue-600 py-3 rounded-lg hover:bg-blue-600 hover:text-white transition"
+                  className="w-full border border-blue-600 text-blue-600 py-3 rounded-lg"
                 >
                   Înregistrare
                 </button>
@@ -220,10 +164,9 @@ const Header = () => {
         </div>
       )}
 
-      {/* BACKDROP */}
       {isMobileMenuOpen && (
         <div
-          className="md:hidden fixed inset-0 top-16 bg-black/20 backdrop-blur-xs z-90"
+          className="md:hidden fixed inset-0 top-16 bg-black/20"
           onClick={closeMobileMenu}
         />
       )}
