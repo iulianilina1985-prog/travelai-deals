@@ -18,7 +18,7 @@ const greetings = [
 ];
 
 function getFirstName(user) {
-  if (!user) return "prieten";
+  if (!user) return "prietene";
 
   const full =
     user.user_metadata?.full_name ||
@@ -26,7 +26,7 @@ function getFirstName(user) {
     user.email ||
     "";
 
-  return full.split("@")[0].split(" ")[0] || "prieten";
+  return full.split("@")[0].split(" ")[0] || "prietene";
 }
 
 /* ==================== COMPONENT ==================== */

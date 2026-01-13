@@ -16,7 +16,7 @@ import LoginPage from "./pages/login";
 import AIChatInterface from "./pages/ai-chat-interface";
 
 import UserProfile from "./pages/user-profile";
-import MyOffersDashboard from "./pages/my-offers-dashboard";
+
 import Register from "./pages/register";
 import TermsPage from "./pages/legal/TermsPage";
 import PrivacyPolicy from "./pages/legal/privacy-policy";
@@ -89,15 +89,6 @@ const Routes = () => {
             element={
               <ProtectedRoute>
                 <UserProfile />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/my-offers-dashboard"
-            element={
-              <ProtectedRoute>
-                <MyOffersDashboard />
               </ProtectedRoute>
             }
           />

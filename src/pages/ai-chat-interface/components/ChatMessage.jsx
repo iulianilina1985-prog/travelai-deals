@@ -1,14 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Icon from "../../../components/AppIcon";
 import Button from "../../../components/ui/Button";
+import { useFavorites } from "../../../contexts/FavoritesContext";
 
 /**
  * ChatMessage
  * - afișează mesaj text + carduri
- * - FĂRĂ scroll logic aici (scroll-ul e controlat de container)
+ * - ❤️ conectat la Supabase prin FavoritesContext
  */
 const ChatMessage = ({ message }) => {
   const isUser = message?.sender === "user";
+  const { favorites, toggleFavorite } = useFavorites();
 
   /* =======================
      TIME FORMAT
@@ -25,27 +27,6 @@ const ChatMessage = ({ message }) => {
   };
 
   /* =======================
-     FAVORITE (localStorage)
-  ======================= */
-  const SAVED_KEY = "travelai_saved_offers";
-  const [savedMap, setSavedMap] = useState({});
-
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(SAVED_KEY);
-      if (raw) setSavedMap(JSON.parse(raw));
-    } catch { }
-  }, []);
-
-  const toggleSave = (id) => {
-    setSavedMap((prev) => {
-      const next = { ...prev, [id]: !prev[id] };
-      localStorage.setItem(SAVED_KEY, JSON.stringify(next));
-      return next;
-    });
-  };
-
-  /* =======================
      CARDS
   ======================= */
   const cards = message.cards || (message.card ? [message.card] : []);
@@ -53,14 +34,30 @@ const ChatMessage = ({ message }) => {
   const renderSingleCard = (card, index) => {
     if (!card) return null;
 
-    const providerName =
-      card.provider_meta?.name ?? card.provider ?? "Partener";
+    const providerName = card.provider_meta?.name ?? card.provider ?? "Partener";
     const brandColor = card.provider_meta?.brand_color ?? "#2563eb";
-    const imageUrl =
-      card.image_url ?? "/assets/affiliates/default.jpg";
-    const saveId =
-      card.id ?? card.cta?.url ?? `card-${index}`;
-    const isSaved = !!savedMap[saveId];
+    const imageUrl = card.image_url ?? "/assets/affiliates/default.jpg";
+    const offerId = card.id ?? card.cta?.url;
+
+    const isSaved = favorites.some(
+      (f) => f.offer_id === offerId && f.provider === card.provider
+    );
+
+    const handleShare = () => {
+      const url = card.cta?.url || window.location.href;
+      const text = `🔥 Oferta TravelAI\n${card.title}\n${url}`;
+
+      if (navigator.share) {
+        navigator.share({
+          title: card.title,
+          text,
+          url,
+        });
+      } else {
+        navigator.clipboard.writeText(text);
+        alert("Link copiat 📋");
+      }
+    };
 
     return (
       <div
@@ -74,9 +71,7 @@ const ChatMessage = ({ message }) => {
               src={imageUrl}
               alt={card.title}
               className="w-full h-full object-cover"
-              onError={(e) =>
-                (e.currentTarget.src = "/assets/images/no_image.png")
-              }
+              onError={(e) => (e.currentTarget.src = "/assets/images/no_image.png")}
             />
           </div>
 
@@ -95,24 +90,34 @@ const ChatMessage = ({ message }) => {
                   {providerName}
                 </span>
 
-                <h3 className="font-semibold text-gray-900">
-                  {card.title}
-                </h3>
+                <h3 className="font-semibold text-gray-900">{card.title}</h3>
               </div>
 
-              <button
-                onClick={() => toggleSave(saveId)}
-                className={`w-10 h-10 rounded-full border flex items-center justify-center ${isSaved
-                    ? "bg-red-50 border-red-200"
-                    : "bg-white border-gray-200"
-                  }`}
-              >
-                <Icon
-                  name="Heart"
-                  size={18}
-                  color={isSaved ? "#E11D48" : "#94A3B8"}
-                />
-              </button>
+              {/* ACTIONS */}
+              <div className="flex gap-2">
+                {/* ❤️ FAVORITE */}
+                <button
+                  onClick={() => toggleFavorite(card)}
+                  className={`w-10 h-10 rounded-full border flex items-center justify-center ${isSaved
+                      ? "bg-red-50 border-red-200"
+                      : "bg-white border-gray-200"
+                    }`}
+                >
+                  <Icon
+                    name="Heart"
+                    size={18}
+                    color={isSaved ? "#E11D48" : "#94A3B8"}
+                  />
+                </button>
+
+                {/* 📤 SHARE */}
+                <button
+                  onClick={handleShare}
+                  className="w-10 h-10 rounded-full border flex items-center justify-center bg-white border-gray-200 hover:bg-gray-50"
+                >
+                  <Icon name="Share2" size={18} />
+                </button>
+              </div>
             </div>
 
             <p className="mt-2 text-sm text-gray-600 line-clamp-3">
@@ -120,11 +125,7 @@ const ChatMessage = ({ message }) => {
             </p>
 
             <div className="mt-4">
-              <a
-                href={card.cta?.url}
-                target="_blank"
-                rel="noreferrer"
-              >
+              <a href={card.cta?.url} target="_blank" rel="noreferrer">
                 <Button
                   className="w-full flex items-center justify-center gap-2"
                   style={{ backgroundColor: brandColor }}
@@ -140,31 +141,24 @@ const ChatMessage = ({ message }) => {
     );
   };
 
+
   /* =======================
      RENDER
   ======================= */
   return (
     <div
       id={`msg-${message.id}`}
-      className={`flex ${isUser ? "justify-end" : "justify-start"
-        } mb-6 scroll-mt-24`}
+      className={`flex ${isUser ? "justify-end" : "justify-start"} mb-6 scroll-mt-24`}
     >
-      <div
-        className={`flex gap-3 max-w-full ${isUser ? "flex-row-reverse" : ""
-          }`}
-      >
+      <div className={`flex gap-3 max-w-full ${isUser ? "flex-row-reverse" : ""}`}>
         {/* AVATAR */}
         <div
           className={`w-9 h-9 rounded-full flex items-center justify-center shadow ${isUser
-              ? "bg-blue-600"
-              : "bg-gradient-to-br from-primary to-secondary"
+            ? "bg-blue-600"
+            : "bg-gradient-to-br from-primary to-secondary"
             }`}
         >
-          <Icon
-            name={isUser ? "User" : "Bot"}
-            size={16}
-            color="white"
-          />
+          <Icon name={isUser ? "User" : "Bot"} size={16} color="white" />
         </div>
 
         {/* CONTENT */}
@@ -172,12 +166,10 @@ const ChatMessage = ({ message }) => {
           {message.content && (
             <div
               className={`px-4 py-3 rounded-2xl whitespace-pre-wrap ${isUser
-                  ? "bg-blue-600 text-white self-end rounded-br-md"
-                  : "bg-white border text-gray-800 self-start rounded-bl-md"
+                ? "bg-blue-600 text-white self-end rounded-br-md"
+                : "bg-white border text-gray-800 self-start rounded-bl-md"
                 }`}
-              dangerouslySetInnerHTML={{
-                __html: message.content,
-              }}
+              dangerouslySetInnerHTML={{ __html: message.content }}
             />
           )}
 

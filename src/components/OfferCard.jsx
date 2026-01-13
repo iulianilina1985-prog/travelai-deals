@@ -5,6 +5,7 @@ import React from "react";
 import Icon from "./AppIcon";
 import Button from "./ui/Button";
 import { useAuth } from "../contexts/AuthContext";
+import { useFavorites } from "../contexts/FavoritesContext";
 
 const MODE_CONFIG = {
     demo: {
@@ -35,11 +36,13 @@ const OfferCard = ({
 }) => {
     const { user } = useAuth();
     const cfg = MODE_CONFIG[mode] ?? MODE_CONFIG.live;
+    const { favorites, toggleFavorite } = useFavorites();
 
     const imageUrl = offer.image_url || "/assets/images/no_image.png";
     const providerColor = offer.provider_meta?.brand_color || "#2563eb";
 
     const handleFavoriteClick = () => {
+        console.log("❤️ CLICK", offer);
         if (!cfg.allowFavorite) return;
 
         if (!user) {
@@ -47,6 +50,13 @@ const OfferCard = ({
             return;
         }
 
+        <OfferCard
+            offer={offer}
+            isFavorite={favorites.some(
+                f => f.offer_id === offer.id && f.provider === offer.provider
+            )}
+            onToggleFavorite={toggleFavorite}
+        />
         onToggleFavorite?.(offer);
     };
 
@@ -86,8 +96,8 @@ const OfferCard = ({
                     <button
                         onClick={handleFavoriteClick}
                         className={`absolute top-3 right-3 p-2 rounded-full backdrop-blur-sm transition-all ${isFavorite
-                                ? "bg-rose-500 text-white"
-                                : "bg-white/80 text-gray-600 hover:bg-white"
+                            ? "bg-rose-500 text-white"
+                            : "bg-white/80 text-gray-600 hover:bg-white"
                             }`}
                         title={isFavorite ? "Șterge din favorite" : "Adaugă la favorite"}
                     >
