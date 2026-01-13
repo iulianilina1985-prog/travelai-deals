@@ -126,55 +126,20 @@ const AIChatInterface = () => {
       const { data: { user } } = await supabase.auth.getUser();
 
       if (user) {
-        // ✅ Import chat history if exists (robust for OAuth redirects)
-        const importedId = await importChatHistory(user.id);
-
-        // Authenticated: Supabase is source of truth
+        // 🔥 Always start with a fresh new chat (like ChatGPT)
         const chats = await getAllChats();
         setAllChats(chats || []);
 
-        // Verificăm dacă avem un chat activ (fie din import, fie din login-redirect-flag)
-        const activeAfterLogin = importedId || localStorage.getItem("activeConversationAfterLogin");
+        setConversationId(window.crypto?.randomUUID?.() ?? `conv-${Date.now()}`);
+        setDbConversationId(null);
+        conversationIdRef.current = null;
+        setMessages([]);
+        setConversationHistory([]);
 
-        if (activeAfterLogin) {
-          const chatToLoad = (chats || []).find(c => String(c.id) === String(activeAfterLogin));
-          if (chatToLoad) {
-            setConversationId(String(activeAfterLogin));
-            setDbConversationId(activeAfterLogin);
-            conversationIdRef.current = String(activeAfterLogin); // sau latestChat.id
-            setMessages(chatToLoad.messages || []);
-            const hist = (chatToLoad.messages || []).flatMap((m) =>
-              m.sender === "user"
-                ? [{ role: "user", content: m.content }]
-                : [{ role: "assistant", content: m.content }]
-            );
-            setConversationHistory(hist);
-          }
-          localStorage.removeItem("activeConversationAfterLogin");
-        } else {
-          // Requirement Update: Load latest conversation if exists
-          if (chats && chats.length > 0) {
-            // Sort by created_at desc just in case, though usually API returns sorted
-            // Assuming chats are ordered or we pick the first one
-            const latestChat = chats[0];
-
-            setConversationId(String(latestChat.id));
-            setDbConversationId(latestChat.id);
-            conversationIdRef.current = String(latestChat.id); // sau latestChat.id
-            setMessages(latestChat.messages || []);
-            const hist = (latestChat.messages || []).flatMap((m) =>
-              m.sender === "user"
-                ? [{ role: "user", content: m.content }]
-                : [{ role: "assistant", content: m.content }]
-            );
-            setConversationHistory(hist);
-          } else {
-            // Really new user or no chats
-            setMessages([]);
-            setConversationHistory([]);
-          }
-        }
-      } else {
+        // Import any local chat AFTER login (but do NOT auto-open it)
+        await importChatHistory(user.id);
+      }
+      else {
         // Non-authenticated: Check if we have existing local history
         const localMsgs = JSON.parse(localStorage.getItem("chatMessages") || "[]");
         const localConvId = localStorage.getItem("currentConversationId");

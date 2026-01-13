@@ -125,6 +125,8 @@ serve(async (req) => {
     const body = await req.json();
     const prompt = norm(body?.prompt);
 
+
+
     console.log("AI-CHAT PROMPT:", prompt);
 
     /* =========================================
