@@ -40,6 +40,10 @@ import {
 const AIChatInterface = () => {
   const navigate = useNavigate();
   const messagesEndRef = useRef(null);
+  const hasInitializedRef = useRef(false);
+  const isSendingRef = useRef(false); // 🔒 Prevent double-send
+  const conversationIdRef = useRef(null);
+
   const [dbConversationId, setDbConversationId] = useState(null);
 
   // ------------------------------------------------------
@@ -55,7 +59,7 @@ const AIChatInterface = () => {
   const [supabaseMode, setSupabaseMode] = useState(false);
   const [allChats, setAllChats] = useState([]);
   const [plan, setPlan] = useState("free");
-  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+
   useEffect(() => {
     if (!messages.length) return;
 
@@ -87,11 +91,8 @@ const AIChatInterface = () => {
   // 📌 Conversație ID (UUID din DB sau fallback local)
   // ------------------------------------------------------
   const [conversationId, setConversationId] = useState(() => {
-    const stored = localStorage.getItem("currentConversationId");
-    if (stored) return stored;
-
+    // Default to new ID; will be overwritten by initChat if history exists
     const id = window.crypto?.randomUUID?.() ?? `conv-${Date.now()}`;
-    localStorage.setItem("currentConversationId", id);
     return id;
   });
 
@@ -115,46 +116,143 @@ const AIChatInterface = () => {
   };
 
   // ======================================================
-  // 🔹 Load mesaje din localStorage (fallback)
+  // 🔹 Load inițial — Sursa de Adevăr (Supabase vs Local)
   // ======================================================
   useEffect(() => {
-    try {
-      const saved = JSON.parse(localStorage.getItem("chatMessages") || "[]");
-      setMessages(saved);
+    const initChat = async () => {
+      if (hasInitializedRef.current) return;
+      hasInitializedRef.current = true;
 
-      // reconstruim și contextul pentru AI
-      const hist = (saved || []).flatMap((m) =>
-        m.sender === "user"
-          ? [{ role: "user", content: m.content }]
-          : [{ role: "assistant", content: m.content }]
-      );
-      setConversationHistory(hist);
-    } catch {
-      setMessages([]);
-      setConversationHistory([]);
-    }
-  }, []);
+      const { data: { user } } = await supabase.auth.getUser();
 
-  // salvăm în localStorage ca backup vizual
-  useEffect(() => {
-    localStorage.setItem("chatMessages", JSON.stringify(messages));
-  }, [messages]);
+      if (user) {
+        // ✅ Import chat history if exists (robust for OAuth redirects)
+        const importedId = await importChatHistory(user.id);
 
-  // ======================================================
-  // 🔹 Load istoric conversații din Supabase
-  // ======================================================
-  useEffect(() => {
-    const loadHistory = async () => {
-      try {
-        const data = await getAllChats();
-        setAllChats(data || []);
-        localStorage.setItem("allChats", JSON.stringify(data || []));
-      } catch (err) {
-        console.error("Eroare loadHistory:", err);
+        // Authenticated: Supabase is source of truth
+        const chats = await getAllChats();
+        setAllChats(chats || []);
+
+        // Verificăm dacă avem un chat activ (fie din import, fie din login-redirect-flag)
+        const activeAfterLogin = importedId || localStorage.getItem("activeConversationAfterLogin");
+
+        if (activeAfterLogin) {
+          const chatToLoad = (chats || []).find(c => String(c.id) === String(activeAfterLogin));
+          if (chatToLoad) {
+            setConversationId(String(activeAfterLogin));
+            setDbConversationId(activeAfterLogin);
+            conversationIdRef.current = String(activeAfterLogin); // sau latestChat.id
+            setMessages(chatToLoad.messages || []);
+            const hist = (chatToLoad.messages || []).flatMap((m) =>
+              m.sender === "user"
+                ? [{ role: "user", content: m.content }]
+                : [{ role: "assistant", content: m.content }]
+            );
+            setConversationHistory(hist);
+          }
+          localStorage.removeItem("activeConversationAfterLogin");
+        } else {
+          // Requirement Update: Load latest conversation if exists
+          if (chats && chats.length > 0) {
+            // Sort by created_at desc just in case, though usually API returns sorted
+            // Assuming chats are ordered or we pick the first one
+            const latestChat = chats[0];
+
+            setConversationId(String(latestChat.id));
+            setDbConversationId(latestChat.id);
+            conversationIdRef.current = String(latestChat.id); // sau latestChat.id
+            setMessages(latestChat.messages || []);
+            const hist = (latestChat.messages || []).flatMap((m) =>
+              m.sender === "user"
+                ? [{ role: "user", content: m.content }]
+                : [{ role: "assistant", content: m.content }]
+            );
+            setConversationHistory(hist);
+          } else {
+            // Really new user or no chats
+            setMessages([]);
+            setConversationHistory([]);
+          }
+        }
+      } else {
+        // Non-authenticated: Check if we have existing local history
+        const localMsgs = JSON.parse(localStorage.getItem("chatMessages") || "[]");
+        const localConvId = localStorage.getItem("currentConversationId");
+
+        if (localMsgs.length > 0) {
+          setMessages(localMsgs);
+          setConversationId(localConvId || `conv-${Date.now()}`);
+
+          const hist = localMsgs.flatMap((m) =>
+            m.sender === "user"
+              ? [{ role: "user", content: m.content }]
+              : [{ role: "assistant", content: m.content }]
+          );
+          setConversationHistory(hist);
+        } else {
+          // Requirement D: Întotdeauna chat nou pe mount
+          setMessages([]);
+          setConversationHistory([]);
+          localStorage.removeItem("chatMessages");
+          localStorage.removeItem("currentConversationId");
+        }
       }
     };
-    loadHistory();
+
+    initChat();
   }, []);
+
+  /**
+   * 🔄 Importă istoricul din localStorage în Supabase
+   */
+  const importChatHistory = async (userId) => {
+    try {
+      const localMessages = JSON.parse(localStorage.getItem("chatMessages") || "[]");
+      if (localMessages && localMessages.length > 0) {
+        // 1. Create empty chat
+        const title = localMessages.find(m => m.sender === "user")?.content || "Imported Chat";
+        const { saveChat, updateChat } = await import("../../services/chatService"); // Dynamic import to ensure fresh logic
+
+        const newChat = await saveChat(title.slice(0, 40));
+
+        if (newChat?.id) {
+          // 2. Populate messages immediately
+          await updateChat(newChat.id, title.slice(0, 40), localMessages);
+
+          localStorage.removeItem("chatMessages");
+          localStorage.removeItem("currentConversationId");
+          return newChat.id;
+        }
+      }
+    } catch (err) {
+      console.error("Eroare la importul istoricului:", err);
+    }
+    return null;
+  };
+
+  // Salvăm în localStorage DOAR dacă user-ul NU este logat (buffer temporar)
+  useEffect(() => {
+    const syncToLocal = async () => {
+      // Robust check: getSession instead of getUser for speed/cache
+      const { data: { session } } = await supabase.auth.getSession();
+
+      // If we have a session, we are logged in -> DO NOT WRITE TO LOCAL STORAGE
+      if (session) {
+        // ACTIVE MEASURE: Wipe local storage to prevent ghosts
+        if (localStorage.getItem("chatMessages")) {
+          localStorage.removeItem("chatMessages");
+          localStorage.removeItem("currentConversationId");
+        }
+        return;
+      }
+
+      if (messages.length > 0) {
+        localStorage.setItem("chatMessages", JSON.stringify(messages));
+        localStorage.setItem("currentConversationId", conversationId);
+      }
+    };
+    syncToLocal();
+  }, [messages, conversationId]);
 
   // ======================================================
   // 🔹 Status AI
@@ -191,7 +289,8 @@ const AIChatInterface = () => {
       if (!conv) return;
 
       setConversationId(String(conv.id));
-      localStorage.setItem("currentConversationId", String(conv.id));
+      setDbConversationId(conv.id);
+      conversationIdRef.current = String(conv.id); // 🔥
 
 
       const convMessages = conv.messages || [];
@@ -203,9 +302,6 @@ const AIChatInterface = () => {
           : [{ role: "assistant", content: m.content }]
       );
       setConversationHistory(hist);
-
-      // și punem în localStorage pentru fallback
-      localStorage.setItem("chatMessages", JSON.stringify(convMessages));
     };
 
     window.addEventListener("loadChatFromHistory", handler);
@@ -216,20 +312,19 @@ const AIChatInterface = () => {
   // EVENTS — începe conversație nouă
   // ======================================================
   useEffect(() => {
-    const handler = (e) => {
-      const { id } = e.detail;
-
-      setConversationId(id);
-      localStorage.setItem("currentConversationId", id);
-
+    const handler = () => {
+      setConversationId(window.crypto?.randomUUID?.() ?? `conv-${Date.now()}`);
+      setDbConversationId(null);
+      conversationIdRef.current = null; // 🔥 IMPORTANT
       setMessages([]);
       setConversationHistory([]);
-      localStorage.setItem("chatMessages", JSON.stringify([]));
     };
 
     window.addEventListener("startNewChat", handler);
     return () => window.removeEventListener("startNewChat", handler);
   }, []);
+
+
 
   // ======================================================
   // LISTENER — Ștergere conversație din Sidebar
@@ -243,11 +338,11 @@ const AIChatInterface = () => {
 
       const current = localStorage.getItem("currentConversationId");
       if (current && current === id.toString()) {
-        localStorage.removeItem("currentConversationId");
-        localStorage.removeItem("chatMessages");
         setMessages([]);
         setConversationHistory([]);
-        setConversationId(`conv-${Date.now()}`);
+        setConversationId(window.crypto?.randomUUID?.() ?? `conv-${Date.now()}`);
+        setDbConversationId(null);
+        conversationIdRef.current = null;
       }
     };
 
@@ -258,241 +353,86 @@ const AIChatInterface = () => {
   // ======================================================
   // ✉️ TRIMITERE MESAJ — FĂRĂ CREDITE, FĂRĂ LIMITĂ CUVINTE
   // ======================================================
+  // ======================================================
+  // ✉️ TRIMITERE MESAJ — STRICT LINEAR LOGIC
+  // ======================================================
   const handleSendMessage = async (content) => {
     if (!content?.trim()) return;
-
-
-    // 1️⃣ Moderare
-    const safe = await moderateUserInput(content).catch(() => true);
-    if (!safe) {
-      setMessages(prev => [
-        ...prev,
-        {
-          id: Date.now(),
-          sender: "ai",
-          content: "Mesaj nepotrivit. 🙏",
-          isError: true,
-        }
-      ]);
-      return;
-    }
-
-    // 2️⃣ User logat?
-    const { data: auth } = await supabase.auth.getUser();
-    const user = auth?.user;
-    if (!user) {
-      setMessages(prev => [
-        ...prev,
-        {
-          id: Date.now(),
-          sender: "ai",
-          content: "Trebuie să fii logat pentru a folosi TravelAI. 🔐",
-          isError: true,
-        }
-      ]);
-      return;
-    }
-
-    // 3️⃣ Planul utilizatorului
-    const sub = await getUserSubscription(user.id);
-    const userPlan = sub?.plan_name?.toLowerCase() || "free";
-    setPlan(userPlan);
-
-    // 4️⃣ Limita zilnică — doar FREE
-    if (userPlan === "free") {
-      const limit = await checkDailyLimit();
-
-      if (!limit.allowed) {
-        setMessages(prev => [
-          ...prev,
-          {
-            id: Date.now(),
-            sender: "ai",
-            content: `
-Ai atins limita zilnică de 5 mesaje.  
-
-🚀 Poți reveni mâine sau poți trece la PRO pentru acces nelimitat.  
-
-🔎 Între timp, poți folosi pagina **Ofertele Mele** pentru a căuta manual cele mai bune oferte de vacanță:  
-
-👉 <a href="/my-offers-dashboard" class="text-blue-500 underline">Deschide Ofertele Mele</a>
-        `,
-            isError: true,
-            isHtml: true
-          }
-        ]);
-        setShowUpgradeModal(true); // 👉 deschide modalul PRO
-        return;
-      }
-
-      await incrementDailyUsage();
-    }
-
-
-    const firstMessage = messages.length === 0;
-
-    // 5️⃣ Construire mesaj user
-    const userMsg = {
-      id: Date.now(),
-      sender: "user",
-      content,
-      timestamp: new Date().toISOString(),
-      title: generateTitle(content),
-    };
-
-    // 6️⃣ UI update (DOAR sync)
-    setMessages(prev => [...prev, userMsg]);
-
-    // 7️⃣ DB logic SEPARAT (fără setState înăuntru)
-    if (messages.length === 0) {
-      // prima conversație → INSERT
-      saveChat(userMsg.title, [userMsg]).then(conv => {
-        if (conv?.id) {
-          setConversationId(conv.id);
-          setDbConversationId(conv.id);
-          localStorage.setItem("currentConversationId", conv.id);
-          setAllChats(prev => [conv, ...prev]);
-        }
-      });
-    } else if (dbConversationId) {
-      // conversație existentă → UPDATE
-      updateChat(
-        dbConversationId,
-        generateTitle(messages[0]?.content),
-        [...messages, userMsg]
-      );
-    }
-
-
-    if (firstMessage) {
-      window.dispatchEvent(
-        new CustomEvent("conversationCreated", {
-          detail: {
-            id: conversationId,
-            title: generateTitle(content),
-            created_at: new Date().toISOString(),
-            messages: [userMsg],
-          },
-        })
-      );
-    }
-
-    setConversationHistory(prev => [...prev, { role: "user", content }]);
-    setIsTyping(true);
+    if (isSendingRef.current) return;
+    isSendingRef.current = true;
 
     try {
-      // 7️⃣ AI
-      const ai = await getTravelRecommendation(
+      const { data: auth } = await supabase.auth.getUser();
+      const user = auth?.user;
+
+      const userMsg = {
+        id: Date.now(),
+        sender: "user",
+        content,
+        timestamp: new Date().toISOString(),
+        title: generateTitle(content),
+      };
+
+      setIsTyping(true);
+      setMessages((prev) => [...prev, userMsg]);
+      setConversationHistory((prev) => [...prev, { role: "user", content }]);
+
+      let currentDbId = conversationIdRef.current;
+
+      // 🧠 DOAR aici se creează conversația
+      if (user && !currentDbId) {
+        const newChat = await saveChat(userMsg.title, [userMsg]);
+        if (!newChat?.id) throw new Error("Failed to create conversation");
+
+        currentDbId = String(newChat.id);
+        conversationIdRef.current = currentDbId;
+
+        setDbConversationId(currentDbId);
+        setConversationId(currentDbId);
+        setAllChats((prev) => [newChat, ...prev]);
+      }
+
+      const aiResponse = await getTravelRecommendation(
         content,
         conversationHistory,
-        conversationId
+        currentDbId
       );
 
-
-
-      const aiContent =
-        ai?.content || ai?.message || ai?.reply || "N-am primit text 😅";
+      const aiContent = aiResponse?.content || "N-am primit răspuns.";
 
       const aiMsg = {
         id: Date.now() + 1,
         sender: "ai",
         content: aiContent,
         timestamp: new Date().toISOString(),
-        isError: !!ai?.errorType,
-        tokens: {
-          in: ai?.tokens_in || 0,
-          out: ai?.tokens_out || 0,
-        },
-        isSupabaseMode: ai?.isSupabaseMode || supabaseMode,
-        type: ai?.type || null,
-        card: ai?.card || null,
-        cards: ai?.cards || [],
+        isError: !!aiResponse?.errorType,
+        cards: aiResponse?.cards || [],
+        card: aiResponse?.card,
+        type: aiResponse?.type,
+        intent: aiResponse?.intent,
       };
 
-      // 🔥 OFERTE (doar dacă AI a returnat intent SI nu avem deja card)
-      let offerCardMsg = null;
-
-      if (ai?.intent?.type && !ai.card && (!ai.cards || ai.cards.length === 0)) {
-        try {
-          const { data: auth } = await supabase.auth.getSession();
-          const token = auth?.session?.access_token;
-
-          const res = await fetch(
-            `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/offers`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
-                Authorization: `Bearer ${token || import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-              },
-              body: JSON.stringify({ intent: ai.intent }),
-            }
-          );
-
-          const data = await res.json();
-
-          if (data?.cards && data.cards.length > 0) {
-            offerCardMsg = {
-              id: Date.now() + 2,
-              sender: "ai",
-              type: "offer",
-              cards: data.cards,
-              timestamp: new Date().toISOString(),
-            };
-          } else if (data?.card) {
-            offerCardMsg = {
-              id: Date.now() + 2,
-              sender: "ai",
-              type: "offer",
-              card: data.card,
-              timestamp: new Date().toISOString(),
-            };
-          }
-        } catch (err) {
-          console.error("Eroare offers:", err);
+      setMessages((prev) => {
+        const next = [...prev, aiMsg];
+        if (user && currentDbId) {
+          updateChat(currentDbId, generateTitle(next[0]?.content), next);
         }
-      }
-
-
-
-      // Salvare + update UI
-      setMessages(prev => {
-        const newMessages = [...prev, aiMsg];
-
-        if (offerCardMsg) {
-          newMessages.push(offerCardMsg);
-        }
-
-        if (dbConversationId) {
-          updateChat(
-            dbConversationId,
-            generateTitle(newMessages[0]?.content),
-            newMessages
-          );
-        }
-
-        return newMessages;
+        return next;
       });
 
-
-      setConversationHistory(prev => [
+      setConversationHistory((prev) => [
         ...prev,
         { role: "assistant", content: aiContent },
       ]);
-    } catch (error) {
-      console.error("Eroare AI:", error);
-      setMessages(prev => [
+    } catch (err) {
+      console.error("Send error:", err);
+      setMessages((prev) => [
         ...prev,
-        {
-          id: Date.now(),
-          sender: "ai",
-          content: "Eroare tehnică. Încearcă din nou.",
-          isError: true,
-        },
+        { id: Date.now(), sender: "ai", isError: true, content: "Eroare critică." },
       ]);
     } finally {
       setIsTyping(false);
+      isSendingRef.current = false;
     }
   };
 
@@ -561,10 +501,7 @@ Ai atins limita zilnică de 5 mesaje.
     <div className="bg-background pt-16 h-screen flex flex-col overflow-hidden">
       <Header />
 
-      <UpgradeModal
-        visible={showUpgradeModal}
-        onClose={() => setShowUpgradeModal(false)}
-      />
+
 
       <div className="flex min-h-[calc(100vh-4rem)]">
         {/* CHAT ZONE */}

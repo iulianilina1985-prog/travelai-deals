@@ -1,0 +1,536 @@
+{
+    "languages": {
+        "en": "English",
+        "ro": "Română"
+    },
+    "components": {
+        "AppImage": {
+            "image_name": "Image Name"
+        },
+        "AuthModal": {
+            "travel": "Travel",
+            "continu_cu_google": "Continuă cu Google",
+            "sau": "SAU",
+            "introdu_adresa_ta_de_email": "Introdu adresa ta de email"
+        },
+        "ErrorBoundary": {
+            "something_went_wrong": "Something went wrong",
+            "we_encountered_an_unexpected_error_while_processing_your_request": "We encountered an unexpected error while processing your request."
+        },
+        "ui": {
+            "Checkbox": {
+                "": "*"
+            },
+            "Footer": {
+                "": "•"
+            },
+            "Header": {
+                "admin": "Admin",
+                "english": "English",
+                "rom_n": "Română",
+                "logout": "Logout"
+            },
+            "Input": {
+                "": "*"
+            },
+            "Select": {
+                "select_an_option": "Select an option",
+                "": "*",
+                "select": "Select...",
+                "search_options": "Search options..."
+            }
+        }
+    },
+    "pages": {
+        "admin-dashboard": {
+            "components": {
+                "ActivityFeed": {
+                    "se_ncarc_activit_ile": "Se încarcă activitățile...",
+                    "activitate_recent": "Activitate recentă"
+                },
+                "ApiMonitoring": {
+                    "api_monitoring": "API Monitoring",
+                    "real_time_api_performance_and_status": "Real-time API performance and status",
+                    "requests": "Requests",
+                    "errors": "Errors",
+                    "uptime": "Uptime",
+                    "response": "Response",
+                    "api_performance_metrics": "API Performance Metrics",
+                    "api_performance_chart": "API Performance Chart"
+                },
+                "RevenueChart": {
+                    "0": "€0",
+                    "se_ncarc_datele": "Se încarcă datele...",
+                    "venit_total": "Venit total",
+                    "abonamente": "Abonamente",
+                    "comisioane": "Comisioane",
+                    "revenue_analytics_chart": "Revenue Analytics Chart"
+                },
+                "SystemAlerts": {
+                    "system_alerts": "System Alerts",
+                    "all_systems_operational": "All systems operational"
+                },
+                "UserManagementTable": {
+                    "se_ncarc": "Se încarcă…",
+                    "caut_nume_sau_email": "Caută nume sau email…",
+                    "ncarc_utilizatorii": "„Încarcă utilizatorii”",
+                    "utilizator": "Utilizator",
+                    "abonament": "Abonament",
+                    "roluri": "Roluri",
+                    "status": "Status",
+                    "creat_la": "Creat la",
+                    "ultima_activitate": "Ultima activitate",
+                    "mesaj_custom_c_tre_utilizator": "Mesaj custom către utilizator"
+                }
+            },
+            "index": {
+                "panou_administrator_travelai_deals": "Panou Administrator - TravelAI Deals",
+                "panou_administrator": "Panou Administrator",
+                "se_ncarc_datele": "Se încarcă datele...",
+                "ac_iuni_rapide": "Acțiuni rapide",
+                "versiunea_2_1_0": "Versiunea 2.1.0",
+                "": "•"
+            }
+        },
+        "ai-chat-interface": {
+            "components": {
+                "ChatSidebar": {
+                    "activitate": "Activitate",
+                    "conversa_iile_mele": "Conversațiile mele",
+                    "terge_conversa_ia": "Șterge conversația",
+                    "nu_ai_conversa_ii_salvate": "Nu ai conversații salvate.",
+                    "oferte_salvate": "Oferte salvate",
+                    "nicio_ofert_salvat": "Nicio ofertă salvată.",
+                    "notific_ri": "Notificări",
+                    "nicio_notificare": "Nicio notificare."
+                },
+                "WelcomeScreen": {
+                    "func_ii_active": "Funcții active:",
+                    "disponibil_offline": "Disponibil offline"
+                }
+            },
+            "index": {
+                "ai_folosit_cele_5_mesaje_gratuite": "Ai folosit cele 5 mesaje gratuite."
+            }
+        },
+        "home-page": {
+            "components": {
+                "StatsSection": {
+                    "150_000": "+150.000",
+                    "oferte_analizate_zilnic": "Oferte analizate zilnic",
+                    "ai_powered": "AI-Powered",
+                    "recomand_ri_personalizate": "Recomandări personalizate",
+                    "20_000": "+20.000",
+                    "utilizatori_mul_umi_i": "Utilizatori mulțumiți"
+                }
+            },
+            "index": {
+                "travel_ai_background": "Travel AI background"
+            }
+        },
+        "hotels": {
+            "Hotels": {
+                "travel_banner": "Travel banner",
+                "caut_destina_ii_ex_bra_ov_bucure_ti_roma": "Caută destinații (ex: Brașov, București, Roma)",
+                "propriet_i_recomandate": "Proprietăți recomandate",
+                "c_uta_i_dup_tipul_propriet_ii": "Căutați după tipul proprietății",
+                "explora_i_rom_nia": "Explorați România",
+                "destina_ii_populare_cu_multe_de_oferit": "Destinații populare cu multe de oferit"
+            }
+        },
+        "legal": {
+            "AfiliereDisclosure": {
+                "travelai_deals": "TravelAI Deals",
+                "booking_com_klook_trip_com_momondo_aviasales": "Booking.com, Klook, Trip.com, Momondo, Aviasales",
+                "nu_pl_te_ti_nimic_n_plus": "nu plătești nimic în plus",
+                "booking_com_hoteluri_i_caz_ri": "Booking.com – hoteluri și cazări",
+                "klook_activit_i_bilete": "Klook – activități & bilete",
+                "momondo_aviasales_zboruri": "Momondo / Aviasales – zboruri",
+                "trip_com_zboruri_hoteluri": "Trip.com – zboruri & hoteluri",
+                "parteneri_globali_din_industria_travel": "Parteneri globali din industria travel"
+            },
+            "contact": {
+                "companie": "Companie:",
+                "cui": "CUI:",
+                "registrul_comer_ului": "Registrul Comerțului:",
+                "adres": "Adresă:",
+                "email": "Email",
+                "program": "Program:",
+                "nume": "Nume",
+                "mesaj": "Mesaj",
+                "misiunea_noastr": "Misiunea noastră",
+                "ce_facem": "Ce facem?",
+                "valorile_noastre": "Valorile noastre"
+            },
+            "CookiePolicy": {
+                "global_linknet_srl": "GLOBAL LINKNET SRL",
+                "a_cookie_uri_esen_iale": "a) Cookie-uri esențiale",
+                "b_cookie_uri_de_analiz": "b) Cookie-uri de analiză",
+                "c_cookie_uri_de_marketing_i_afiliere": "c) Cookie-uri de marketing și afiliere",
+                "google_analytics_statistici_anonime": "Google Analytics – statistici anonime",
+                "stripe_pl_i_sigure_i_preven_ie_fraud": "Stripe – plăți sigure și prevenție fraudă",
+                "platforme_de_afiliere_tracking_conversii": "Platforme de afiliere – tracking conversii"
+            },
+            "privacy-policy": {
+                "travelai_deals": "TravelAI Deals",
+                "global_linknet_srl": "GLOBAL LINKNET SRL",
+                "email_nume_avatar_op_ional": "Email, nume, avatar (opțional)",
+                "preferin_e_de_c_l_torie_i_interac_iuni_cu_func_iile_platformei": "Preferințe de călătorie și interacțiuni cu funcțiile platformei",
+                "ip_device_browser_cookie_uri": "IP, device, browser, cookie-uri",
+                "date_tehnice_transmise_c_tre_stripe_pentru_pl_i": "Date tehnice transmise către Stripe pentru plăți",
+                "crearea_i_administrarea_contului": "Crearea și administrarea contului",
+                "generarea_de_recomand_ri_ai": "Generarea de recomandări AI",
+                "procesarea_abonamentelor_prin_stripe": "Procesarea abonamentelor prin Stripe",
+                "analiz_intern_pentru_mbun_t_irea_platformei": "Analiză internă pentru îmbunătățirea platformei",
+                "securitate_i_prevenirea_abuzului": "Securitate și prevenirea abuzului",
+                "stripe": "Stripe",
+                "supabase": "Supabase",
+                "servicii_analytics_date_agregate_i_anonimizate": "Servicii analytics (date agregate și anonimizate)",
+                "drept_de_acces": "Drept de acces",
+                "drept_de_rectificare": "Drept de rectificare",
+                "drept_de_tergere_dreptul_de_a_fi_uitat": "Drept de ștergere („dreptul de a fi uitat”)",
+                "drept_de_portabilitate": "Drept de portabilitate",
+                "drept_de_opozi_ie": "Drept de opoziție",
+                "dreptul_de_a_depune_pl_ngere_la_anspdcp": "Dreptul de a depune plângere la ANSPDCP"
+            },
+            "TermsPage": {
+                "travelai_deals": "TravelAI Deals",
+                "global_linknet_srl": "GLOBAL LINKNET SRL",
+                "platform": "„Platformă”",
+                "utilizator": "„Utilizator”",
+                "operator": "„Operator”",
+                "parteneri": "„Parteneri”",
+                "nu_este_agen_ie_de_turism": "Nu este agenție de turism",
+                "exactitatea_datelor_introduse": "exactitatea datelor introduse",
+                "p_strarea_confiden_ialit_ii_parolei": "păstrarea confidențialității parolei",
+                "activitatea_desf_urat_n_cont": "activitatea desfășurată în cont",
+                "stripe": "Stripe",
+                "actualizarea_n_timp_real_a_ofertelor": "actualizarea în timp real a ofertelor",
+                "exactitatea_datelor_furnizate_de_parteneri": "exactitatea datelor furnizate de parteneri",
+                "disponibilitatea_continu_a_platformei": "disponibilitatea continuă a platformei"
+            }
+        },
+        "login": {
+            "components": {
+                "LoginForm": {
+                    "bun_venit_napoi": "Bun venit înapoi",
+                    "conecteaz_te_la_contul_t_u_travelai_deals": "Conectează-te la contul tău TravelAI Deals",
+                    "demo_credentials": "Demo Credentials:",
+                    "admin_admin_travelai_ro_travel123": "Admin: admin@travelai.ro / Travel123!",
+                    "user_user_travelai_ro_travel123": "User: user@travelai.ro / Travel123!",
+                    "manager_manager_travelai_ro_travel123": "Manager: manager@travelai.ro / Travel123!",
+                    "exemplu_email_com": "exemplu@email.com",
+                    "introdu_parola": "Introdu parola",
+                    "continu_cu_google": "Continuă cu Google"
+                },
+                "LoginHeader": {
+                    "95": "95%",
+                    "travelai_deals": "TravelAI Deals",
+                    "oferte_inteligente_de_c_l_torie": "Oferte inteligente de călătorie",
+                    "rom_n": "Română",
+                    "english": "English",
+                    "deutsch": "Deutsch",
+                    "fran_ais": "Français",
+                    "c_utare_automat_ai": "Căutare automată AI",
+                    "notific_ri_n_timp_real": "Notificări în timp real",
+                    "economii_p_n_la_70": "Economii până la 70%",
+                    "destina_ii_europene": "Destinații europene",
+                    "50_000": "50,000+",
+                    "utilizatori_activi": "Utilizatori activi",
+                    "2_5m": "€2.5M",
+                    "economii_generate": "Economii generate",
+                    "satisfac_ie_clien_i": "Satisfacție clienți"
+                },
+                "TrustSignals": {
+                    "autentificare_cu_doi_factori_disponibil": "Autentificare cu doi factori disponibilă",
+                    "monitorizare_activitate_suspect_24_7": "Monitorizare activitate suspectă 24/7",
+                    "backup_automat_i_recuperare_date": "Backup automat și recuperare date",
+                    "conformitate_complet_gdpr_i_ccpa": "Conformitate completă GDPR și CCPA",
+                    "ssl": "SSL",
+                    "gdpr": "GDPR",
+                    "iso_27001": "ISO 27001",
+                    "onrc": "ONRC"
+                }
+            },
+            "index": {
+                "email": "Email",
+                "introdu_adresa_ta_de_email": "Introdu adresa ta de email"
+            }
+        },
+        "my-offers-dashboard": {
+            "components": {
+                "DealDetailsModal": {
+                    "plecare": "Plecare",
+                    "ntoarcere": "Întoarcere",
+                    "num_rul_de_persoane": "Numărul de persoane",
+                    "durata": "Durata",
+                    "companie_aerian": "Companie aeriană",
+                    "aeroporturi": "Aeroporturi",
+                    "bagaj": "Bagaj",
+                    "wifi_gratuit": "WiFi gratuit",
+                    "pre_urile_sunt_per_persoan_n_camer_dubl": "• Prețurile sunt per persoană în cameră dublă",
+                    "disponibilitate_limitat": "• Disponibilitate limitată",
+                    "pre_urile_pot_varia_n_func_ie_de_disponibilitate": "• Prețurile pot varia în funcție de disponibilitate"
+                },
+                "FilterPanel": {
+                    "0": "0",
+                    "5000": "5000",
+                    "filtre_i_sortare": "Filtre și sortare",
+                    "caut_destina_ii_ora_e_hoteluri": "Caută destinații, orașe, hoteluri...",
+                    "ex_roma_atena_dubai": "Ex: Roma, Atena, Dubai..."
+                },
+                "SubscriptionBanner": {
+                    "notific_ri_folosite": "Notificări folosite",
+                    "notific_ri_nelimitate": "Notificări nelimitate",
+                    "oferte_exclusive": "Oferte exclusive",
+                    "alert_pre_n_timp_real": "Alertă preț în timp real",
+                    "suport_prioritar": "Suport prioritar"
+                }
+            },
+            "index": {
+                "te_rog_autentific_te": "Te rog autentifică-te",
+                "aceast_pagin_este_disponibil_doar_pentru_utilizatori_autentifica_i": "Această pagină este disponibilă doar pentru utilizatori autentificați.",
+                "login": "Login",
+                "ofertele_mele": "Ofertele mele",
+                "favorite_i_c_ut_ri_monitorizate": "Favorite și căutări monitorizate",
+                "favorite": "Favorite",
+                "c_ut_ri": "Căutări",
+                "nicio_ofert_favorit": "Nicio ofertă favorită",
+                "caut_oferte": "Caută oferte",
+                "nicio_c_utare_salvat": "Nicio căutare salvată"
+            }
+        },
+        "NotFound": {
+            "404": "404",
+            "page_not_found": "Page Not Found"
+        },
+        "offers": {
+            "components": {
+                "AirportInput": {
+                    "ex_bucure_ti_otp": "Ex: București OTP",
+                    "ex_fco_cdg_lhr": "Ex: FCO, CDG, LHR",
+                    "ex_paris_italia_spania": "Ex: Paris, Italia, Spania"
+                },
+                "HotelFilters": {
+                    "orice": "Orice",
+                    "2_stele": "2+ stele",
+                    "3_stele": "3+ stele",
+                    "4_stele": "4+ stele",
+                    "5_stele": "5 stele",
+                    "f_r_mas": "Fără masă",
+                    "mic_dejun": "Mic dejun",
+                    "demipensiune": "Demipensiune",
+                    "all_inclusive": "All inclusive",
+                    "rating_minim": "Rating minim"
+                },
+                "OffersList": {
+                    "c_ut_m_cele_mai_bune_oferte": "Căutăm cele mai bune oferte...",
+                    "": "🔍",
+                    "sfat": "💡 Sfat:"
+                },
+                "PeopleSelector": {
+                    "adul_i": "Adulți",
+                    "copii": "Copii",
+                    "ex_800": "Ex: 800",
+                    "selecteaz_v_rsta": "Selectează vârsta"
+                },
+                "SearchOffers": {
+                    "travelpayouts": "Travelpayouts"
+                }
+            },
+            "index": {
+                "title": "Caută oferte de călătorie",
+                "subtitle": "Folosește AI-ul nostru pentru a găsi cele mai bune oferte de la partenerii verificați.",
+                "favorites": "Favorite",
+                "chat_ai": "Chat AI",
+                "search_error": "A apărut o eroare la căutare."
+            }
+        },
+        "register": {
+            "components": {
+                "EmailVerificationNotice": {
+                    "verific_folderul_spam_sau_junk": "• Verifică folderul Spam sau Junk",
+                    "asigur_te_c_adresa_este_corect": "• Asigură-te că adresa este corectă",
+                    "linkul_expir_n_24_de_ore": "• Linkul expiră în 24 de ore",
+                    "contacteaz_suportul_dac_problema_persist": "• Contactează suportul dacă problema persistă",
+                    "": "•"
+                },
+                "RegistrationForm": {
+                    "introdu_prenumele": "Introdu prenumele",
+                    "introdu_numele_de_familie": "Introdu numele de familie",
+                    "introdu_adresa_de_email": "Introdu adresa de email",
+                    "creeaz_o_parol_puternic": "Creează o parolă puternică",
+                    "puterea_parolei": "Puterea parolei:",
+                    "minim_8_caractere": "Minim 8 caractere",
+                    "majuscul": "Majusculă",
+                    "liter_mic": "Literă mică",
+                    "cifr": "Cifră",
+                    "confirm_parola_introdus": "Confirmă parola introdusă",
+                    "continu_cu_google": "Continuă cu Google"
+                },
+                "SubscriptionTierSelector": {
+                    "alege_planul_dorit": "Alege planul dorit",
+                    "func_ionalit_i_incluse": "Funcționalități incluse:",
+                    "limit_ri": "Limitări:",
+                    "conformitate_gdpr_i_protec_ia_datelor": "Conformitate GDPR și protecția datelor",
+                    "criptare_ssl": "Criptare SSL",
+                    "conform_gdpr": "Conform GDPR",
+                    "centre_de_date_n_ue": "Centre de date în UE"
+                },
+                "TrustSignals": {
+                    "gdpr": "GDPR",
+                    "ssl": "SSL",
+                    "ue": "UE",
+                    "ro": "RO"
+                }
+            },
+            "index": {
+                "napoi": "Înapoi"
+            }
+        },
+        "subscription-management": {
+            "components": {
+                "BillingHistoryCard": {
+                    "istoric_pl_i": "Istoric plăți",
+                    "id_stripe": "ID Stripe:"
+                },
+                "CancellationModal": {
+                    "cancel_subscription": "Cancel Subscription",
+                    "what_you_ll_lose": "What you'll lose:",
+                    "unlimited_travel_deal_notifications": "• Unlimited travel deal notifications",
+                    "exclusive_premium_offers_and_discounts": "• Exclusive premium offers and discounts",
+                    "priority_customer_support": "• Priority customer support",
+                    "advanced_filtering_and_search_options": "• Advanced filtering and search options",
+                    "price_drop_alerts_and_monitoring": "• Price drop alerts and monitoring",
+                    "cancellation_details": "Cancellation Details"
+                },
+                "PaymentMethodCard": {
+                    "123": "123",
+                    "payment_methods": "Payment Methods",
+                    "manage_your_payment_options": "Manage your payment options",
+                    "add_new_payment_method": "Add New Payment Method",
+                    "john_doe": "John Doe",
+                    "1234_5678_9012_3456": "1234 5678 9012 3456",
+                    "mm_yy": "MM/YY",
+                    "123_main_st_city_country": "123 Main St, City, Country",
+                    "no_payment_methods_added": "No payment methods added",
+                    "add_a_payment_method_to_manage_your_subscription": "Add a payment method to manage your subscription",
+                    "secure_payment_processing": "Secure Payment Processing"
+                },
+                "PlanComparisonModal": {
+                    "choose_your_plan": "Choose Your Plan",
+                    "plan_change_information": "Plan Change Information",
+                    "upgrades_take_effect_immediately_with_prorated_billing": "• Upgrades take effect immediately with prorated billing",
+                    "downgrades_take_effect_at_the_end_of_your_current_billing_period": "• Downgrades take effect at the end of your current billing period",
+                    "you_can_cancel_your_subscription_at_any_time": "• You can cancel your subscription at any time",
+                    "all_prices_include_applicable_european_vat": "• All prices include applicable European VAT"
+                },
+                "UsageStatsCard": {
+                    "usage_statistics": "Usage Statistics",
+                    "current_billing_period": "Current billing period",
+                    "saved_notifications": "Saved Notifications",
+                    "api_calls": "API Calls",
+                    "premium_features": "Premium Features",
+                    "deals_found": "Deals Found",
+                    "total_savings": "Total Savings"
+                }
+            },
+            "index": {
+                "subscription_management": "Subscription Management",
+                "subscription_status": "Subscription Status",
+                "your_account_is_in_good_standing": "Your account is in good standing",
+                "status": "Status:",
+                "active": "Active",
+                "next_billing": "Next billing:",
+                "auto_renewal": "Auto-renewal:",
+                "enabled": "Enabled",
+                "data_privacy": "Data & Privacy",
+                "gdpr_compliant_billing": "GDPR compliant billing"
+            }
+        },
+        "user-profile": {
+            "components": {
+                "DataPrivacyTab": {
+                    "se_ncarc_set_rile_de_confiden_ialitate": "Se încarcă setările de confidențialitate…",
+                    "c_ut_ri_salvate": "Căutări salvate",
+                    "oferte_salvate": "Oferte salvate",
+                    "interac_iuni_chat": "Interacțiuni / chat",
+                    "dimensiune_date": "Dimensiune date",
+                    "ultimul_export": "Ultimul export",
+                    "membru_din": "Membru din",
+                    "export_i_datele": "Exportă-ți datele",
+                    "toate_ofertele_i_c_ut_rile_salvate_vor_fi_terse": "• Toate ofertele și căutările salvate vor fi șterse",
+                    "abonamentul_t_u_va_fi_anulat": "• Abonamentul tău va fi anulat",
+                    "vei_pierde_accesul_la_func_iile_premium": "• Vei pierde accesul la funcțiile premium",
+                    "aceast_ac_iune_nu_poate_fi_anulat": "• Această acțiune nu poate fi anulată",
+                    "delete_my_account": "\"DELETE MY ACCOUNT\"",
+                    "confirm_deletion_instr": "Pentru a confirma ștergerea contului, scrie",
+                    "below": "mai jos:"
+                },
+                "SubscriptionTab": {
+                    "until": "până la",
+                    "se_ncarc": "Se încarcă...",
+                    "plan": "Plan",
+                    "perioad": "Perioadă",
+                    "statut": "Statut",
+                    "limi_ai": "Limită AI"
+                },
+                "LanguageCurrencyTab": {
+                    "limb_i_moned": "Limbă și monedă",
+                    "personalizeaz_preferin_ele_tale_regionale": "Personalizează preferințele tale regionale",
+                    "anuleaz": "Anulează",
+                    "salveaz_set_rile": "Salvează setările",
+                    "previzualizare": "Previzualizare",
+                    "a_a_vor_fi_afi_ate_datele_tale": "Așa vor fi afișate datele tale",
+                    "ofert_exemplu": "Ofertă exemplu",
+                    "pre_zbor": "Preț zbor:",
+                    "pre_hotel": "Preț hotel:",
+                    "data_plec_rii": "Data plecării:",
+                    "set_ri_curente": "Setări curente",
+                    "limba": "Limba:",
+                    "moned": "Monedă:",
+                    "format_dat": "Format dată:",
+                    "format_numere": "Format numere:",
+                    "informa_ii_regionale": "Informații regionale",
+                    "set_ri_suplimentare_specifice_regiunii": "Setări suplimentare specifice regiunii",
+                    "fus_orar": "Fus orar:",
+                    "gdpr": "GDPR:",
+                    "calendar_s_rb_tori": "Calendar sărbători:",
+                    "pl_i": "Plăți:"
+                },
+                "NotificationSettingsTab": {
+                    "se_ncarc_preferin_ele": "Se încarcă preferințele...",
+                    "notific_ri_prin_email": "Notificări prin Email",
+                    "notific_ri_push": "Notificări Push",
+                    "preferin_e_generale": "Preferințe generale"
+                },
+                "PersonalInfoTab": {
+                    "se_ncarc_informa_iile_personale": "Se încarcă informațiile personale...",
+                    "informa_ii_personale": "Informații Personale",
+                    "40_xxx_xxx_xxx": "+40 XXX XXX XXX",
+                    "securitate": "Securitate",
+                    "autentificare_cu_doi_factori": "Autentificare cu doi factori",
+                    "parol": "Parolă",
+                    "ultima_schimbare_n_a": "Ultima schimbare: n/a"
+                },
+                "reset-password": {
+                    "resetare_parol_travelai_deals": "Resetare parolă - TravelAI Deals",
+                    "resetare_parol": "Resetare parolă",
+                    "parol_nou": "Parolă nouă",
+                    "confirm_parola": "Confirmă parola"
+                },
+                "TravelPreferencesTab": {
+                    "motor_de_recomand_ri_ai": "Motor de recomandări AI",
+                    "precizie_recomand_ri": "Precizie recomandări",
+                    "oferte_g_site": "Oferte găsite",
+                    "economii_estimate": "Economii estimate"
+                }
+            },
+            "index": {
+                "se_ncarc_profilul": "Se încarcă profilul...",
+                "plan_curent": "Plan Curent",
+                "meniu_profil": "Meniu Profil"
+            }
+        }
+    }
+}

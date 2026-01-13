@@ -3,39 +3,25 @@ import { supabase } from "../lib/supabase";
 /**
  * ✅ Salvare conversație în Supabase
  */
-export async function saveChat(title, messages) {
-  try {
-    const { data: auth } = await supabase.auth.getUser();
-    const user = auth?.user;
+export async function saveChat(title) {
+  const { data: auth } = await supabase.auth.getUser();
+  const user = auth?.user;
+  if (!user) return null;
 
-    if (!user) {
-      console.warn("⚠️ User neautentificat – conversația NU a fost salvată.");
-      return null;
-    }
+  const { data, error } = await supabase
+    .from("chat_conversations")
+    .insert([{ user_id: user.id, title, messages: [] }])
+    .select()
+    .single();
 
-    const { data, error } = await supabase
-      .from("chat_conversations")
-      .insert([
-        {
-          user_id: user.id,
-          title,
-          messages,
-        },
-      ])
-      .select()
-      .single();
-
-    if (error) {
-      console.error("❌ Eroare la salvarea conversației:", error);
-      return null;
-    }
-
-    return data;
-  } catch (err) {
-    console.error("❌ Eroare în saveChat:", err);
+  if (error) {
+    console.error("saveChat:", error);
     return null;
   }
+
+  return data;
 }
+
 /**
  * 🔄 Actualizează conversația EXISTENTĂ
  */

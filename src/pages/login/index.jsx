@@ -38,7 +38,11 @@ const LoginPage = () => {
   useEffect(() => {
     const checkSession = async () => {
       const { data } = await supabase.auth.getSession();
-      if (data?.session) navigate("/ai-chat-interface");
+      if (data?.session) {
+        // Dacă suntem logați (ex: revenire din OAuth), încercăm importul
+        await importChatHistory(data.session.user.id);
+        navigate("/ai-chat-interface");
+      }
     };
     checkSession();
   }, [navigate]);
@@ -48,7 +52,7 @@ const LoginPage = () => {
     e.preventDefault();
     setLoading(true);
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
@@ -59,8 +63,36 @@ const LoginPage = () => {
       return;
     }
 
+    // ✅ Import chat history from localStorage if it exists
+    if (data?.user) {
+      await importChatHistory(data.user.id);
+    }
+
     navigate("/ai-chat-interface");
     setLoading(false);
+  };
+
+  /**
+   * 🔄 Importă istoricul din localStorage în Supabase
+   */
+  const importChatHistory = async (userId) => {
+    try {
+      const localMessages = JSON.parse(localStorage.getItem("chatMessages") || "[]");
+      if (localMessages && localMessages.length > 0) {
+        const { saveChat } = await import("../../services/chatService");
+        const title = localMessages.find(m => m.sender === "user")?.content || "Imported Chat";
+        const newChat = await saveChat(title.slice(0, 40), localMessages);
+
+        if (newChat?.id) {
+          // Marcăm acest chat ca fiind cel "activ" pentru a fi încărcat de AIChatInterface
+          localStorage.setItem("activeConversationAfterLogin", newChat.id);
+        }
+      }
+      localStorage.removeItem("chatMessages");
+      localStorage.removeItem("currentConversationId");
+    } catch (err) {
+      console.error("Eroare la importul istoricului:", err);
+    }
   };
 
   // 🔹 RESETARE PAROLĂ
@@ -165,7 +197,7 @@ const LoginPage = () => {
                       className="w-full flex items-center justify-center gap-3 border border-border bg-white hover:bg-gray-50 py-2.5 rounded-lg shadow-sm transition mt-2"
                     >
                       <svg width="20" height="20" viewBox="0 0 48 48">
-                        <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.4 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.7 1.1 7.8 3l5.7-5.7C34.6 6.5 29.6 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20c11.3 0 20-8.7 20-20 0-1.3-.1-2.7-.4-3.5z"/>
+                        <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.4 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.7 1.1 7.8 3l5.7-5.7C34.6 6.5 29.6 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20c11.3 0 20-8.7 20-20 0-1.3-.1-2.7-.4-3.5z" />
                       </svg>
                       Continuă cu Google
                     </button>

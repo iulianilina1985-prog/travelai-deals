@@ -17,42 +17,31 @@ export async function getTravelRecommendation(
   try {
     console.log("➡️ TravelAI → ai-chat:", userMessage);
 
-    // 1️⃣ Check session
+    // 1️⃣ Check session (optional)
     const {
       data: { session },
     } = await supabase.auth.getSession();
 
-    if (!session) {
-      return {
-        id: Date.now(),
-        sender: "ai",
-        content: "Trebuie să fii autentificat pentru a folosi TravelAI 🔐",
-        isError: true,
-      };
+    // 2️⃣ Call backend AI via Supabase Function (INTENT + REAL CARDS)
+    const { data, error } = await supabase.functions.invoke("ai-chat", {
+      body: {
+        user_id: session?.user?.id || "guest",
+        conversation_id: conversationId,
+        prompt: userMessage,
+      },
+    });
+
+    if (error) {
+      console.error("❌ ai-chat invocation error:", error);
+      throw error;
     }
 
-    // 2️⃣ Call backend AI (INTENT + REAL CARDS)
-    const response = await fetch(
-      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-chat`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`,
-        },
-        body: JSON.stringify({
-          user_id: session.user.id,
-          conversation_id: conversationId,
-          prompt: userMessage,
-        }),
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error("AI backend error");
+    if (!data) {
+      console.warn("⚠️ ai-chat returned no data");
+      throw new Error("No data received from AI service");
     }
 
-    const data = await response.json();
+    console.log("✅ TravelAI ← response received:", data.reply?.substring(0, 50) + "...");
 
     // 3️⃣ Use response from backend (including multiple cards if present)
     return {
@@ -63,6 +52,7 @@ export async function getTravelRecommendation(
       card: data.card || null, // legacy support
       cards: data.cards || [], // modern multi-card support
       isSupabaseMode: true,
+      intent: data.intent || null,
     };
 
   } catch (err) {
@@ -74,6 +64,8 @@ export async function getTravelRecommendation(
       content:
         "A apărut o eroare în comunicarea cu serviciul AI. Încearcă din nou.",
       isError: true,
+      errorType: err.name || "Error",
+      errorMessage: err.message
     };
   }
 }

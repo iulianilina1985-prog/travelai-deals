@@ -23,16 +23,21 @@ const ChatSidebar = ({ isOpen, onClose, history = [] }) => {
     const onConversationCreated = (e) => {
       const conv = e.detail;
 
-      setConversations((prev) => [
-        {
-          id: conv.id,
-          title: conv.title || "Conversație nouă",
-          created_at: conv.created_at || new Date().toISOString(),
-          messages: conv.messages || [],
-        },
-        ...prev,
-      ]);
+      setConversations((prev) => {
+        // dacă deja există, nu mai adăugăm nimic
+        if (prev.some((c) => c.id === conv.id)) return prev;
+
+        return [
+          {
+            id: conv.id,
+            title: conv.title || "Conversație nouă",
+            created_at: conv.created_at || new Date().toISOString(),
+          },
+          ...prev,
+        ];
+      });
     };
+
 
     const onConversationUpdated = (e) => {
       const { id, title } = e.detail;
@@ -99,16 +104,10 @@ const ChatSidebar = ({ isOpen, onClose, history = [] }) => {
   // =====================================================
   const handleNewConversation = () => {
     window.dispatchEvent(
-      new CustomEvent("startNewChat", {
-        detail: {
-          id: Date.now(),
-          title: "Conversație nouă",
-          messages: [],
-          created_at: new Date().toISOString(),
-        },
-      })
+      new CustomEvent("startNewChat")
     );
   };
+
 
   // =====================================================
   // Sidebar UI
@@ -151,11 +150,10 @@ const ChatSidebar = ({ isOpen, onClose, history = [] }) => {
             <button
               key={t.id}
               onClick={() => setActiveTab(t.id)}
-              className={`relative flex-1 flex items-center justify-center py-3 text-sm ${
-                activeTab === t.id
-                  ? "text-primary border-b-2 border-primary"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
+              className={`relative flex-1 flex items-center justify-center py-3 text-sm ${activeTab === t.id
+                ? "text-primary border-b-2 border-primary"
+                : "text-muted-foreground hover:text-foreground"
+                }`}
             >
               <Icon name={t.icon} size={16} />
               <span className="hidden sm:inline ml-2">{t.label}</span>
@@ -282,9 +280,8 @@ const ChatSidebar = ({ isOpen, onClose, history = [] }) => {
                 notifications.map((n) => (
                   <div
                     key={n.id}
-                    className={`p-3 border rounded-lg flex justify-between items-start ${
-                      n.isRead ? "bg-card" : "bg-primary/10"
-                    }`}
+                    className={`p-3 border rounded-lg flex justify-between items-start ${n.isRead ? "bg-card" : "bg-primary/10"
+                      }`}
                   >
                     <div className="flex-1">
                       <h5 className="font-medium">{n.title}</h5>

@@ -20,7 +20,6 @@ const Header = () => {
   const navigationItems = [
     { label: "Caută oferte", path: "/cauta-oferte", icon: "Search" },
     { label: "Chat AI", path: "/ai-chat-interface", icon: "MessageCircle" },
-    { label: "Profil", path: "/user-profile", icon: "User" },
   ];
 
   const isActivePath = (path) => location?.pathname === path;
@@ -57,6 +56,19 @@ const Header = () => {
                 </div>
               </Link>
             ))}
+
+            {isAuthenticated && (
+              <Link
+                to="/user-profile"
+                className={`nav-item ${isActivePath("/user-profile") ? "active" : ""}`}
+              >
+                <div className="flex items-center space-x-2">
+                  <Icon name="User" size={18} />
+                  <span>Profil</span>
+                </div>
+              </Link>
+            )}
+
 
             {userProfile?.roles?.includes("admin") && (
               <Link
@@ -126,6 +138,21 @@ const Header = () => {
                 <span>{item.label}</span>
               </Link>
             ))}
+
+            {isAuthenticated && (
+              <Link
+                to="/user-profile"
+                onClick={closeMobileMenu}
+                className={`flex items-center space-x-3 px-4 py-3 rounded-lg ${isActivePath("/user-profile")
+                    ? "bg-primary text-primary-foreground"
+                    : "hover:bg-muted"
+                  }`}
+              >
+                <Icon name="User" size={20} />
+                <span>Profil</span>
+              </Link>
+            )}
+
 
             {isAuthenticated ? (
               <button

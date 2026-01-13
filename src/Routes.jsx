@@ -14,7 +14,7 @@ import HomePage from "./pages/home-page";
 import AdminDashboard from "./pages/admin-dashboard";
 import LoginPage from "./pages/login";
 import AIChatInterface from "./pages/ai-chat-interface";
-import SubscriptionManagement from "./pages/subscription-management";
+
 import UserProfile from "./pages/user-profile";
 import MyOffersDashboard from "./pages/my-offers-dashboard";
 import Register from "./pages/register";
@@ -23,7 +23,7 @@ import PrivacyPolicy from "./pages/legal/privacy-policy";
 import ResetPasswordPage from "./pages/user-profile/components/reset-password";
 import CookiePolicy from "./pages/legal/CookiePolicy";
 import ContactPage from "./pages/legal/contact";
-import Hotels from "./pages/hotels/Hotels";
+
 import AfiliereDisclosure from "./pages/legal/AfiliereDisclosure";
 import GuideDestinatii2025 from "./pages/guides/GuideDestinatii2025";
 import GuideBileteAvion from "./pages/guides/GuideBileteAvion";
@@ -59,7 +59,7 @@ const Routes = () => {
           <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/politica-cookie" element={<CookiePolicy />} />
           <Route path="/contact" element={<ContactPage />} />
-          <Route path="/hotels" element={<Hotels />} />
+
           <Route path="/afiliere-disclosure" element={<AfiliereDisclosure />} />
           <Route path="/ghiduri/destinatii-2025" element={<GuideDestinatii2025 />} />
           <Route path="/ghiduri/bilete-ieftine" element={<GuideBileteAvion />} />
@@ -78,21 +78,11 @@ const Routes = () => {
           {/* Protejate */}
           <Route
             path="/ai-chat-interface"
-            element={
-              <ProtectedRoute>
-                <AIChatInterface />
-              </ProtectedRoute>
-            }
+            element={<AIChatInterface />}
           />
 
-          <Route
-            path="/subscription-management"
-            element={
-              <ProtectedRoute>
-                <SubscriptionManagement />
-              </ProtectedRoute>
-            }
-          />
+
+
 
           <Route
             path="/user-profile"
