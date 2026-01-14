@@ -29,6 +29,39 @@ function strip(s: string) {
     .trim();
 }
 
+const TRAVELPAYOUTS_TOKEN = Deno.env.get("TRAVELPAYOUTS_API_TOKEN");
+
+async function getCheapestFlightPrice(fromIata: string, toIata: string) {
+  if (!TRAVELPAYOUTS_TOKEN) return null;
+
+  const url = `https://api.travelpayouts.com/v1/prices/calendar?origin=${fromIata}&destination=${toIata}&currency=EUR&token=${TRAVELPAYOUTS_TOKEN}`;
+
+  const res = await fetch(url);
+  const json = await res.json();
+
+  if (!json?.data) return null;
+
+  let cheapest = null;
+  let cheapestDate = null;
+
+  for (const date in json.data) {
+    const f = json.data[date];
+    if (!cheapest || f.price < cheapest.price) {
+      cheapest = f;
+      cheapestDate = date;
+    }
+  }
+
+  if (!cheapest) return null;
+
+  return {
+    price: cheapest.price,
+    depart_date: cheapestDate,
+    transfers: cheapest.transfers
+  };
+}
+
+
 /* ================= FLIGHT PARSER ================= */
 
 function extractFlightData(text: string) {
@@ -100,7 +133,9 @@ function buildGenericCard(p: AffiliateProvider, intent: any) {
     title: intent.type === "flight"
       ? `Zbor ${intent.from_city || intent.from || ""} → ${intent.to_city || intent.to || ""}`
       : `${p.name} - ${intent.to || intent.to_city || "Destinație"}`,
-    description: p.description,
+    description: intent.price
+      ? `De la €${intent.price} • ${intent.transfers === 0 ? "Direct" : intent.transfers + " escale"}`
+      : p.description,
     image_url: p.image_url,
     provider_meta: {
       id: p.id,
@@ -108,7 +143,7 @@ function buildGenericCard(p: AffiliateProvider, intent: any) {
       brand_color: p.brandColor
     },
     cta: {
-      label: p.ctaLabel,
+      label: intent.price ? `Vezi zborul €${intent.price}` : p.ctaLabel,
       url: link
     }
   };
@@ -138,12 +173,18 @@ serve(async (req) => {
       const toIata = await resolveToIata(flight.to_city);
 
       if (fromIata && toIata) {
+        const live = await getCheapestFlightPrice(fromIata, toIata);
+
         const intent = {
           type: "flight",
           ...flight,
           from_iata: fromIata,
-          to_iata: toIata
+          to_iata: toIata,
+          price: live?.price,
+          depart_date: live?.depart_date,
+          transfers: live?.transfers
         };
+
         const providers = getAIProvidersByCategory("flight");
         const cards = providers.map(p => buildGenericCard(p, intent));
 

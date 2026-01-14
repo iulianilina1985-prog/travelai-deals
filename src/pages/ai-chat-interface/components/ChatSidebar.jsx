@@ -9,12 +9,16 @@ const ChatSidebar = ({ isOpen, onClose, history = [] }) => {
   const [conversations, setConversations] = useState(history);
   const { favorites, toggleFavorite } = useFavorites();
 
+  // ===============================
   // Sync history
+  // ===============================
   useEffect(() => {
     setConversations(history);
   }, [history]);
 
-  // Live updates
+  // ===============================
+  // Live events
+  // ===============================
   useEffect(() => {
     const onConversationCreated = (e) => {
       const conv = e.detail;
@@ -46,6 +50,9 @@ const ChatSidebar = ({ isOpen, onClose, history = [] }) => {
     };
   }, []);
 
+  // ===============================
+  // Utils
+  // ===============================
   const formatTimeAgo = (ts) => {
     if (!ts) return "";
     const diff = new Date() - new Date(ts);
@@ -60,12 +67,36 @@ const ChatSidebar = ({ isOpen, onClose, history = [] }) => {
   };
 
   const deleteConversation = (id) => {
-    window.dispatchEvent(new CustomEvent("deleteConversation", { detail: { id } }));
+    window.dispatchEvent(
+      new CustomEvent("deleteConversation", { detail: { id } })
+    );
     setConversations((prev) => prev.filter((x) => x.id !== id));
   };
 
   const handleNewConversation = () => {
     window.dispatchEvent(new CustomEvent("startNewChat"));
+  };
+
+  // ===============================
+  // SHARE
+  // ===============================
+  const handleShare = async (deal) => {
+    const text = `🔥 Ofertă TravelAI\n${deal.title}\n${deal.link}`;
+
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: "TravelAI Deal",
+          text,
+          url: deal.link,
+        });
+      } else {
+        await navigator.clipboard.writeText(deal.link);
+        alert("Link copiat în clipboard");
+      }
+    } catch (err) {
+      console.error("Share failed", err);
+    }
   };
 
   const tabs = [
@@ -85,7 +116,7 @@ const ChatSidebar = ({ isOpen, onClose, history = [] }) => {
 
       <div
         className={`fixed top-16 right-0 h-[calc(100vh-4rem)] w-80 bg-background border-l z-50 transition-transform flex flex-col
-        ${isOpen ? "translate-x-0" : "translate-x-full"} 
+        ${isOpen ? "translate-x-0" : "translate-x-full"}
         lg:relative lg:top-0 lg:h-full lg:translate-x-0`}
       >
         {/* Header */}
@@ -108,8 +139,8 @@ const ChatSidebar = ({ isOpen, onClose, history = [] }) => {
               key={t.id}
               onClick={() => setActiveTab(t.id)}
               className={`flex-1 py-3 flex justify-center items-center gap-2 text-sm ${activeTab === t.id
-                  ? "text-primary border-b-2 border-primary"
-                  : "text-muted-foreground"
+                ? "text-primary border-b-2 border-primary"
+                : "text-muted-foreground"
                 }`}
             >
               <Icon name={t.icon} size={16} />
@@ -118,7 +149,7 @@ const ChatSidebar = ({ isOpen, onClose, history = [] }) => {
           ))}
         </div>
 
-        {/* Scrollable content */}
+        {/* SCROLL AREA */}
         <div className="flex-1 overflow-y-auto p-4">
           {/* HISTORY */}
           {activeTab === "history" && (
@@ -165,19 +196,28 @@ const ChatSidebar = ({ isOpen, onClose, history = [] }) => {
                     </h5>
                     <p className="text-primary font-bold">{deal.price}</p>
 
-                    <div className="flex gap-2 mt-2">
+                    <div className="flex gap-2 mt-3">
                       <Button
                         size="sm"
                         onClick={() => window.open(deal.link, "_blank")}
                       >
                         Vezi
                       </Button>
+
                       <Button
                         size="sm"
                         variant="outline"
                         onClick={() => toggleFavorite(deal)}
                       >
                         Șterge
+                      </Button>
+
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleShare(deal)}
+                      >
+                        <Icon name="Share2" size={16} />
                       </Button>
                     </div>
                   </div>
@@ -199,19 +239,7 @@ const ChatSidebar = ({ isOpen, onClose, history = [] }) => {
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t shrink-0 grid grid-cols-2 gap-2">
-          <Link to="/my-offers-dashboard">
-            <Button variant="outline" size="sm" className="w-full">
-              Ofertele mele
-            </Button>
-          </Link>
 
-          <Link to="/user-profile">
-            <Button variant="outline" size="sm" className="w-full">
-              Setări
-            </Button>
-          </Link>
-        </div>
       </div>
     </>
   );
