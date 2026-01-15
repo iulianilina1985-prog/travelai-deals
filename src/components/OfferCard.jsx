@@ -1,6 +1,3 @@
-// src/components/OfferCard.jsx
-// Unified Offer Card – used everywhere (Chat, Search, Dashboard)
-
 import React from "react";
 import Icon from "./AppIcon";
 import Button from "./ui/Button";
@@ -27,30 +24,53 @@ const MODE_CONFIG = {
     },
 };
 
-const OfferCard = ({
-    offer,
-    mode = "live",
-    onViewDetails,
-}) => {
+/* =========================
+   IMAGE RESOLVER
+========================= */
+const resolveImage = (img) => {
+    if (!img) return "/assets/images/no_image.png";
+
+    // url complet
+    if (img.startsWith("http")) return img;
+
+    // deja absolut
+    if (img.startsWith("/")) return img;
+
+    // ex: assets/flight/flight.jpg
+    return "/" + img;
+};
+
+const OfferCard = ({ offer, mode = "live", onViewDetails }) => {
     const { user } = useAuth();
     const { favorites, toggleFavorite } = useFavorites();
-    const cfg = MODE_CONFIG[mode] ?? MODE_CONFIG.live;
 
-    const imageUrl = offer.image_url || "/assets/images/no_image.png";
-    const providerColor = offer.provider_meta?.brand_color || "#2563eb";
+    const cfg = MODE_CONFIG[mode] || MODE_CONFIG.live;
 
-    const offerId = offer.id ?? offer.cta?.url;
-    const isFavorite = favorites.some(
-        (f) => f.offer_id === offerId && f.provider === offer.provider
-    );
+    /* =========================
+       NORMALIZARE OFERTĂ
+    ========================= */
+    const offerId = offer.offer_id || offer.id || offer.cta?.url;
 
-    // =========================
-    // ✈️ FLIGHT META
-    // =========================
-    const price = offer.price;
-    const transfers = offer.transfers;
+    const image = offer.image || offer.image_url;
+    const link = offer.link || offer.cta?.url;
+    const price = offer.price ?? null;
+    const transfers = offer.transfers ?? null;
     const departDate = offer.depart_date || offer.departure_at;
 
+    const provider = offer.provider || "Partner";
+
+    const providerColor =
+        offer.provider_meta?.brand_color ||
+        offer.provider_color ||
+        "#2563eb";
+
+    const isFavorite = favorites.some(
+        (f) => f.offer_id === offerId && f.provider === provider
+    );
+
+    /* =========================
+       FLIGHT META
+    ========================= */
     const formattedDate = departDate
         ? new Date(departDate).toLocaleDateString("ro-RO", {
             day: "2-digit",
@@ -60,14 +80,14 @@ const OfferCard = ({
 
     const flightSubtitle =
         price != null
-            ? `€${price} • ${transfers === 0 ? "Direct" : `${transfers} escale`}${formattedDate ? ` • ${formattedDate}` : ""
-            }`
+            ? `De la €${price} • ${transfers === 0 ? "Direct" : `${transfers} escale`
+            }${formattedDate ? ` • ${formattedDate}` : ""}`
             : null;
 
-    // =========================
-    // HANDLERS
-    // =========================
-    const handleFavoriteClick = () => {
+    /* =========================
+       HANDLERS
+    ========================= */
+    const handleFavorite = () => {
         if (!cfg.allowFavorite) return;
 
         if (!user) {
@@ -75,7 +95,17 @@ const OfferCard = ({
             return;
         }
 
-        toggleFavorite(offer);
+        const normalized = {
+            offer_id: offerId,
+            provider,
+            title: offer.title,
+            image: image,
+            price: price,
+            link: link,
+            raw: offer, // păstrăm originalul
+        };
+
+        toggleFavorite(normalized);
     };
 
     const handleCTA = () => {
@@ -84,24 +114,29 @@ const OfferCard = ({
             return;
         }
 
-        if (offer.cta?.url) {
-            window.open(offer.cta.url, "_blank", "noopener,noreferrer");
+        if (link) {
+            window.open(link, "_blank", "noopener,noreferrer");
         }
     };
 
+    /* =========================
+       RENDER
+    ========================= */
     return (
         <div className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow overflow-hidden border border-gray-100">
 
             {/* IMAGE */}
             <div className="relative h-48 bg-gray-100">
                 <img
-                    src={imageUrl}
+                    src={resolveImage(image)}
                     alt={offer.title}
                     className="w-full h-full object-cover"
-                    onError={(e) => (e.currentTarget.src = "/assets/images/no_image.png")}
+                    onError={(e) => {
+                        e.currentTarget.src = "/assets/images/no_image.png";
+                    }}
                 />
 
-                {/* MODE BADGE */}
+                {/* BADGE */}
                 {cfg.badge && (
                     <div
                         className={`absolute top-3 left-3 ${cfg.badgeColor} text-white px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1`}
@@ -114,14 +149,18 @@ const OfferCard = ({
                 {/* ❤️ FAVORITE */}
                 {cfg.allowFavorite && (
                     <button
-                        onClick={handleFavoriteClick}
-                        className={`absolute top-3 right-3 p-2 rounded-full backdrop-blur-sm transition-all ${isFavorite
+                        onClick={handleFavorite}
+                        className={`absolute top-3 right-3 p-2 rounded-full backdrop-blur-sm transition ${isFavorite
                                 ? "bg-rose-500 text-white"
                                 : "bg-white/80 text-gray-600 hover:bg-white"
                             }`}
                         title={isFavorite ? "Șterge din favorite" : "Adaugă la favorite"}
                     >
-                        <Icon name="Heart" size={18} fill={isFavorite ? "currentColor" : "none"} />
+                        <Icon
+                            name="Heart"
+                            size={18}
+                            fill={isFavorite ? "currentColor" : "none"}
+                        />
                     </button>
                 )}
             </div>
@@ -134,7 +173,7 @@ const OfferCard = ({
                         className="px-2 py-1 rounded text-xs font-medium text-white"
                         style={{ backgroundColor: providerColor }}
                     >
-                        {offer.provider}
+                        {provider}
                     </span>
 
                     {offer.type && (
@@ -149,22 +188,16 @@ const OfferCard = ({
                     {offer.title}
                 </h3>
 
-                {/* FLIGHT META or DESCRIPTION */}
+                {/* META */}
                 <p className="text-sm text-gray-600 mb-4">
                     {flightSubtitle || offer.description}
                 </p>
 
                 {/* CTA */}
-                <Button
-                    fullWidth
-                    iconName="ExternalLink"
-                    iconPosition="right"
-                    onClick={handleCTA}
-                >
-                    {price != null ? `Vezi zborul €${price}` : (offer.cta?.label || "Vezi oferta")}
+                <Button fullWidth iconName="ExternalLink" iconPosition="right" onClick={handleCTA}>
+                    {price != null ? `Vezi oferta €${price}` : offer.cta?.label || "Vezi oferta"}
                 </Button>
 
-                {/* DETAILS */}
                 {onViewDetails && (
                     <button
                         onClick={() => onViewDetails(offer)}

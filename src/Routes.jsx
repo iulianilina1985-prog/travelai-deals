@@ -30,6 +30,7 @@ import GuideBileteAvion from "./pages/guides/GuideBileteAvion";
 import GuideHoteluri from "./pages/guides/GuideHoteluri";
 
 import OffersPage from "./pages/offers"; // 🔥 PAGINA CORECTĂ
+import FavoritesPage from "./pages/offers/FavoritesPage.jsx";
 
 import CheckoutSuccess from "./pages/payments/CheckoutSuccess";
 import CheckoutCancel from "./pages/payments/CheckoutCancel";
@@ -67,6 +68,14 @@ const Routes = () => {
 
           {/* 🔥 Noua pagină de căutare */}
           <Route path="/cauta-oferte" element={<OffersPage />} />
+          <Route
+            path="/cauta-oferte/favorite"
+            element={
+              <ProtectedRoute>
+                <FavoritesPage />
+              </ProtectedRoute>
+            }
+          />
 
           <Route path="/checkout-success" element={<CheckoutSuccess />} />
           <Route path="/checkout-cancel" element={<CheckoutCancel />} />

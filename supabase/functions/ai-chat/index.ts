@@ -31,35 +31,72 @@ function strip(s: string) {
 
 const TRAVELPAYOUTS_TOKEN = Deno.env.get("TRAVELPAYOUTS_API_TOKEN");
 
-async function getCheapestFlightPrice(fromIata: string, toIata: string) {
-  if (!TRAVELPAYOUTS_TOKEN) return null;
-
-  const url = `https://api.travelpayouts.com/v1/prices/calendar?origin=${fromIata}&destination=${toIata}&currency=EUR&token=${TRAVELPAYOUTS_TOKEN}`;
-
-  const res = await fetch(url);
-  const json = await res.json();
-
-  if (!json?.data) return null;
-
-  let cheapest = null;
-  let cheapestDate = null;
-
-  for (const date in json.data) {
-    const f = json.data[date];
-    if (!cheapest || f.price < cheapest.price) {
-      cheapest = f;
-      cheapestDate = date;
-    }
+async function getCheapestFlightPrice(fromIata: string, toIata: string, date: string) {
+  if (!TRAVELPAYOUTS_TOKEN) {
+    console.error("❌ TRAVELPAYOUTS_API_TOKEN is missing!");
+    return null;
   }
 
-  if (!cheapest) return null;
+  // Use V2 Latest API - it's often more reliable than the V1 Calendar
+  const url =
+    `https://api.travelpayouts.com/v2/prices/latest` +
+    `?origin=${fromIata}` +
+    `&destination=${toIata}` +
+    `&period_type=month` +
+    `&beginning_of_period=${date.slice(0, 7)}-01` + // First of month
+    `&currency=EUR` +
+    `&limit=100` +
+    `&token=${TRAVELPAYOUTS_TOKEN}`;
 
-  return {
-    price: cheapest.price,
-    depart_date: cheapestDate,
-    transfers: cheapest.transfers
-  };
+  console.log(`🔍 TP V2 Fetch: ${url.replace(TRAVELPAYOUTS_TOKEN, "***")}`);
+  try {
+    const res = await fetch(url);
+    const json = await res.json();
+
+    if (!json?.success || !json?.data || !Array.isArray(json.data)) {
+      console.log("⚠️ TP V2 API Error:", JSON.stringify(json).slice(0, 200));
+      return null;
+    }
+
+    const allOffers = json.data;
+    console.log(`� Found ${allOffers.length} offers in cache.`);
+
+    // 1. Try to find the exact date
+    const exactDay = allOffers.find((o: any) => o.depart_date === date);
+    if (exactDay) {
+      console.log(`✅ Exact Match: ${exactDay.value} EUR (Found at: ${exactDay.found_at})`);
+      return {
+        price: exactDay.value,
+        transfers: exactDay.number_of_changes,
+        airline: exactDay.gate, // V2 uses gate or airline
+        flight_number: exactDay.flight_number,
+        depart_at: exactDay.depart_date,
+        found_at: exactDay.found_at
+      };
+    }
+
+    // 2. Fallback: cheapest in the whole result
+    const cheapest = allOffers.sort((a: any, b: any) => a.value - b.value)[0];
+    if (cheapest) {
+      console.log(`💡 Suggesting cheapest: ${cheapest.value} EUR on ${cheapest.depart_date}`);
+      return {
+        price: cheapest.value,
+        transfers: cheapest.number_of_changes,
+        airline: cheapest.gate,
+        flight_number: cheapest.flight_number,
+        depart_at: cheapest.depart_date,
+        found_at: cheapest.found_at,
+        is_approximate: true
+      };
+    }
+
+    return null;
+  } catch (err) {
+    console.error("❌ TP API Fatal Error:", err);
+    return null;
+  }
 }
+
 
 
 /* ================= FLIGHT PARSER ================= */
@@ -67,12 +104,17 @@ async function getCheapestFlightPrice(fromIata: string, toIata: string) {
 function extractFlightData(text: string) {
   const t = strip(text);
 
-  if (!t.includes("zbor")) return null;
+  if (!t.includes("zbor") && !t.includes("avion")) return null;
 
-  // 🔹 RUTA – doar orașe (se oprește înainte de cifre)
+  // ==== RUTĂ ====
   const routeMatch =
     t.match(/din\s+([a-z ]+?)\s+(?:la|spre|catre)\s+([a-z ]+?)(?=\s+\d|\s*$)/) ||
+
+    // catre paris din bucuresti
+    t.match(/(?:la|spre|catre)\s+([a-z ]+?)\s+din\s+([a-z ]+?)(?=\s+\d|\s*$)/)?.slice(1).reverse() ||
+
     t.match(/zbor\s+([a-z ]+?)\s+([a-z ]+?)(?=\s+\d|\s*$)/) ||
+    t.match(/avion\s+([a-z ]+?)\s+([a-z ]+?)(?=\s+\d|\s*$)/) ||
     t.match(/([a-z ]+?)\s*(?:->|→|-)\s*([a-z ]+?)(?=\s+\d|\s*$)/);
 
 
@@ -81,61 +123,74 @@ function extractFlightData(text: string) {
   const from = routeMatch[1].trim();
   const to = routeMatch[2].trim();
 
-  // 🔹 DATE
-  const dateMatch = t.match(
-    /(\d{1,2})(?:\s*[-–]\s*(\d{1,2}))?\s+(ianuarie|februarie|martie|aprilie|mai|iunie|iulie|august|septembrie|octombrie|noiembrie|decembrie)\s+(\d{4})/
-  );
-
-  if (!dateMatch) return null;
-
-  // 🔹 PASAGERI
+  // ==== PASAGERI ====
   const paxMatch = t.match(/(\d+)\s*(pasageri|persoane|adulti)/);
   const passengers = paxMatch ? Number(paxMatch[1]) : 1;
 
+  // ==== LUNI ====
   const monthMap: Record<string, string> = {
-    ianuarie: "01",
-    februarie: "02",
-    martie: "03",
-    aprilie: "04",
-    mai: "05",
-    iunie: "06",
-    iulie: "07",
-    august: "08",
-    septembrie: "09",
-    octombrie: "10",
-    noiembrie: "11",
-    decembrie: "12",
+    ianuarie: "01", februarie: "02", martie: "03", aprilie: "04",
+    mai: "05", iunie: "06", iulie: "07", august: "08",
+    septembrie: "09", octombrie: "10", noiembrie: "11", decembrie: "12",
   };
 
-  const pad = (n: string) => (n.length === 1 ? `0${n}` : n);
-  const year = dateMatch[4];
+  let day, month, year;
 
-  const month = monthMap[dateMatch[3]];
-  const startDay = pad(dateMatch[1]);
-  const endDay = dateMatch[2] ? pad(dateMatch[2]) : null;
+  // TEXT: 22 mai 2026
+  const textDate = t.match(
+    /(\d{1,2})\s+(ianuarie|februarie|martie|aprilie|mai|iunie|iulie|august|septembrie|octombrie|noiembrie|decembrie)\s+(\d{4})/
+  );
+
+  // NUMERIC: 22.02.2026 | 22/02/2026 | 22-02-2026
+  const numericDate = t.match(
+    /(\d{1,2})[./-](\d{1,2})[./-](\d{4})/
+  );
+
+  if (textDate) {
+    day = textDate[1];
+    month = monthMap[textDate[2]];
+    year = textDate[3];
+  }
+  else if (numericDate) {
+    day = numericDate[1];
+    month = numericDate[2].padStart(2, "0");
+    year = numericDate[3];
+  }
+  else {
+    return null;
+  }
+
+  const pad = (n: string) => n.padStart(2, "0");
 
   return {
     from_city: from,
     to_city: to,
-    depart_date: `${year}-${month}-${startDay}`,
-    return_date: endDay ? `${year}-${month}-${endDay}` : undefined,
+    depart_date: `${year}-${month}-${pad(day)}`,
     passengers,
   };
 }
 
 
+
 function buildGenericCard(p: AffiliateProvider, intent: any) {
   const link = p.buildLink(intent);
+  const isFlight = intent.type === "flight";
+
   return {
     id: `${p.id}|${intent.to || intent.to_city || "gen"}`,
     type: intent.type,
     provider: p.name,
-    title: intent.type === "flight"
+    title: isFlight
       ? `Zbor ${intent.from_city || intent.from || ""} → ${intent.to_city || intent.to || ""}`
       : `${p.name} - ${intent.to || intent.to_city || "Destinație"}`,
     description: intent.price
-      ? `De la €${intent.price} • ${intent.transfers === 0 ? "Direct" : intent.transfers + " escale"}`
+      ? `De la €${intent.price} • ${intent.transfers === 0 ? "Direct" : (intent.transfers ? `${intent.transfers} escale` : "Zbor disponibil")}`
       : p.description,
+    price: intent.price,
+    transfers: intent.transfers,
+    depart_date: intent.depart_date,
+    airline: intent.airline,
+    flight_number: intent.flight_number,
     image_url: p.image_url,
     provider_meta: {
       id: p.id,
@@ -143,7 +198,7 @@ function buildGenericCard(p: AffiliateProvider, intent: any) {
       brand_color: p.brandColor
     },
     cta: {
-      label: intent.price ? `Vezi zborul €${intent.price}` : p.ctaLabel,
+      label: (isFlight && intent.price) ? `Vezi zborul de la €${intent.price}` : p.ctaLabel,
       url: link
     }
   };
@@ -165,45 +220,77 @@ serve(async (req) => {
     console.log("AI-CHAT PROMPT:", prompt);
 
     /* =========================================
-       1. QUICK INTENT (REGEX) - OPTIONAL
+       1. DATA EXTRACTION (REGEX)
        ========================================= */
-    const flight = extractFlightData(prompt);
-    if (flight) {
-      const fromIata = await resolveToIata(flight.from_city);
-      const toIata = await resolveToIata(flight.to_city);
+    const flightMatch = extractFlightData(prompt);
+    let pricingContext = "";
+    let flightIntent = null;
+
+    if (flightMatch) {
+      console.log("📍 Flight Regex Match:", JSON.stringify(flightMatch));
+      const fromIata = await resolveToIata(flightMatch.from_city);
+      const toIata = await resolveToIata(flightMatch.to_city);
 
       if (fromIata && toIata) {
-        const live = await getCheapestFlightPrice(fromIata, toIata);
+        console.log(`📍 Resolved IATAs: ${fromIata} -> ${toIata}`);
+        const live = await getCheapestFlightPrice(fromIata, toIata, flightMatch.depart_date);
 
-        const intent = {
+        // Populate intent even if price is null
+        flightIntent = {
           type: "flight",
-          ...flight,
+          ...flightMatch,
           from_iata: fromIata,
           to_iata: toIata,
           price: live?.price,
-          depart_date: live?.depart_date,
-          transfers: live?.transfers
+          transfers: live?.transfers,
+          airline: live?.airline,
+          flight_number: live?.flight_number,
+          depart_at: live?.depart_at
         };
 
-        const providers = getAIProvidersByCategory("flight");
-        const cards = providers.map(p => buildGenericCard(p, intent));
+        if (live) {
+          console.log(`✅ Live Data: ${live.price} EUR, Date: ${live.depart_at}, Cache Age: ${live.found_at}`);
+          const isExact = live.depart_at?.startsWith(flightMatch.depart_date);
 
-        return new Response(
-          JSON.stringify({
-            reply: `✈️ Am găsit zboruri din ${flight.from_city} spre ${flight.to_city}.`,
-            type: "flight",
-            cards,
-          }),
-          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
+          pricingContext = `
+[CONTEXT LIVE ZBOR]
+Ruta: ${flightMatch.from_city} (${fromIata}) -> ${flightMatch.to_city} (${toIata})
+Data Căutată: ${flightMatch.depart_date}
+Data Găsită în Cache: ${live.depart_at}
+Status Data: ${isExact ? "EXACTĂ" : "APROXIMATIVĂ (cea mai ieftină găsită recent)"}
+Ultima actualizare în cache: ${live.found_at}
+Pasageri: ${flightMatch.passengers}
+Preț minim: ${live.price} EUR
+Escale: ${live.transfers === 0 ? "Direct" : (live.transfers || "Necunoscut")}
+
+INSTRUCȚIUNI: 
+1. Dacă data găsită nu este exactă, spune "Prețurile pentru acea perioadă pornesc de la...".
+2. Menționează că prețul poate varia în funcție de disponibilitatea live.
+`;
+        } else {
+          console.log("⚠️ No live price found. Using regex data only.");
+          pricingContext = `
+[CONTEXT ZBOR - PREȚ INDISPONIBIL]
+Ruta: ${flightMatch.from_city} (${fromIata}) -> ${flightMatch.to_city} (${toIata})
+Data: ${flightMatch.depart_date}
+Pasageri: ${flightMatch.passengers}
+IMPORTANT: Spune-i utilizatorului că nu ai găsit un preț instant, dar poate verifica ofertele actualizate folosind cardul de mai jos.
+`;
+        }
+      } else {
+        console.log("⚠️ Could not resolve IATAs for one or both cities.");
       }
+    } else {
+      console.log("ℹ️ No flight intent detected by regex.");
     }
 
+
     /* =========================================
-       2. AI GENERATION & FALLBACK
+       2. AI GENERATION
        ========================================= */
 
     if (!OPENAI_API_KEY || OPENAI_API_KEY === "YOUR_OPENAI_KEY") {
+      // (Keep pseudo-ai logic for emergency but simplified)
       console.warn("⚠️ OPENAI_API_KEY missing - Using Pseudo-AI");
 
       const lowerPrompt = prompt.toLowerCase();
@@ -246,6 +333,15 @@ serve(async (req) => {
         }
       }
 
+      // 4. ZBORURI (Pseudo-AI fallback)
+      else if (flightIntent) {
+        replyText = `Am găsit zborul tău către ${flightIntent.to_city}! ${flightIntent.price ? `Prețul este de la ${flightIntent.price}€.` : "Poți vedea prețurile actualizate pe link."}`;
+        intent = flightIntent;
+        cards = getAIProvidersByCategory("flight").map(p => buildGenericCard(p, intent));
+      }
+
+      console.log("🤖 Pseudo-AI Reply:", replyText);
+
       return new Response(
         JSON.stringify({
           reply: replyText,
@@ -259,6 +355,7 @@ serve(async (req) => {
     }
 
     // REAL AI PATH
+    console.log("💉 Injecting context for AI:", pricingContext ? "YES" : "NO");
     const aiRes = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -268,7 +365,7 @@ serve(async (req) => {
       body: JSON.stringify({
         model: "gpt-4o-mini",
         messages: [
-          { role: "system", content: SYSTEM_PROMPT },
+          { role: "system", content: SYSTEM_PROMPT + (pricingContext ? `\n\n${pricingContext}` : "") },
           { role: "user", content: prompt },
         ],
         temperature: 0.7,
@@ -279,10 +376,15 @@ serve(async (req) => {
 
     const aiJson = await aiRes.json();
     const rawContent = aiJson?.choices?.[0]?.message?.content ?? "";
+    console.log("🧠 AI Raw Response:", rawContent.slice(0, 100));
+
     let parsed: any = {};
     try {
-      parsed = JSON.parse(rawContent);
-    } catch {
+      // Handle potential markdown wrapping
+      const cleanContent = rawContent.replace(/```json|```/g, "").trim();
+      parsed = JSON.parse(cleanContent);
+    } catch (err) {
+      console.error("❌ JSON Parse Error:", err, "Raw:", rawContent);
       parsed = { reply: rawContent, intent: { type: null } };
     }
 
@@ -290,11 +392,11 @@ serve(async (req) => {
        3. INTENT PROCESSING
        ========================================= */
     let cards: any[] = [];
-    const intent = parsed.intent || {};
+    const intent = flightIntent || parsed.intent || {};
 
     if (intent.type) {
-      // Resolve IATA for flights if needed
-      if (intent.type === "flight" && intent.from && intent.to) {
+      // Resolve IATA for flights if needed (unlikely if regex caught it, but good for pure AI)
+      if (intent.type === "flight" && intent.from && intent.to && !intent.from_iata) {
         const fromIata = await resolveToIata(intent.from);
         const toIata = await resolveToIata(intent.to);
         if (fromIata && toIata) {
@@ -310,16 +412,21 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({
         message: {
-          text: parsed.reply || "Nu am înțeles exact, poți reformula?",
+          text: parsed.reply || (
+            intent.type === "flight"
+              ? `✈️ Am găsit zboruri din ${intent.from_city || intent.from || "?"} spre ${intent.to_city || intent.to || "?"}.`
+              : "Nu am înțeles exact, poți reformula?"
+          ),
           confidence: parsed.confidence || 0.8,
         },
-        reply: parsed.reply,
-        intent: parsed.intent,
+        reply: parsed.reply || null,
+        intent: intent,
         cards,
         type: cards.length > 0 ? "offer" : null
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
+
 
   } catch (err) {
     console.error("AI-CHAT FATAL ERROR:", err);

@@ -51,11 +51,18 @@ export async function resolveToIata(input: string): Promise<string | null> {
     "antalya": "AYT"
   };
 
-  if (OVERRIDES[key]) return OVERRIDES[key];
+  if (OVERRIDES[key]) {
+    console.log(`📍 IATA Match (Override): ${key} -> ${OVERRIDES[key]}`);
+    return OVERRIDES[key];
+  }
 
   const hits = AIRPORT_INDEX[key];
 
-  if (!hits || hits.length === 0) return null;
+  if (!hits || hits.length === 0) {
+    console.log(`⚠️ IATA Not Found for: ${key}`);
+    return null;
+  }
 
+  console.log(`📍 IATA Match (Index): ${key} -> ${hits[0]}`);
   return hits[0]; // deterministic
 }
