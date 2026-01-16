@@ -65,7 +65,7 @@ const OfferCard = ({ offer, mode = "live", onViewDetails }) => {
         "#2563eb";
 
     const isFavorite = favorites.some(
-        (f) => f.offer_id === offerId && f.provider === provider
+        (f) => (f.offer_id === offerId && f.provider === provider) || (offer.id && f.id === offer.id)
     );
 
     /* =========================
@@ -90,22 +90,8 @@ const OfferCard = ({ offer, mode = "live", onViewDetails }) => {
     const handleFavorite = () => {
         if (!cfg.allowFavorite) return;
 
-        if (!user) {
-            alert("Te rog autentifică-te pentru a salva favorite.");
-            return;
-        }
-
-        const normalized = {
-            offer_id: offerId,
-            provider,
-            title: offer.title,
-            image: image,
-            price: price,
-            link: link,
-            raw: offer, // păstrăm originalul
-        };
-
-        toggleFavorite(normalized);
+        // Trimitem obiectul direct, contextul se ocupă de normalizare
+        toggleFavorite(offer);
     };
 
     const handleCTA = () => {
@@ -151,8 +137,8 @@ const OfferCard = ({ offer, mode = "live", onViewDetails }) => {
                     <button
                         onClick={handleFavorite}
                         className={`absolute top-3 right-3 p-2 rounded-full backdrop-blur-sm transition ${isFavorite
-                                ? "bg-rose-500 text-white"
-                                : "bg-white/80 text-gray-600 hover:bg-white"
+                            ? "bg-rose-500 text-white"
+                            : "bg-white/80 text-gray-600 hover:bg-white"
                             }`}
                         title={isFavorite ? "Șterge din favorite" : "Adaugă la favorite"}
                     >
@@ -197,6 +183,7 @@ const OfferCard = ({ offer, mode = "live", onViewDetails }) => {
                 <Button fullWidth iconName="ExternalLink" iconPosition="right" onClick={handleCTA}>
                     {price != null ? `Vezi oferta €${price}` : offer.cta?.label || "Vezi oferta"}
                 </Button>
+
 
                 {onViewDetails && (
                     <button

@@ -3,9 +3,14 @@ import React from "react";
 import OfferCard from "../../../components/OfferCard";
 import { MOCK_OFFERS } from "../mockData";
 
-const OffersList = ({ offers = [], hasSearched, loading }) => {
+const OffersList = ({
+  offers = [],
+  hasSearched,
+  loading,
+  context = "search", // 👈 "search" | "favorites"
+}) => {
   const safeOffers = Array.isArray(offers) ? offers : [];
-  const isMock = !hasSearched;
+  const isMock = !hasSearched && context === "search";
   const displayOffers = isMock ? MOCK_OFFERS : safeOffers;
 
   if (loading) {
@@ -17,7 +22,7 @@ const OffersList = ({ offers = [], hasSearched, loading }) => {
     );
   }
 
-  if (hasSearched && safeOffers.length === 0) {
+  if (!isMock && hasSearched && safeOffers.length === 0) {
     return (
       <div className="mt-16 text-center py-12">
         <div className="text-6xl mb-4">🔍</div>
@@ -35,14 +40,14 @@ const OffersList = ({ offers = [], hasSearched, loading }) => {
     <div className="mt-16">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold">
-          {isMock ? "Exemple de oferte" : "Rezultate căutare"}
+          {isMock
+            ? "Exemple de oferte"
+            : context === "favorites"
+              ? "Ofertele tale favorite"
+              : "Rezultate căutare"}
         </h2>
 
-        {isMock ? (
-          <span className="text-sm text-gray-500 bg-yellow-50 px-3 py-1 rounded-full border border-yellow-200">
-            Carduri demonstrative
-          </span>
-        ) : (
+        {!isMock && (
           <span className="text-sm text-gray-600">
             {safeOffers.length}{" "}
             {safeOffers.length === 1 ? "rezultat" : "rezultate"}
@@ -53,10 +58,9 @@ const OffersList = ({ offers = [], hasSearched, loading }) => {
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {displayOffers.map((offer, index) => (
           <OfferCard
-            key={offer.id ?? `offer-${index}`}
+            key={offer.offer_id ?? offer.id ?? `offer-${index}`}
             offer={offer}
             mode={isMock ? "demo" : "live"}
-            showFavoriteButton={!isMock}
           />
         ))}
       </div>
@@ -65,8 +69,7 @@ const OffersList = ({ offers = [], hasSearched, loading }) => {
         <div className="mt-8 p-6 bg-blue-50 rounded-xl border border-blue-100">
           <p className="text-sm text-blue-900">
             <strong>💡 Sfat:</strong> Acestea sunt exemple demonstrative.
-            Folosește formularul de căutare de mai sus pentru a vedea oferte reale
-            de la partenerii noștri.
+            Folosește formularul de căutare de mai sus pentru a vedea oferte reale.
           </p>
         </div>
       )}

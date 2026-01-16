@@ -37,11 +37,16 @@ const ChatMessage = ({ message }) => {
     const providerName = card.provider_meta?.name ?? card.provider ?? "Partener";
     const brandColor = card.provider_meta?.brand_color ?? "#2563eb";
     const imageUrl = card.image_url ?? "/assets/affiliates/default.jpg";
-    const offerId = card.id ?? card.cta?.url;
-
     const isSaved = favorites.some(
-      (f) => f.offer_id === offerId && f.provider === card.provider
+      (f) =>
+        (f.offer_id === (card.id || card.cta?.url || card.offer_id) && f.provider === card.provider) ||
+        (card.id && f.id === card.id)
     );
+
+    const handleFavorite = () => {
+      // Deoarece ChatMessage nu primește direct un `user` state, ne bazăm pe context sau verificăm rapid
+      toggleFavorite(card);
+    };
 
     const handleShare = () => {
       const url = card.cta?.url || window.location.href;
@@ -97,16 +102,17 @@ const ChatMessage = ({ message }) => {
               <div className="flex gap-2">
                 {/* ❤️ FAVORITE */}
                 <button
-                  onClick={() => toggleFavorite(card)}
+                  onClick={handleFavorite}
                   className={`w-10 h-10 rounded-full border flex items-center justify-center ${isSaved
-                      ? "bg-red-50 border-red-200"
-                      : "bg-white border-gray-200"
+                    ? "bg-red-50 border-red-200"
+                    : "bg-white border-gray-200"
                     }`}
                 >
                   <Icon
                     name="Heart"
                     size={18}
                     color={isSaved ? "#E11D48" : "#94A3B8"}
+                    fill={isSaved ? "#E11D48" : "none"}
                   />
                 </button>
 

@@ -201,24 +201,46 @@ function buildSearchPayload(offerType, formData) {
 // ==============================
 // Component
 // ==============================
-const SearchOffers = ({ onSearch }) => {
-  const [offerType, setOfferType] = useState("hotel");
+const SearchOffers = ({ onSearch, initialOfferType, initialFormData }) => {
+  const [offerType, setOfferType] = useState(initialOfferType || "hotel");
 
   const [formData, setFormData] = useState({
-    destination: "",
-    fromAirport: "",
-    toAirport: "",
-    checkIn: "",
-    checkOut: "",
-    adults: 2,
-    children: 0,
-    childrenAges: [],
-    maxBudget: "",
-    hotelStars: "3+",
-    mealType: "any",
-    hotelRating: 3,
-    selectedOperators: [],
+    destination: initialFormData?.destination || "",
+    fromAirport: initialFormData?.airports?.from || "",
+    toAirport: initialFormData?.airports?.to || "",
+    checkIn: initialFormData?.dates?.start || "",
+    checkOut: initialFormData?.dates?.end || "",
+    adults: initialFormData?.people?.adults ?? 2,
+    children: initialFormData?.people?.children ?? 0,
+    childrenAges: initialFormData?.people?.childrenAges || [],
+    maxBudget: initialFormData?.filters?.maxBudget || "",
+    hotelStars: initialFormData?.filters?.hotelStars || "3+",
+    mealType: initialFormData?.filters?.mealType || "any",
+    hotelRating: initialFormData?.filters?.hotelRating ?? 3,
+    selectedOperators: initialFormData?.operators || [],
   });
+
+  // Sync state if props change (important for resuming searches)
+  useEffect(() => {
+    if (initialOfferType) setOfferType(initialOfferType);
+    if (initialFormData) {
+      setFormData({
+        destination: initialFormData.destination || "",
+        fromAirport: initialFormData.airports?.from || "",
+        toAirport: initialFormData.airports?.to || "",
+        checkIn: initialFormData.dates?.start || "",
+        checkOut: initialFormData.dates?.end || "",
+        adults: initialFormData.people?.adults ?? 2,
+        children: initialFormData.people?.children ?? 0,
+        childrenAges: initialFormData.people?.childrenAges || [],
+        maxBudget: initialFormData.filters?.maxBudget || "",
+        hotelStars: initialFormData.filters?.hotelStars || "3+",
+        mealType: initialFormData.filters?.mealType || "any",
+        hotelRating: initialFormData.filters?.hotelRating ?? 3,
+        selectedOperators: initialFormData.operators || [],
+      });
+    }
+  }, [initialOfferType, initialFormData]);
 
   const fields = FORM_CONFIG[offerType]?.fields ?? FORM_CONFIG.hotel.fields;
 
