@@ -264,29 +264,30 @@ const OffersPage = () => {
 
     if (activeTab === "searches") {
       return (
-        <div className="space-y-6">
-          {/* BULK ACTIONS BAR */}
-          <div className="flex items-center justify-between bg-white p-4 rounded-xl border shadow-sm sticky top-20 z-10 transition-all">
-            <div className="flex items-center gap-3">
-              <span className="text-sm font-medium text-slate-600">
-                {selectedSearchIds.length} selectate
-              </span>
-            </div>
+        <div className="space-y-4">
+
+          {/* ACTION BAR */}
+          <div className="bg-white border rounded-lg p-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <span className="text-sm text-slate-600">
+              {selectedSearchIds.length} selectate
+            </span>
+
             <div className="flex gap-2">
               <Button
-                variant="outline"
                 size="sm"
-                className="text-rose-600 border-rose-200 hover:bg-rose-50"
+                variant="outline"
+                className="text-rose-600 border-rose-300"
                 disabled={selectedSearchIds.length === 0}
                 onClick={deleteSelectedSearches}
                 iconName="Trash2"
               >
                 Șterge selectate
               </Button>
+
               <Button
-                variant="ghost"
                 size="sm"
-                className="text-slate-500 hover:text-rose-600"
+                variant="ghost"
+                className="text-slate-500"
                 onClick={deleteAllSearches}
               >
                 Șterge toate
@@ -294,67 +295,79 @@ const OffersPage = () => {
             </div>
           </div>
 
-          <div className="grid gap-4">
-            {savedSearches.length === 0 ? (
-              <div className="text-center py-20 bg-white rounded-2xl border border-dashed text-slate-400">
-                <Icon name="History" size={48} className="mx-auto mb-4 opacity-20" />
-                <p>Nu ai încă nicio căutare salvată.</p>
-              </div>
-            ) : (
-              savedSearches.map((s) => (
+          {/* LIST */}
+          {savedSearches.length === 0 ? (
+            <div className="text-center py-16 text-slate-400 border rounded-lg bg-white">
+              <Icon name="History" size={40} className="mx-auto mb-3 opacity-30" />
+              <p>Nu ai încă nicio căutare salvată.</p>
+            </div>
+          ) : (
+            <div className="divide-y border rounded-lg bg-white">
+              {savedSearches.map((s) => (
                 <div
                   key={s.id}
-                  className={`p-4 bg-white rounded-xl border flex justify-between items-center transition-all hover:shadow-md ${selectedSearchIds.includes(s.id) ? "border-blue-500 bg-blue-50/30" : ""
-                    }`}
+                  className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3
+                ${selectedSearchIds.includes(s.id) ? "bg-blue-50" : ""}
+              `}
                 >
-                  <div className="flex items-center gap-4 flex-1">
+                  {/* LEFT */}
+                  <div className="flex items-start gap-3 flex-1 min-w-0">
                     <input
                       type="checkbox"
-                      className="w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                      className="mt-1"
                       checked={selectedSearchIds.includes(s.id)}
                       onChange={() => toggleSelect(s.id)}
                     />
+
                     <div className="min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 border border-slate-200">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] uppercase font-semibold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">
                           {s.offer_type}
                         </span>
-                        <div className="font-semibold text-slate-900 truncate">{s.query}</div>
+                        <span className="font-medium text-slate-900 truncate">
+                          {s.query}
+                        </span>
                       </div>
-                      <div className="text-xs text-slate-500 flex items-center gap-1">
+
+                      <div className="text-xs text-slate-500 flex items-center gap-1 mt-1">
                         <Icon name="Calendar" size={12} />
                         {new Date(s.created_at).toLocaleString("ro-RO", {
                           day: "2-digit",
                           month: "short",
                           hour: "2-digit",
-                          minute: "2-digit"
+                          minute: "2-digit",
                         })}
                       </div>
                     </div>
                   </div>
 
+                  {/* RIGHT */}
                   <Button
                     size="sm"
-                    onClick={() => navigate(location.pathname, {
-                      state: {
-                        autoSearch: true,
-                        query: s.query,
-                        offerType: s.offer_type,
-                        payload: s.payload
-                      },
-                      replace: true
-                    })}
+                    className="w-full sm:w-auto"
                     iconName="RotateCcw"
+                    onClick={() =>
+                      navigate(location.pathname, {
+                        state: {
+                          autoSearch: true,
+                          query: s.query,
+                          offerType: s.offer_type,
+                          payload: s.payload,
+                        },
+                        replace: true,
+                      })
+                    }
                   >
                     Repetă
                   </Button>
                 </div>
-              ))
-            )}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       );
     }
+
     return null;
   };
 
@@ -372,40 +385,71 @@ const OffersPage = () => {
             </p>
 
             {/* TABS */}
-            <div className="flex gap-6 mt-6">
-              <button
-                onClick={() => setActiveTab("search")}
-                className={`pb-1 transition-all ${activeTab === "search"
-                  ? "font-bold text-blue-600 border-b-2 border-blue-600"
-                  : "text-slate-500 hover:text-slate-800"
-                  }`}
-              >
-                🔍 Caută
-              </button>
+            <div className="mt-6">
 
-              <button
-                onClick={() => setActiveTab("favorites")}
-                className={`pb-1 transition-all ${activeTab === "favorites"
-                  ? "font-bold text-blue-600 border-b-2 border-blue-600"
-                  : "text-slate-500 hover:text-slate-800"
-                  }`}
-              >
-                ❤️ Favorite ({favorites.length})
-              </button>
+              {/* MOBILE */}
+              <div className="grid grid-cols-3 gap-2 sm:hidden bg-slate-100 p-1 rounded-xl">
+                {[
+                  { id: "search", label: "Caută", icon: "🔍" },
+                  { id: "favorites", label: `Favorite (${favorites.length})`, icon: "❤️" },
+                  { id: "searches", label: `Căutări (${savedSearches.length})`, icon: "🕘" },
+                ].map(tab => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`
+          text-sm py-2 rounded-lg font-medium transition
+          ${activeTab === tab.id
+                        ? "bg-white text-blue-600 shadow font-semibold"
+                        : "text-slate-600"}
+        `}
+                  >
+                    <div className="flex flex-col items-center leading-tight">
+                      <span>{tab.icon}</span>
+                      <span>{tab.label}</span>
+                    </div>
+                  </button>
+                ))}
+              </div>
 
-              <button
-                onClick={() => {
-                  setActiveTab("searches");
-                  loadSavedSearches();
-                }}
-                className={`pb-1 transition-all ${activeTab === "searches"
-                  ? "font-bold text-blue-600 border-b-2 border-blue-600"
-                  : "text-slate-500 hover:text-slate-800"
-                  }`}
-              >
-                🕘 Căutări ({savedSearches.length})
-              </button>
+              {/* DESKTOP */}
+              <div className="hidden sm:flex gap-6">
+                <button
+                  onClick={() => setActiveTab("search")}
+                  className={`pb-1 transition-all ${activeTab === "search"
+                    ? "font-bold text-blue-600 border-b-2 border-blue-600"
+                    : "text-slate-500 hover:text-slate-800"
+                    }`}
+                >
+                  🔍 Caută
+                </button>
+
+                <button
+                  onClick={() => setActiveTab("favorites")}
+                  className={`pb-1 transition-all ${activeTab === "favorites"
+                    ? "font-bold text-blue-600 border-b-2 border-blue-600"
+                    : "text-slate-500 hover:text-slate-800"
+                    }`}
+                >
+                  ❤️ Favorite ({favorites.length})
+                </button>
+
+                <button
+                  onClick={() => {
+                    setActiveTab("searches");
+                    loadSavedSearches();
+                  }}
+                  className={`pb-1 transition-all ${activeTab === "searches"
+                    ? "font-bold text-blue-600 border-b-2 border-blue-600"
+                    : "text-slate-500 hover:text-slate-800"
+                    }`}
+                >
+                  🕘 Căutări ({savedSearches.length})
+                </button>
+              </div>
+
             </div>
+
           </div>
 
           <Button onClick={() => navigate("/ai-chat-interface")}>
