@@ -60,32 +60,15 @@ const AIChatInterface = () => {
   const [allChats, setAllChats] = useState([]);
   const [plan, setPlan] = useState("free");
 
-  useEffect(() => {
-    if (!messages.length) return;
-
-    const last = messages[messages.length - 1];
-
-    // 🔥 doar când AI răspunde
-    if (last.sender !== "ai") return;
-
-    // dacă AI trimite text + carduri, ne ducem la TEXT
-    let target = document.getElementById(`msg-${last.id}`);
-
-    // fallback: caută ultimul mesaj AI cu text
-    if (!last.content && messages.length > 1) {
-      for (let i = messages.length - 2; i >= 0; i--) {
-        if (messages[i].sender === "ai" && messages[i].content) {
-          target = document.getElementById(`msg-${messages[i].id}`);
-          break;
-        }
-      }
-    }
-
-    target?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
+  const scrollToBottom = (behavior = "smooth") => {
+    requestAnimationFrame(() => {
+      messagesEndRef.current?.scrollIntoView({
+        behavior,
+        block: "end",
+      });
     });
-  }, [messages]);
+  };
+
 
   // ------------------------------------------------------
   // 📌 Conversație ID (UUID din DB sau fallback local)
@@ -114,6 +97,21 @@ const AIChatInterface = () => {
       .maybeSingle();
     return data;
   };
+  useEffect(() => {
+    if (!messages.length) return;
+
+    const last = messages[messages.length - 1];
+    if (last.sender !== "ai") return;
+
+    requestAnimationFrame(() => {
+      const el = document.getElementById(`msg-${last.id}`);
+      el?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    });
+  }, [messages]);
+
 
   // ======================================================
   // 🔹 Load inițial — Sursa de Adevăr (Supabase vs Local)
@@ -339,7 +337,21 @@ const AIChatInterface = () => {
       };
 
       setIsTyping(true);
-      setMessages((prev) => [...prev, userMsg]);
+      setMessages((prev) => {
+        const next = [...prev, userMsg];
+
+        requestAnimationFrame(() => {
+          const el = document.getElementById(`msg-${userMsg.id}`);
+          el?.scrollIntoView({
+            behavior: "auto",   // instant
+            block: "start",
+          });
+        });
+
+        return next;
+      });
+
+
       setConversationHistory((prev) => [...prev, { role: "user", content }]);
 
       let currentDbId = conversationIdRef.current;
@@ -384,6 +396,8 @@ const AIChatInterface = () => {
         }
         return next;
       });
+
+
 
       setConversationHistory((prev) => [
         ...prev,
@@ -542,10 +556,6 @@ const AIChatInterface = () => {
                   />
                 ))}
 
-
-
-
-                {/* TYPING */}
                 {isTyping && (
                   <div className="flex items-center space-x-2 p-4">
                     <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
@@ -556,8 +566,6 @@ const AIChatInterface = () => {
                     </span>
                   </div>
                 )}
-
-                <div ref={messagesEndRef} />
               </div>
             )}
           </div>

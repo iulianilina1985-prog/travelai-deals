@@ -31,20 +31,10 @@ const OffersPage = () => {
   const [initialOfferType, setInitialOfferType] = useState(null);
 
   const resultsRef = useRef(null);
+  const searchTopRef = useRef(null);
 
-  useEffect(() => {
-    if (resultsRef.current) {
-      resultsRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [activeTab, hasSearched]);
 
-  useEffect(() => {
-    loadSavedSearches();
-  }, []);
 
-  /* ===============================
-      LOAD / SAVE / DELETE SEARCHES
-  ================================ */
   /* ===============================
       LOAD / SAVE / DELETE SEARCHES
   ================================ */
@@ -171,7 +161,13 @@ const OffersPage = () => {
     setActiveTab("search");
     setInitialFormData(null); // Reset pre-fill
     setInitialOfferType(null);
-
+    // 🔥 SCROLL IMEDIAT DUPĂ CLICK
+    requestAnimationFrame(() => {
+      resultsRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    });
     try {
       const { data: { session } } = await supabase.auth.getSession();
 
@@ -373,9 +369,11 @@ const OffersPage = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 pt-24 pb-20">
-      <div className="max-w-6xl mx-auto px-4">
-        {/* HEADER */}
-        <div className="flex justify-between items-start mb-8">
+
+      {/* ================= HEADER + TABS ================= */}
+      <div className="bg-white border-b sticky top-0 z-40">
+
+        <div className="max-w-6xl mx-auto px-4 py-6 flex justify-between items-start">
           <div>
             <h1 className="text-3xl font-extrabold text-slate-900">
               Caută oferte
@@ -383,73 +381,6 @@ const OffersPage = () => {
             <p className="text-slate-600 mt-2">
               Motorul tău de găsit vacanțe bune.
             </p>
-
-            {/* TABS */}
-            <div className="mt-6">
-
-              {/* MOBILE */}
-              <div className="grid grid-cols-3 gap-2 sm:hidden bg-slate-100 p-1 rounded-xl">
-                {[
-                  { id: "search", label: "Caută", icon: "🔍" },
-                  { id: "favorites", label: `Favorite (${favorites.length})`, icon: "❤️" },
-                  { id: "searches", label: `Căutări (${savedSearches.length})`, icon: "🕘" },
-                ].map(tab => (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`
-          text-sm py-2 rounded-lg font-medium transition
-          ${activeTab === tab.id
-                        ? "bg-white text-blue-600 shadow font-semibold"
-                        : "text-slate-600"}
-        `}
-                  >
-                    <div className="flex flex-col items-center leading-tight">
-                      <span>{tab.icon}</span>
-                      <span>{tab.label}</span>
-                    </div>
-                  </button>
-                ))}
-              </div>
-
-              {/* DESKTOP */}
-              <div className="hidden sm:flex gap-6">
-                <button
-                  onClick={() => setActiveTab("search")}
-                  className={`pb-1 transition-all ${activeTab === "search"
-                    ? "font-bold text-blue-600 border-b-2 border-blue-600"
-                    : "text-slate-500 hover:text-slate-800"
-                    }`}
-                >
-                  🔍 Caută
-                </button>
-
-                <button
-                  onClick={() => setActiveTab("favorites")}
-                  className={`pb-1 transition-all ${activeTab === "favorites"
-                    ? "font-bold text-blue-600 border-b-2 border-blue-600"
-                    : "text-slate-500 hover:text-slate-800"
-                    }`}
-                >
-                  ❤️ Favorite ({favorites.length})
-                </button>
-
-                <button
-                  onClick={() => {
-                    setActiveTab("searches");
-                    loadSavedSearches();
-                  }}
-                  className={`pb-1 transition-all ${activeTab === "searches"
-                    ? "font-bold text-blue-600 border-b-2 border-blue-600"
-                    : "text-slate-500 hover:text-slate-800"
-                    }`}
-                >
-                  🕘 Căutări ({savedSearches.length})
-                </button>
-              </div>
-
-            </div>
-
           </div>
 
           <Button onClick={() => navigate("/ai-chat-interface")}>
@@ -458,7 +389,85 @@ const OffersPage = () => {
           </Button>
         </div>
 
+        {/* ===== MOBILE TABS – FULL WIDTH ===== */}
+        <div className="sm:hidden grid grid-cols-3 text-center border-t">
+          {[
+            { id: "search", label: "Caută", icon: "🔍" },
+            { id: "favorites", label: "Favorite", icon: "❤️" },
+            { id: "searches", label: "Căutări", icon: "🕘" },
+          ].map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`py-3 text-sm font-medium transition
+              ${activeTab === tab.id
+                  ? "text-blue-600 border-b-2 border-blue-600"
+                  : "text-slate-500"}
+            `}
+            >
+              <div className="flex flex-col items-center gap-0.5">
+                <span>{tab.icon}</span>
+                <span>
+                  {tab.label}
+                  {tab.id === "favorites" && ` (${favorites.length})`}
+                  {tab.id === "searches" && ` (${savedSearches.length})`}
+                </span>
+              </div>
+            </button>
+          ))}
+        </div>
+
+        {/* ===== DESKTOP TABS ===== */}
+        <div className="hidden sm:flex gap-6 max-w-6xl mx-auto px-4 pt-4">
+          <button
+            onClick={() => setActiveTab("search")}
+            className={`pb-2 ${activeTab === "search"
+              ? "font-bold text-blue-600 border-b-2 border-blue-600"
+              : "text-slate-500 hover:text-slate-800"
+              }`}
+          >
+            🔍 Caută
+          </button>
+
+          <button
+            onClick={() => setActiveTab("favorites")}
+            className={`pb-2 ${activeTab === "favorites"
+              ? "font-bold text-blue-600 border-b-2 border-blue-600"
+              : "text-slate-500 hover:text-slate-800"
+              }`}
+          >
+            ❤️ Favorite ({favorites.length})
+          </button>
+
+          <button
+            onClick={() => {
+              setActiveTab("searches");
+              loadSavedSearches();
+            }}
+            className={`pb-2 ${activeTab === "searches"
+              ? "font-bold text-blue-600 border-b-2 border-blue-600"
+              : "text-slate-500 hover:text-slate-800"
+              }`}
+          >
+            🕘 Căutări ({savedSearches.length})
+          </button>
+        </div>
+      </div>
+
+      {/* ================= PAGE CONTENT ================= */}
+      <div className="max-w-6xl mx-auto px-4">
+
         <div className="border-b mb-8" />
+        <div ref={searchTopRef} />
+
+        {/* SEARCH FORM – rămâne montat */}
+        <div style={{ display: activeTab === "search" ? "block" : "none" }}>
+          <SearchOffers
+            onSearch={handleSearch}
+            initialFormData={initialFormData}
+            initialOfferType={initialOfferType}
+          />
+        </div>
 
         {/* SEARCH FORM – rămâne montat */}
         <div style={{ display: activeTab === "search" ? "block" : "none" }}>
@@ -476,6 +485,7 @@ const OffersPage = () => {
       </div>
     </div>
   );
+
 };
 
 export default OffersPage;
