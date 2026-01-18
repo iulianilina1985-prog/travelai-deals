@@ -3,6 +3,7 @@ import Button from "../../../components/ui/Button";
 import { Checkbox } from "../../../components/ui/Checkbox";
 import Icon from "../../../components/AppIcon";
 import { supabase } from "../../../lib/supabase";
+import { useNavigate } from "react-router-dom";
 
 // setări default dacă userul nu are încă rând în privacy_settings
 const DEFAULT_PRIVACY = {
@@ -13,6 +14,7 @@ const DEFAULT_PRIVACY = {
 };
 
 const DataPrivacyTab = () => {
+  const navigate = useNavigate();
   const [privacySettings, setPrivacySettings] = useState({
     data_collection: true,
     analytics: false,
@@ -36,6 +38,7 @@ const DataPrivacyTab = () => {
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
+
 
       // user curent
       const { data: userData, error: userErr } = await supabase.auth.getUser();
@@ -103,52 +106,44 @@ const DataPrivacyTab = () => {
 
   // 🔁 helper separat ca să-l putem apela și după EXPORT
   const loadUsageStats = async (uid) => {
-    // saved_deals
-    const { count: savedDealsCount } = await supabase
-      .from("saved_deals")
-      .select("id", { count: "exact", head: true })
-      .eq("user_id", uid);
-
-    // saved_searches
+    // 🔎 CĂUTĂRI SALVATE
     const { count: savedSearchesCount } = await supabase
       .from("saved_searches")
       .select("id", { count: "exact", head: true })
       .eq("user_id", uid);
 
-    // chat_history ca “vizualizări profil” – deocamdată ca demo
-    const { count: chatCount } = await supabase
-      .from("chat_history")
+    // ❤️ OFERTE SALVATE (CORECT)
+    const { count: savedOffersCount } = await supabase
+      .from("saved_offers")
       .select("id", { count: "exact", head: true })
       .eq("user_id", uid);
 
-    // user profile creat la
+    // 💬 CHATURI (CORECT)
+    const { count: chatCount } = await supabase
+      .from("chat_conversations")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", uid);
+
+    /// 📅 DATA CREĂRII CONTULUI
     const { data: profileRow } = await supabase
       .from("user_profiles")
       .select("created_at")
-      .eq("user_id", uid)
+      .eq("id", uid)
       .maybeSingle();
 
     setDataUsage((prev) => ({
       ...prev,
       totalSearches: savedSearchesCount ?? 0,
-      savedDeals: savedDealsCount ?? 0,
+      savedDeals: savedOffersCount ?? 0,
       profileViews: chatCount ?? 0,
       accountCreated: profileRow?.created_at
         ? new Date(profileRow.created_at).toISOString().slice(0, 10)
-        : prev.accountCreated,
+        : "—",
     }));
 
-    // actualizăm și în privacy_settings ca să păstrăm ultima statistică
-    await supabase
-      .from("privacy_settings")
-      .update({
-        total_searches: savedSearchesCount ?? 0,
-        saved_deals: savedDealsCount ?? 0,
-        profile_views: chatCount ?? 0,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("user_id", uid);
+
   };
+
 
   // ✅ 2. când bifezi/debifezi o setare, o salvăm și în DB
   const handlePrivacyChange = async (setting, checked) => {
@@ -474,9 +469,15 @@ const DataPrivacyTab = () => {
               Citește politica noastră completă de confidențialitate și
               prelucrare a datelor.
             </p>
-            <Button variant="outline" size="sm" iconName="ExternalLink">
+            <Button
+              variant="outline"
+              size="sm"
+              iconName="ExternalLink"
+              onClick={() => navigate("/politica-confidentialitate")}
+            >
               Vezi politica
             </Button>
+
           </div>
         </div>
       </div>

@@ -26,50 +26,49 @@ const UserProfile = () => {
   }, [activeTab]);
 
   useEffect(() => {
-  const fetchUser = async () => {
-    try {
-      // 1) USER
-      const { data: userData } = await supabase.auth.getUser();
-      const user = userData?.user;
-      if (!user) return;
+    const fetchUser = async () => {
+      try {
+        // 1) USER
+        const { data: userData } = await supabase.auth.getUser();
+        const user = userData?.user;
+        if (!user) return;
 
-      // 2) SUBSCRIPTION REALĂ
-      const { data: sub } = await supabase
-        .from("subscriptions")
-        .select("plan_name")
-        .eq("user_id", user.id)
-        .maybeSingle();
+        // 2) SUBSCRIPTION REALĂ
+        const { data: sub } = await supabase
+          .from("subscriptions")
+          .select("plan_name")
+          .eq("user_id", user.id)
+          .maybeSingle();
 
-      const realPlan = sub?.plan_name || "Free";
+        const realPlan = sub?.plan_name || "Free";
 
-      // 3) UPDATE USER INFO
-      setUserInfo({
-        name: user.user_metadata?.full_name || "Utilizator",
-        email: user.email,
-        avatar: user.user_metadata?.avatar_url || "",
-        subscriptionTier: realPlan, // 🔥 PLAN REAL, NU metadata veche!
-        memberSince: new Date(user.created_at).toLocaleDateString("ro-RO", {
-          year: "numeric",
-          month: "long",
-        }),
-      });
+        // 3) UPDATE USER INFO
+        setUserInfo({
+          name: user.user_metadata?.full_name || "Utilizator",
+          email: user.email,
+          avatar: user.user_metadata?.avatar_url || "",
+          subscriptionTier: realPlan, // 🔥 PLAN REAL, NU metadata veche!
+          memberSince: new Date(user.created_at).toLocaleDateString("ro-RO", {
+            year: "numeric",
+            month: "long",
+          }),
+        });
 
-    } finally {
-      setLoading(false);
-    }
-  };
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  fetchUser();
-}, []);
+    fetchUser();
+  }, []);
 
 
   const tabs = [
     { id: "personal", label: "Informații Personale", icon: "User", component: PersonalInfoTab },
-    { id: "travel", label: "Preferințe Călătorie", icon: "Plane", component: TravelPreferencesTab },
-    { id: "subscription", label: "Abonament", icon: "Crown", component: SubscriptionTab },
+
     { id: "notifications", label: "Notificări", icon: "Bell", component: NotificationSettingsTab },
     { id: "privacy", label: "Confidențialitate", icon: "Shield", component: DataPrivacyTab },
-    { id: "language", label: "Limbă & Monedă", icon: "Globe", component: LanguageCurrencyTab },
+
   ];
 
   const ActiveTabComponent =
@@ -118,11 +117,14 @@ const UserProfile = () => {
                 </div>
 
                 <div>
-                  <div className="text-lg font-bold text-primary">
-                    {userInfo.subscriptionTier}
+                  <div className="text-lg font-bold text-success">
+                    Cont activ
                   </div>
-                  <div className="text-sm text-muted-foreground">Plan Curent</div>
+                  <div className="text-sm text-muted-foreground">
+                    Acces complet la platformă
+                  </div>
                 </div>
+
               </div>
             )
           )}
@@ -165,11 +167,10 @@ const UserProfile = () => {
                     <button
                       key={tab.id}
                       onClick={() => handleTabChange(tab.id)}
-                      className={`flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors ${
-                        activeTab === tab.id
-                          ? "bg-primary text-primary-foreground"
-                          : "text-foreground hover:bg-muted"
-                      }`}
+                      className={`flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors ${activeTab === tab.id
+                        ? "bg-primary text-primary-foreground"
+                        : "text-foreground hover:bg-muted"
+                        }`}
                     >
                       <Icon name={tab.icon} size={20} />
                       <span>{tab.label}</span>
@@ -188,11 +189,10 @@ const UserProfile = () => {
                   <button
                     key={tab.id}
                     onClick={() => handleTabChange(tab.id)}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                      activeTab === tab.id
-                        ? "bg-primary text-primary-foreground"
-                        : "text-foreground hover:bg-muted"
-                    }`}
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${activeTab === tab.id
+                      ? "bg-primary text-primary-foreground"
+                      : "text-foreground hover:bg-muted"
+                      }`}
                   >
                     <Icon name={tab.icon} size={20} />
                     <span>{tab.label}</span>
