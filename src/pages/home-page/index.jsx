@@ -2,18 +2,45 @@ import React, { useState } from "react";
 import Header from "../../components/ui/Header";
 import Footer from "../../components/ui/Footer";
 import AuthModal from "../../components/AuthModal";
-import TravelGuidesSection from "./components/TravelGuidesSection";
-
-// 🔥 Noua secțiune de conținut travel
-import FeaturedDestinationsSection from "./components/FeaturedDestinationsSection";
 
 import HeroSection from "./components/HeroSection";
-import FeaturesSection from "./components/FeaturesSection";
+import PartnersSection from "./components/PartnersSection";
+import FeaturedDestinationsSection from "./components/FeaturedDestinationsSection";
+import TravelGuidesSection from "./components/TravelGuidesSection";
 import StatsSection from "./components/StatsSection";
 import HowItWorksSection from "./components/HowItWorksSection";
+import FeaturesSection from "./components/FeaturesSection";
 import TestimonialsSection from "./components/TestimonialsSection";
 import CTASection from "./components/CTASection";
-import PartnersSection from "./components/PartnersSection"; // 🔥 Nou
+
+/* ==============================
+   🖼️ IMAGINI HERO (LOCALE)
+   ⚠️ NU CONTEAZĂ NUMELE
+============================== */
+
+const HERO_IMAGES = [
+  "/assets/hero/paris.jpg",
+  "/assets/hero/rome.png",
+  "/assets/hero/barcelona.webp",
+  "/assets/hero/dubai.jpeg",
+  // 👉 adaugi aici toate imaginile tale
+];
+
+/* ==============================
+   📅 IMAGINEA ZILEI (STABIL)
+============================== */
+
+const dayOfYear = Math.floor(
+  (Date.now() - new Date(new Date().getFullYear(), 0, 0)) /
+  (1000 * 60 * 60 * 24)
+);
+
+const heroBackground =
+  HERO_IMAGES[dayOfYear % HERO_IMAGES.length];
+
+/* ==============================
+   🏠 HOMEPAGE
+============================== */
 
 const HomePage = () => {
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -22,41 +49,37 @@ const HomePage = () => {
   const closeAuthModal = () => setShowAuthModal(false);
 
   return (
-    <div className="relative min-h-screen flex flex-col text-foreground overflow-hidden">
+    <div className="relative min-h-screen flex flex-col overflow-hidden bg-transparent">
 
-      {/* 🌅 Background doar în prima zonă (hero) */}
-      <div className="absolute top-0 left-0 w-full h-[550px] -z-10 overflow-hidden">
-        <img
-          src="/assets/images/frontimage.png"
-          alt="Travel AI background"
-          className="w-full h-full object-cover opacity-[0.45]"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-white/40 to-white/90 backdrop-blur-[2px]" />
-      </div>
 
       {/* HEADER */}
       <Header onAuthClick={openAuthModal} />
 
-      {/* MAIN CONTENT */}
+      {/* MAIN */}
       <main className="flex-grow pt-16">
-
+        {/* HERO */}
         <HeroSection onStart={openAuthModal} />
 
-        {/* 🔥 Secțiune parteneri logo */}
+        {/* PARTENERI */}
         <PartnersSection />
 
-        {/* 🗺️ Secțiune cu destinații — OBLIGATORIE pentru Travelpayouts */}
+        {/* DESTINAȚII */}
         <FeaturedDestinationsSection />
 
-        {/* 🔥 GHIDURI TRAVEL – Conținut editorial pentru Travelpayouts */}
+        {/* GHIDURI */}
         <TravelGuidesSection />
 
+        {/* REST */}
         <StatsSection />
         <HowItWorksSection />
         <FeaturesSection />
         <TestimonialsSection />
         <CTASection onStart={openAuthModal} />
       </main>
+
+      <Footer />
+
+      {/* AUTH MODAL */}
       {showAuthModal && <AuthModal onClose={closeAuthModal} />}
     </div>
   );
