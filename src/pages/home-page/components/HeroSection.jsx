@@ -96,7 +96,7 @@ const HeroSection = () => {
             </button>
 
             <button
-              onClick={() => navigate("/ai-chat")}
+              onClick={() => navigate("/ai-chat-interface")}
               className="px-8 py-3 bg-indigo-600 text-white rounded-lg text-lg font-medium hover:bg-indigo-700 shadow-md flex items-center gap-2"
             >
               <Icon name="MessageCircle" size={18} />
