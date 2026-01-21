@@ -1,57 +1,78 @@
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { AFFILIATES } from "../../../affiliates/registry";
 
-const partners = [
-  { name: "Booking.com", logo: "/assets/partners/booking.png", url: "https://www.booking.com" },
-  { name: "Trip.com", logo: "/assets/partners/trip.png", url: "https://www.trip.com" },
-  { name: "Kiwi.com", logo: "/assets/partners/kiwi.png", url: "https://www.kiwi.com" },
-  { name: "Skyscanner", logo: "/assets/partners/skyscanner.png", url: "https://www.skyscanner.net" },
-  { name: "Agoda", logo: "/assets/partners/agoda.png", url: "https://www.agoda.com" },
-  { name: "Expedia", logo: "/assets/partners/expedia.png", url: "https://www.expedia.com" },
-  { name: "Momondo", logo: "/assets/partners/momondo.png", url: "https://www.momondo.com" },
-  { name: "Airbnb", logo: "/assets/partners/airbnb.png", url: "https://www.airbnb.com" }, // 🔥 Adăugat cu link
-];
+const ROTATE_EVERY_MS = 5000;
+const ITEMS_PER_PAGE = 8;
 
 const PartnersSection = () => {
+  const partners = useMemo(() => {
+    return Object.values(AFFILIATES).filter(p => p.image_url);
+  }, []);
+
+  const [page, setPage] = useState(0);
+
+  const totalPages = Math.ceil(partners.length / ITEMS_PER_PAGE);
+
+  useEffect(() => {
+    if (totalPages <= 1) return;
+
+    const interval = setInterval(() => {
+      setPage(prev => (prev + 1) % totalPages);
+    }, ROTATE_EVERY_MS);
+
+    return () => clearInterval(interval);
+  }, [totalPages]);
+
+  const visiblePartners = partners.slice(
+    page * ITEMS_PER_PAGE,
+    page * ITEMS_PER_PAGE + ITEMS_PER_PAGE
+  );
+
   return (
     <section className="w-full py-16 bg-white">
       <div className="max-w-7xl mx-auto px-6 text-center">
 
-        <h2 className="text-2xl lg:text-3xl font-bold mb-10 text-foreground">
-          Ofertele sunt verificate automat de pe cele mai populare platforme
+        <h2 className="text-2xl lg:text-3xl font-bold mb-12 text-foreground">
+          Ofertele sunt verificate automat prin partenerii noștri oficiali
         </h2>
 
         <div
           className="
-            grid 
-            grid-cols-2 
-            sm:grid-cols-3 
-            md:grid-cols-4 
-            lg:grid-cols-8 
-            gap-10 
+            grid
+            grid-cols-2
+            sm:grid-cols-3
+            md:grid-cols-4
+            lg:grid-cols-8
+            gap-12
             place-items-center
           "
         >
-          {partners.map((p) => (
+          {visiblePartners.map((p) => (
             <a
-              key={p.name}
-              href={p.url}
+              key={p.id}
+              href={p.buildLink()}
               target="_blank"
               rel="noopener noreferrer"
+              title={p.name}
               className="
-                flex items-center justify-center 
-                transition duration-200 
-                hover:scale-110 
+                flex items-center justify-center
+                opacity-80
                 hover:opacity-100
+                hover:scale-105
+                transition
+                duration-300
               "
-              title={`Vizitează ${p.name}`}
             >
               <img
-                src={p.logo}
+                src={p.image_url}
                 alt={p.name}
+                loading="lazy"
                 className="
-                  w-28 sm:w-32 md:w-36 
-                  object-contain 
-                  drop-shadow-sm
+                  h-14
+                  sm:h-16
+                  md:h-20
+                  lg:h-24
+                  object-contain
                 "
               />
             </a>

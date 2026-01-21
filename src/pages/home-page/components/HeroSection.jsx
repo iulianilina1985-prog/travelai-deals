@@ -87,22 +87,33 @@ const HeroSection = () => {
             {text.subtitle}
           </p>
 
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
+          <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
+            {/* CTA principal */}
             <button
               onClick={() => navigate("/cauta-oferte")}
-              className="px-8 py-3 bg-white text-black rounded-lg text-lg font-medium hover:bg-gray-200 shadow-md"
+              className="w-full sm:w-auto px-8 py-3 bg-white text-black rounded-lg text-lg font-semibold hover:bg-gray-200 shadow-md"
             >
               Caută oferte
             </button>
 
+            {/* CTA secundar (mobil = outline, desktop = solid) */}
             <button
               onClick={() => navigate("/ai-chat-interface")}
-              className="px-8 py-3 bg-indigo-600 text-white rounded-lg text-lg font-medium hover:bg-indigo-700 shadow-md flex items-center gap-2"
+              className="
+      w-full sm:w-auto
+      px-8 py-3 rounded-lg text-lg font-semibold
+      flex items-center justify-center gap-2
+      shadow-md transition-all
+      border border-white/70 text-white bg-white/10
+      hover:bg-white/15
+      sm:border-0 sm:bg-indigo-600 sm:hover:bg-indigo-700
+    "
             >
               <Icon name="MessageCircle" size={18} />
               Chat AI
             </button>
           </div>
+
         </div>
       </div>
     </section>

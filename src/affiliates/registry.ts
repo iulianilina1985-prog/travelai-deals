@@ -38,7 +38,7 @@ export const AFFILIATES: Record<string, AffiliateProvider> = {
         brandColor: "#2563eb",
         description: "Obține compensații pentru zboruri întârziate sau anulate. Verifică eligibilitatea gratuit.",
         ctaLabel: "Solicită compensație",
-        image_url: "/assets/affiliates/compensair.jpg",
+        image_url: "/assets/partners/Compensair.png",
         buildLink: () => "https://compensair.tpx.lt/U5isYCUu",
     },
 
@@ -49,7 +49,7 @@ export const AFFILIATES: Record<string, AffiliateProvider> = {
         brandColor: "#0f172a",
         description: "Lider mondial în drepturile pasagerilor aerieni. Recuperează-ți banii pentru zboruri cu probleme.",
         ctaLabel: "Verifică zbor",
-        image_url: "/assets/affiliates/airhelp.jpg",
+        image_url: "/assets/partners/airhelp.png",
         buildLink: () => "https://airhelp.tpx.lt/8Vc3jzeS",
     },
 
@@ -64,7 +64,7 @@ export const AFFILIATES: Record<string, AffiliateProvider> = {
         brandColor: "#00a650",
         description: "Transferuri private de la aeroport către hotel. Șoferi profesioniști și prețuri fixe.",
         ctaLabel: "Rezervă taxi",
-        image_url: "/assets/transfers/kiwitaxi.jpg",
+        image_url: "/assets/partners/kiwi.png",
         buildLink: () => "https://kiwitaxi.tpx.lt/UkO0mEQp",
     },
 
@@ -75,7 +75,7 @@ export const AFFILIATES: Record<string, AffiliateProvider> = {
         brandColor: "#2563eb",
         description: "Cea mai mare platformă de transferuri din lume. Alege oferta potrivită pentru tine.",
         ctaLabel: "Vezi oferte",
-        image_url: "/assets/transfers/gettransfer.jpg",
+        image_url: "/assets/partners/get-transfer.png",
         buildLink: () => "https://gettransfer.tpx.lt/rn63Ywr6",
     },
 
@@ -86,7 +86,7 @@ export const AFFILIATES: Record<string, AffiliateProvider> = {
         brandColor: "#f97316",
         description: "Transferuri de încredere în peste 150 de țări. Opțiuni pentru toate bugetele.",
         ctaLabel: "Rezervă transfer",
-        image_url: "/assets/transfers/holidaytaxis.jpg",
+        image_url: "/assets/partners/holiday-taxis.png",
         buildLink: () => "https://holidaytaxis.tpx.lt/JwHtT3CU",
     },
 
@@ -97,13 +97,44 @@ export const AFFILIATES: Record<string, AffiliateProvider> = {
         brandColor: "#0ea5e9",
         description: "Sistem de rezervare pentru transferuri în toată lumea. Siguranță și confort.",
         ctaLabel: "Caută transfer",
-        image_url: "/assets/transfers/intui.jpg",
+        image_url: "/assets/partners/intui-travel.png",
         buildLink: () => "https://intui.tpx.lt/uNkNui5o",
     },
+    welcome: {
+        id: "welcome",
+        name: "Welcome Pickups",
+        category: "transfers",
+        brandColor: "#0ea5e9",
+        description: "Sistem de rezervare pentru transferuri în toată lumea. Siguranță și confort.",
+        ctaLabel: "Caută transfer",
+        image_url: "/assets/partners/welcome.png",
+        buildLink: () => "https://tpx.lt/IDhRRzm4",
+    },
+    indrive: {
+        id: "indrive",
+        name: "Indrive - city to city",
+        category: "transfers",
+        brandColor: "#0ea5e9",
+        description: "Sistem de rezervare pentru transferuri în toată lumea. Siguranță și confort.",
+        ctaLabel: "Caută transfer",
+        image_url: "/assets/partners/Indrive.png",
+        buildLink: () => "https://indrive.tpx.lt/PjItpkkJ",
+    },
+
 
     /* ===============================
        TICKETS / ATTRACTIONS / TOURS
        =============================== */
+    ticketmaster: {
+        id: "ticket",
+        name: "Ticket Master",
+        category: "tickets",
+        brandColor: "#ff5b00",
+        description: "Bilete instant pentru muzee și atracții. Sari peste coadă și bucură-te de experiență.",
+        ctaLabel: "Vezi bilete",
+        image_url: "/assets/partners/ticketmaster.png",
+        buildLink: () => "https://ticketmaster.tpx.lt/6baSABiP",
+    },
 
     tiqets: {
         id: "tiqets",
@@ -112,7 +143,7 @@ export const AFFILIATES: Record<string, AffiliateProvider> = {
         brandColor: "#ff5b00",
         description: "Bilete instant pentru muzee și atracții. Sari peste coadă și bucură-te de experiență.",
         ctaLabel: "Vezi bilete",
-        image_url: "/assets/activities/tiqets.jpg",
+        image_url: "/assets/partners/tiqets.png",
         buildLink: () => "https://tiqets.tpx.lt/S3EpuE54",
     },
 
@@ -123,7 +154,7 @@ export const AFFILIATES: Record<string, AffiliateProvider> = {
         brandColor: "#7c3aed",
         description: "Un singur permis pentru zeci de atracții de top. Economisește timp și vizitează mai mult.",
         ctaLabel: "Alege permis",
-        image_url: "/assets/activities/gocity.jpg",
+        image_url: "/assets/partners/go-city.png",
         buildLink: () => "https://gocity.tpx.lt/S4LY11s7",
     },
 
@@ -134,7 +165,7 @@ export const AFFILIATES: Record<string, AffiliateProvider> = {
         brandColor: "#ff5b00",
         description: "Aventuri, tururi și experiențe locale unice. Descoperă ce poți face în destinația ta.",
         ctaLabel: "Descoperă activități",
-        image_url: "/assets/activities/klook.jpg",
+        image_url: "/assets/partners/klook.png",
         buildLink: (params) => {
             const city = params?.city || params?.to || "";
             return city ? `https://klook.tpx.lt/jnEi9ZtF?q=${encodeURIComponent(city)}` : "https://klook.tpx.lt/jnEi9ZtF";
@@ -148,7 +179,7 @@ export const AFFILIATES: Record<string, AffiliateProvider> = {
         brandColor: "#2563eb",
         description: "Audio-ghiduri și tururi pe telefonul tău. Explorează în propriul ritm.",
         ctaLabel: "Vezi tururi",
-        image_url: "/assets/activities/wegotrip.jpg",
+        image_url: "/assets/partners/wegotrip.png",
         buildLink: () => "https://wegotrip.tpx.lt/wLLCYstz",
     },
 
@@ -159,7 +190,7 @@ export const AFFILIATES: Record<string, AffiliateProvider> = {
         brandColor: "#0284c7",
         description: "Închirieri de iahturi și experiențe pe mare. Navighează către următoarea aventură.",
         ctaLabel: "Vezi iahturi",
-        image_url: "/assets/activities/searadar.jpg",
+        image_url: "/assets/partners/searadar.png",
         buildLink: () => "https://searadar.tpx.lt/Zzzl97vT",
     },
 
@@ -174,7 +205,7 @@ export const AFFILIATES: Record<string, AffiliateProvider> = {
         brandColor: "#2563eb",
         description: "Rămâi conectat în peste 200 de țări cu eSIM. Fără taxe de roaming, instalare rapidă.",
         ctaLabel: "Vezi planuri eSIM",
-        image_url: "/assets/esim/airalo.jpg",
+        image_url: "/assets/partners/airalo.png",
         buildLink: () => "https://airalo.tpx.lt/feoFvQ5n",
     },
 
@@ -185,7 +216,7 @@ export const AFFILIATES: Record<string, AffiliateProvider> = {
         brandColor: "#0f172a",
         description: "Cartelă SIM universală pentru călători. Tarife locale peste tot în lume.",
         ctaLabel: "Comandă SIM",
-        image_url: "/assets/esim/drimsim.jpg",
+        image_url: "/assets/partners/drimsim.png",
         buildLink: () => "https://drimsim.tpx.lt/3ntSCd91",
     },
 
@@ -196,7 +227,7 @@ export const AFFILIATES: Record<string, AffiliateProvider> = {
         brandColor: "#22c55e",
         description: "Internet mobil stabil oriunde călătorești. Activează-ți eSIM-ul în câteva minute.",
         ctaLabel: "Vezi oferte Yesim",
-        image_url: "/assets/esim/yesim.jpg",
+        image_url: "/assets/partners/yesim.png",
         buildLink: () => "https://yesim.tpx.lt/OeegGKjR",
     },
 
@@ -207,7 +238,7 @@ export const AFFILIATES: Record<string, AffiliateProvider> = {
         brandColor: "#2563eb",
         description: "Conectivitate globală simplă. Alege pachetul potrivit pentru destinația ta.",
         ctaLabel: "Activează eSIM",
-        image_url: "/assets/esim/ekta.jpg",
+        image_url: "/assets/partners/EKTA.png",
         buildLink: () => "https://ektatraveling.tpx.lt/zSJixg2v",
     },
 
@@ -222,7 +253,7 @@ export const AFFILIATES: Record<string, AffiliateProvider> = {
         brandColor: "#2563eb",
         description: "Cel mai rapid motor de căutare pentru zboruri ieftine. Compară sute de companii aeriene.",
         ctaLabel: "Vezi zboruri",
-        image_url: "/assets/flight/flight.jpg",
+        image_url: "/assets/partners/aviasales.png",
         buildLink: (params) => {
             const { from_iata, to_iata, depart_date, return_date, passengers = 1 } = params || {};
             if (!from_iata || !to_iata) return "https://www.aviasales.com/?marker=688834&locale=ro";
@@ -252,7 +283,7 @@ export const AFFILIATES: Record<string, AffiliateProvider> = {
         brandColor: "#2563eb",
         description: "Închirieri auto la nivel mondial. Cele mai bune oferte de la furnizori de top.",
         ctaLabel: "Caută mașini",
-        image_url: "/assets/cars/qeeq.jpg",
+        image_url: "/assets/partners/qeeq.png",
         buildLink: () => "https://qeeq.tpx.lt/yOJgifcr",
     },
 
@@ -263,7 +294,7 @@ export const AFFILIATES: Record<string, AffiliateProvider> = {
         brandColor: "#1e40af",
         description: "Rezervări auto accesibile în toată lumea. Proces simplu și suport non-stop.",
         ctaLabel: "Vezi mașini",
-        image_url: "/assets/cars/economybookings.jpg",
+        image_url: "/assets/partners/economy-bookings.png",
         buildLink: () => "https://economybookings.tpx.lt/H8mpmQJp",
     },
 
@@ -274,7 +305,7 @@ export const AFFILIATES: Record<string, AffiliateProvider> = {
         brandColor: "#00A859",
         description: "Închirieri auto de la furnizori locali. Servicii personalizate și prețuri oneste.",
         ctaLabel: "Vezi oferte locale",
-        image_url: "/assets/cars/localrent.jpg",
+        image_url: "/assets/partners/localrent.png",
         buildLink: (params) => {
             const loc = params?.location || params?.to || "";
             return loc ? `https://localrent.tpx.lt/BDajXZeJ?pickup=${encodeURIComponent(loc)}` : "https://localrent.tpx.lt/BDajXZeJ";
@@ -292,7 +323,7 @@ export const AFFILIATES: Record<string, AffiliateProvider> = {
         brandColor: "#dc2626",
         description: "Cine locale, cursuri de gătit și tururi culinare. Mănâncă alături de localnici.",
         ctaLabel: "Vezi experiențe",
-        image_url: "/assets/food/eatwith.jpg",
+        image_url: "/assets/partners/Eatwith.png",
         buildLink: () => "https://eatwith.tpx.lt/i5TpILAX",
     },
 
