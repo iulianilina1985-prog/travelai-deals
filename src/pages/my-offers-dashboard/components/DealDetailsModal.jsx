@@ -7,14 +7,14 @@ const DealDetailsModal = ({ deal, isOpen, onClose }) => {
   if (!isOpen || !deal) return null;
 
   const formatPrice = (price) => {
-    return new Intl.NumberFormat('ro-RO', {
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'EUR'
     })?.format(price);
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString)?.toLocaleDateString('ro-RO', {
+    return new Date(dateString)?.toLocaleDateString('en-US', {
       weekday: 'long',
       day: '2-digit',
       month: 'long',
@@ -23,7 +23,7 @@ const DealDetailsModal = ({ deal, isOpen, onClose }) => {
   };
 
   const formatTime = (timeString) => {
-    return new Date(`2000-01-01T${timeString}`)?.toLocaleTimeString('ro-RO', {
+    return new Date(`2000-01-01T${timeString}`)?.toLocaleTimeString('en-US', {
       hour: '2-digit',
       minute: '2-digit'
     });
@@ -41,7 +41,7 @@ const DealDetailsModal = ({ deal, isOpen, onClose }) => {
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-border">
           <h2 className="text-2xl font-bold text-foreground">
-            Detalii ofertă
+            Offer details
           </h2>
           <Button
             variant="ghost"
@@ -90,7 +90,7 @@ const DealDetailsModal = ({ deal, isOpen, onClose }) => {
                   </div>
                 )}
                 <div className="text-sm text-muted-foreground mt-1">
-                  per persoană
+                  per person
                 </div>
               </div>
             </div>
@@ -99,35 +99,35 @@ const DealDetailsModal = ({ deal, isOpen, onClose }) => {
             <div className="grid md:grid-cols-2 gap-6">
               <div className="space-y-4">
                 <h4 className="text-lg font-semibold text-foreground">
-                  Detalii călătorie
+                  Travel details
                 </h4>
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
                     <Icon name="Calendar" size={18} className="text-primary" />
                     <div>
-                      <div className="font-medium">Plecare</div>
+                      <div className="font-medium">Departure</div>
                       <div className="text-muted-foreground">{formatDate(deal?.departureDate)}</div>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <Icon name="Calendar" size={18} className="text-primary" />
                     <div>
-                      <div className="font-medium">Întoarcere</div>
+                      <div className="font-medium">Return</div>
                       <div className="text-muted-foreground">{formatDate(deal?.returnDate)}</div>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <Icon name="Users" size={18} className="text-primary" />
                     <div>
-                      <div className="font-medium">Numărul de persoane</div>
-                      <div className="text-muted-foreground">{deal?.travelers} persoane</div>
+                      <div className="font-medium">Number of persons</div>
+                      <div className="text-muted-foreground">{deal?.travelers} persons</div>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <Icon name="Clock" size={18} className="text-primary" />
                     <div>
-                      <div className="font-medium">Durata</div>
-                      <div className="text-muted-foreground">{deal?.duration} zile</div>
+                      <div className="font-medium">Duration</div>
+                      <div className="text-muted-foreground">{deal?.duration} days</div>
                     </div>
                   </div>
                 </div>
@@ -135,34 +135,34 @@ const DealDetailsModal = ({ deal, isOpen, onClose }) => {
 
               <div className="space-y-4">
                 <h4 className="text-lg font-semibold text-foreground">
-                  Informații zbor
+                  Flight information
                 </h4>
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
                     <Icon name="Plane" size={18} className="text-primary" />
                     <div>
-                      <div className="font-medium">Companie aeriană</div>
+                      <div className="font-medium">Airline</div>
                       <div className="text-muted-foreground">{deal?.airline}</div>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <Icon name="Clock" size={18} className="text-primary" />
                     <div>
-                      <div className="font-medium">Plecare</div>
+                      <div className="font-medium">Departure</div>
                       <div className="text-muted-foreground">{formatTime(deal?.departureTime)} - {formatTime(deal?.arrivalTime)}</div>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <Icon name="MapPin" size={18} className="text-primary" />
                     <div>
-                      <div className="font-medium">Aeroporturi</div>
+                      <div className="font-medium">Airports</div>
                       <div className="text-muted-foreground">{deal?.departureAirport} → {deal?.arrivalAirport}</div>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <Icon name="Luggage" size={18} className="text-primary" />
                     <div>
-                      <div className="font-medium">Bagaj</div>
+                      <div className="font-medium">Baggage</div>
                       <div className="text-muted-foreground">{deal?.baggage}</div>
                     </div>
                   </div>
@@ -174,7 +174,7 @@ const DealDetailsModal = ({ deal, isOpen, onClose }) => {
             {deal?.hotel && (
               <div className="space-y-4">
                 <h4 className="text-lg font-semibold text-foreground">
-                  Detalii hotel
+                  Hotel details
                 </h4>
                 <div className="bg-muted rounded-lg p-4">
                   <div className="flex items-start justify-between mb-3">
@@ -192,7 +192,7 @@ const DealDetailsModal = ({ deal, isOpen, onClose }) => {
                           ))}
                         </div>
                         <span className="text-sm text-muted-foreground">
-                          ({deal?.hotel?.rating}/10 - {deal?.hotel?.reviews} recenzii)
+                          ({deal?.hotel?.rating}/10 - {deal?.hotel?.reviews} reviews)
                         </span>
                       </div>
                     </div>
@@ -215,7 +215,7 @@ const DealDetailsModal = ({ deal, isOpen, onClose }) => {
                       </div>
                       <div className="flex items-center gap-2">
                         <Icon name="Wifi" size={14} />
-                        <span>WiFi gratuit</span>
+                        <span>Free WiFi</span>
                       </div>
                     </div>
                   </div>
@@ -226,7 +226,7 @@ const DealDetailsModal = ({ deal, isOpen, onClose }) => {
             {/* Description */}
             <div className="space-y-4">
               <h4 className="text-lg font-semibold text-foreground">
-                Descriere
+                Description
               </h4>
               <p className="text-muted-foreground leading-relaxed">
                 {deal?.description}
@@ -236,7 +236,7 @@ const DealDetailsModal = ({ deal, isOpen, onClose }) => {
             {/* Inclusions */}
             <div className="space-y-4">
               <h4 className="text-lg font-semibold text-foreground">
-                Ce include
+                What's included
               </h4>
               <div className="grid md:grid-cols-2 gap-2">
                 {deal?.inclusions?.map((inclusion, index) => (
@@ -251,13 +251,13 @@ const DealDetailsModal = ({ deal, isOpen, onClose }) => {
             {/* Terms */}
             <div className="bg-muted rounded-lg p-4">
               <h5 className="font-semibold text-foreground mb-2">
-                Termeni și condiții
+                Terms and conditions
               </h5>
               <ul className="text-sm text-muted-foreground space-y-1">
-                <li>• Prețurile sunt per persoană în cameră dublă</li>
-                <li>• Oferta este valabilă până pe {new Date(deal.expiryDate)?.toLocaleDateString('ro-RO')}</li>
-                <li>• Disponibilitate limitată</li>
-                <li>• Prețurile pot varia în funcție de disponibilitate</li>
+                <li>• Prices are per person in double room</li>
+                <li>• Offer valid until {new Date(deal.expiryDate)?.toLocaleDateString('en-US')}</li>
+                <li>• Limited availability</li>
+                <li>• Prices may vary based on availability</li>
               </ul>
             </div>
           </div>
@@ -266,7 +266,7 @@ const DealDetailsModal = ({ deal, isOpen, onClose }) => {
         {/* Footer */}
         <div className="flex items-center justify-between p-6 border-t border-border bg-muted/50">
           <div className="text-sm text-muted-foreground">
-            Oferit de {deal?.provider}
+            Offered by {deal?.provider}
           </div>
           <div className="flex gap-3">
             <Button
@@ -275,21 +275,21 @@ const DealDetailsModal = ({ deal, isOpen, onClose }) => {
                 if (navigator.share) {
                   navigator.share({
                     title: deal?.title,
-                    text: `Ofertă specială: ${deal?.title} - ${formatPrice(deal?.currentPrice)}`,
+                    text: `Special offer: ${deal?.title} - ${formatPrice(deal?.currentPrice)}`,
                     url: window.location?.href
                   });
                 }
               }}
             >
               <Icon name="Share2" size={16} className="mr-2" />
-              Distribuie
+              Share
             </Button>
             <Button
               variant="default"
               onClick={() => window.open(deal?.bookingUrl, '_blank')}
             >
               <Icon name="ExternalLink" size={16} className="mr-2" />
-              Rezervă acum
+              Book now
             </Button>
           </div>
         </div>

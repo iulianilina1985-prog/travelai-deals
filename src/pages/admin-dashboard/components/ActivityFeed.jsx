@@ -35,17 +35,17 @@ const ActivityFeed = () => {
   };
 
   const timeAgo = (date) => {
-    if (!date) return "necunoscut";
+    if (!date) return "unknown";
 
-    const diff = (Date.now() - new Date(date).getTime()) / 1000; // secunde
+    const diff = (Date.now() - new Date(date).getTime()) / 1000; // seconds
 
-    if (diff < 60) return "acum câteva secunde";
-    if (diff < 3600) return `${Math.floor(diff / 60)} minute în urmă`;
-    if (diff < 86400) return `${Math.floor(diff / 3600)} ore în urmă`;
-    return `${Math.floor(diff / 86400)} zile în urmă`;
+    if (diff < 60) return "just now";
+    if (diff < 3600) return `${Math.floor(diff / 60)} minutes ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)} hours ago`;
+    return `${Math.floor(diff / 86400)} days ago`;
   };
 
-  // ✅ Fetch activități reale
+  // ✅ Fetch real activities
   const fetchActivities = useCallback(async () => {
     setLoading(true);
 
@@ -56,7 +56,7 @@ const ActivityFeed = () => {
       .limit(50);
 
     if (error) {
-      console.error("Eroare la extragerea activităților:", error);
+      console.error("Error fetching activities:", error);
       setLoading(false);
       return;
     }
@@ -64,8 +64,8 @@ const ActivityFeed = () => {
     const mapped = (data || []).map((item) => ({
       id: item.id,
       type: item.event_type,
-      user: item.user_id || "Sistem",
-      action: item.description || "Eveniment înregistrat",
+      user: item.user_id || "System",
+      action: item.description || "Event recorded",
       timestamp: timeAgo(item.created_at),
       icon: iconMap[item.event_type] || iconMap.default,
       iconColor: colorMap[item.event_type] || colorMap.default,
@@ -83,7 +83,7 @@ const ActivityFeed = () => {
   if (loading) {
     return (
       <div className="bg-card border border-border rounded-lg p-6 shadow-card">
-        <p className="text-muted-foreground">Se încarcă activitățile...</p>
+        <p className="text-muted-foreground">Loading activities...</p>
       </div>
     );
   }
@@ -92,12 +92,12 @@ const ActivityFeed = () => {
     <div className="bg-card border border-border rounded-lg shadow-card">
       <div className="p-6 border-b border-border">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-foreground">Activitate recentă</h3>
+          <h3 className="text-lg font-semibold text-foreground">Recent activity</h3>
           <button
             onClick={fetchActivities}
             className="text-sm text-primary hover:text-primary/80 transition-colors"
           >
-            Reîncarcă
+            Reload
           </button>
         </div>
       </div>
@@ -105,7 +105,7 @@ const ActivityFeed = () => {
       <div className="p-6">
         {activities.length === 0 ? (
           <p className="text-muted-foreground text-sm">
-            Nu există activitate înregistrată momentan.
+            There is no activity recorded at the moment.
           </p>
         ) : (
           <div className="space-y-4 max-h-96 overflow-y-auto">
@@ -125,7 +125,7 @@ const ActivityFeed = () => {
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="font-medium text-foreground">
-                      {activity.user === "Sistem" ? "Sistem" : activity.user}
+                      {activity.user === "System" ? "System" : activity.user}
                     </span>
                   </div>
 

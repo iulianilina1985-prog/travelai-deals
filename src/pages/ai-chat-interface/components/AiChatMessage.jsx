@@ -103,8 +103,8 @@ const ChatMessage = ({ message }) => {
               <button
                 onClick={() => toggleSave(saveId)}
                 className={`w-10 h-10 rounded-full border flex items-center justify-center ${isSaved
-                    ? "bg-red-50 border-red-200"
-                    : "bg-white border-gray-200"
+                  ? "bg-red-50 border-red-200"
+                  : "bg-white border-gray-200"
                   }`}
               >
                 <Icon
@@ -130,7 +130,7 @@ const ChatMessage = ({ message }) => {
                   style={{ backgroundColor: brandColor }}
                 >
                   <Icon name="ExternalLink" size={16} />
-                  {card.cta?.label ?? "Vezi detalii"}
+                  {card.cta?.label ?? "See details"}
                 </Button>
               </a>
             </div>
@@ -156,8 +156,8 @@ const ChatMessage = ({ message }) => {
         {/* AVATAR */}
         <div
           className={`w-9 h-9 rounded-full flex items-center justify-center shadow ${isUser
-              ? "bg-blue-600"
-              : "bg-gradient-to-br from-primary to-secondary"
+            ? "bg-blue-600"
+            : "bg-gradient-to-br from-primary to-secondary"
             }`}
         >
           <Icon
@@ -172,8 +172,8 @@ const ChatMessage = ({ message }) => {
           {message.content && (
             <div
               className={`px-4 py-3 rounded-2xl whitespace-pre-wrap ${isUser
-                  ? "bg-blue-600 text-white self-end rounded-br-md"
-                  : "bg-white border text-gray-800 self-start rounded-bl-md"
+                ? "bg-blue-600 text-white self-end rounded-br-md"
+                : "bg-white border text-gray-800 self-start rounded-bl-md"
                 }`}
               dangerouslySetInnerHTML={{
                 __html: message.content,

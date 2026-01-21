@@ -19,15 +19,15 @@ const AfiliereDisclosure = () => {
         "
       >
         <h1 className="text-3xl md:text-5xl font-bold text-foreground mb-4 flex justify-center items-center gap-3">
-          Disclosure Afiliere 🤝
+          Affiliate Disclosure 🤝
         </h1>
 
         <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-          Transparență totală: vezi cum funcționează parteneriatele noastre și cum pot apărea comisioane.
+          Total transparency: see how our partnerships work and how commissions may arise.
         </p>
 
         <p className="text-xs md:text-sm text-muted-foreground mt-4">
-          Ultima actualizare: {new Date().toLocaleDateString("ro-RO")}
+          Last update: {new Date().toLocaleDateString("en-US")}
         </p>
       </section>
 
@@ -44,21 +44,21 @@ const AfiliereDisclosure = () => {
         >
           {/* INTRO */}
           <p className="text-muted-foreground text-base md:text-lg leading-relaxed">
-            Platforma <strong>TravelAI Deals</strong> colaborează cu parteneri internaționali precum{" "}
-            <strong>Booking.com, Klook, Trip.com, Momondo, Aviasales</strong> și alții. Unele linkuri de pe site pot fi
-            linkuri de afiliere.
+            The <strong>TravelAI Deals</strong> platform collaborates with international partners such as{" "}
+            <strong>Booking.com, Klook, Trip.com, Momondo, Aviasales</strong> and others. Some links on the site may be
+            affiliate links.
           </p>
 
           {/* 1 */}
           <section>
             <h2 className="flex items-center gap-2 text-lg md:text-2xl font-semibold text-foreground mb-3">
               <Icon name="Link" size={20} className="text-primary" />
-              1. Ce înseamnă linkurile de afiliere?
+              1. What do affiliate links mean?
             </h2>
 
             <p className="text-muted-foreground leading-relaxed text-sm md:text-base">
-              Dacă accesezi un link și finalizezi o rezervare, este posibil să primim un comision. Important:
-              <strong> nu plătești nimic în plus</strong>. Prețul rămâne identic cu cel afișat pe site-ul partenerului.
+              If you access a link and complete a reservation, we may receive a commission. Important:
+              <strong> you don't pay anything extra</strong>. The price remains identical to the one displayed on the partner's site.
             </p>
           </section>
 
@@ -66,12 +66,12 @@ const AfiliereDisclosure = () => {
           <section>
             <h2 className="flex items-center gap-2 text-lg md:text-2xl font-semibold text-foreground mb-3">
               <Icon name="Rocket" size={20} className="text-primary" />
-              2. De ce folosim afilierea?
+              2. Why do we use affiliation?
             </h2>
 
             <p className="text-muted-foreground leading-relaxed text-sm md:text-base">
-              Comisioanele ne permit să menținem platforma gratuită și să investim în dezvoltarea funcțiilor AI care
-              caută automat cele mai bune oferte pentru zboruri, hoteluri și activități travel.
+              Commissions allow us to keep the platform free and invest in the development of AI functions that
+              automatically search for the best deals for flights, hotels, and travel activities.
             </p>
           </section>
 
@@ -79,13 +79,13 @@ const AfiliereDisclosure = () => {
           <section>
             <h2 className="flex items-center gap-2 text-lg md:text-2xl font-semibold text-foreground mb-3">
               <Icon name="ShieldCheck" size={20} className="text-primary" />
-              3. Transparență și obiectivitate
+              3. Transparency and objectivity
             </h2>
 
             <p className="text-muted-foreground leading-relaxed text-sm md:text-base">
-              Recomandările AI nu sunt influențate de parteneriate sau comisioane. Algoritmul caută obiectiv cele mai
-              bune opțiuni disponibile în baza datelor furnizate de parteneri. Comisionul nu afectează ordinea și nici
-              preferințele afișate.
+              AI recommendations are not influenced by partnerships or commissions. The algorithm searches objectively for the
+              best available options based on data provided by partners. The commission does not affect the order or the
+              displayed preferences.
             </p>
           </section>
 
@@ -93,15 +93,15 @@ const AfiliereDisclosure = () => {
           <section>
             <h2 className="flex items-center gap-2 text-lg md:text-2xl font-semibold text-foreground mb-3">
               <Icon name="Users" size={20} className="text-primary" />
-              4. Cine sunt partenerii noștri?
+              4. Who are our partners?
             </h2>
 
             <ul className="space-y-2 ml-6 text-muted-foreground list-disc leading-relaxed text-sm md:text-base">
-              <li>Booking.com – hoteluri și cazări</li>
-              <li>Klook – activități & bilete</li>
-              <li>Momondo / Aviasales – zboruri</li>
-              <li>Trip.com – zboruri & hoteluri</li>
-              <li>Parteneri globali din industria travel</li>
+              <li>Booking.com – hotels and accommodation</li>
+              <li>Klook – activities & tickets</li>
+              <li>Momondo / Aviasales – flights</li>
+              <li>Trip.com – flights & hotels</li>
+              <li>Global partners in the travel industry</li>
             </ul>
           </section>
 
@@ -113,7 +113,7 @@ const AfiliereDisclosure = () => {
             </h2>
 
             <p className="text-muted-foreground leading-relaxed text-sm md:text-base">
-              Pentru întrebări suplimentare legate de afiliere, ne poți contacta la:
+              For additional questions related to affiliation, you can contact us at:
               <br />
               <a href="mailto:contact@travelai-deals.com" className="text-primary underline">
                 contact@travelai-deals.com
@@ -122,8 +122,7 @@ const AfiliereDisclosure = () => {
           </section>
         </div>
       </div>
-
-      
+      <Footer />
     </div>
   );
 };

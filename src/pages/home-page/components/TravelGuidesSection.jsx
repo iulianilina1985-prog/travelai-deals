@@ -15,93 +15,93 @@ const ITEMS_PER_WEEK = 3;
 const GUIDES_MONTH_2026 = [
   // WEEK 1
   {
-    title: "Top destinații accesibile în 2026",
+    title: "Top affordable destinations in 2026",
     image: "/assets/guides/guides1.jpg",
     description:
-      "Orașe și regiuni cu cel mai bun raport calitate–preț în 2026. Analizăm costuri reale, sezonalitate și zboruri avantajoase.",
+      "Cities and regions with the best value for money in 2026. We analyze real costs, seasonality, and advantageous flights.",
     link: "/ghiduri/destinatii-accesibile-2026",
   },
   {
-    title: "Cum găsești bilete de avion mai ieftine în 2026",
+    title: "How to find cheaper flight tickets in 2026",
     image: "/assets/guides/guides2.jpg",
     description:
-      "Strategii actualizate pentru 2026: flexibilitate, alerte de preț și căutări inteligente care pot reduce costurile semnificativ.",
+      "Updated strategies for 2026: flexibility, price alerts, and smart searches that can significantly reduce costs.",
     link: "/ghiduri/bilete-ieftine-2026",
   },
   {
-    title: "Greșeli frecvente când rezervi o vacanță",
+    title: "Common mistakes when booking a vacation",
     image: "/assets/guides/guides3.jpg",
     description:
-      "De la date prost alese la taxe ascunse. Vezi ce să eviți pentru a nu plăti mai mult decât este necesar.",
+      "From poorly chosen dates to hidden fees. See what to avoid so you don't pay more than necessary.",
     link: "/ghiduri/greseli-rezervare-vacanta",
   },
 
   // WEEK 2
   {
-    title: "Când este cel mai bun moment să rezervi un hotel",
+    title: "When is the best time to book a hotel",
     image: "/assets/guides/guides4.jpg",
     description:
-      "Prețurile hotelurilor fluctuează constant. Îți explicăm când să rezervi pentru cele mai bune tarife în 2026.",
+      "Hotel prices fluctuate constantly. We explain when to book for the best rates in 2026.",
     link: "/ghiduri/cand-rezervi-hotel",
   },
   {
-    title: "City-break vs vacanță lungă: ce alegi?",
+    title: "City-break vs. long vacation: what to choose?",
     image: "/assets/guides/guides5.jpg",
     description:
-      "Comparăm costurile, experiențele și beneficiile fiecărei opțiuni, în funcție de buget și timp.",
+      "We compare the costs, experiences, and benefits of each option, depending on budget and time.",
     link: "/ghiduri/city-break-vs-vacanta",
   },
   {
-    title: "Cum economisești bani folosind activități locale",
+    title: "How to save money using local activities",
     image: "/assets/guides/guides6.jpg",
     description:
-      "Tururi, bilete și experiențe locale pot fi mai ieftine decât crezi. Află cum să le alegi corect.",
+      "Local tours, tickets, and experiences can be cheaper than you think. Learn how to choose them correctly.",
     link: "/ghiduri/activitati-locale-economii",
   },
 
   // WEEK 3
   {
-    title: "Cele mai bune perioade pentru vacanțe în Europa",
+    title: "The best times for vacations in Europe",
     image: "/assets/guides/europe-seasons.jpg",
     description:
-      "Sezon de vârf vs extra-sezon. Unde și când merită să călătorești în 2026.",
+      "Peak season vs. off-season. Where and when it's worth traveling in 2026.",
     link: "/ghiduri/perioade-vacante-europa",
   },
   {
-    title: "Cum să eviți taxele ascunse la rezervări",
+    title: "How to avoid hidden fees when booking",
     image: "/assets/guides/hidden-fees.jpg",
     description:
-      "Bagaje, comisioane, conversii valutare. Ghid practic pentru a plăti exact cât te aștepți.",
+      "Luggage, commissions, currency conversions. A practical guide to paying exactly what you expect.",
     link: "/ghiduri/taxe-ascunse-rezervari",
   },
   {
-    title: "Vacanțe potrivite pentru munca remote",
+    title: "Vacations suitable for remote work",
     image: "/assets/guides/remote-work.jpg",
     description:
-      "Destinații prietenoase cu nomazii digitali: internet, costuri, stil de viață.",
+      "Digital nomad-friendly destinations: internet, costs, lifestyle.",
     link: "/ghiduri/vacante-remote-work",
   },
 
   // WEEK 4
   {
-    title: "Cum alegi asigurarea de călătorie potrivită",
+    title: "How to choose the right travel insurance",
     image: "/assets/guides/guides10.jpg",
     description:
-      "Ce acoperă, ce nu și când merită să o faci. Ghid simplu pentru 2026.",
+      "What it covers, what it doesn't, and when it's worth it. Simple guide for 2026.",
     link: "/ghiduri/asigurare-calatorie",
   },
   {
-    title: "Activități care merită rezervate din timp",
+    title: "Activities worth booking in advance",
     image: "/assets/guides/guides11.jpg",
     description:
-      "Atracții și experiențe care se epuizează rapid. Ce să rezervi înainte să pleci.",
+      "Attractions and experiences that sell out quickly. What to book before you go.",
     link: "/ghiduri/activitati-rezervare-din-timp",
   },
   {
-    title: "Cum planifici o vacanță fără stres",
+    title: "How to plan a stress-free vacation",
     image: "/assets/guides/guides12.jpg",
     description:
-      "Checklist complet: de la bilete la activități, pentru o vacanță organizată cap-coadă.",
+      "Complete checklist: from tickets to activities, for an end-to-end organized vacation.",
     link: "/ghiduri/planificare-vacanta",
   },
 ];
@@ -125,7 +125,7 @@ const TravelGuidesSection = () => {
     <section className="w-full py-16 bg-gray-50">
       <div className="max-w-7xl mx-auto px-6">
         <h2 className="text-2xl lg:text-3xl font-bold mb-10 text-center text-gray-900">
-          Ghiduri și sfaturi de călătorie
+          Travel Guides and Tips
         </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
@@ -152,7 +152,7 @@ const TravelGuidesSection = () => {
                 to={g.link}
                 className="text-blue-600 hover:underline text-sm font-medium"
               >
-                Citește mai mult →
+                Read more →
               </Link>
             </article>
           ))}

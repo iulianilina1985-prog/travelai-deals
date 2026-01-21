@@ -44,11 +44,11 @@ const UserProfile = () => {
 
         // 3) UPDATE USER INFO
         setUserInfo({
-          name: user.user_metadata?.full_name || "Utilizator",
+          name: user.user_metadata?.full_name || "User",
           email: user.email,
           avatar: user.user_metadata?.avatar_url || "",
-          subscriptionTier: realPlan, // 🔥 PLAN REAL, NU metadata veche!
-          memberSince: new Date(user.created_at).toLocaleDateString("ro-RO", {
+          subscriptionTier: realPlan, // 🔥 REAL PLAN
+          memberSince: new Date(user.created_at).toLocaleDateString("en-US", {
             year: "numeric",
             month: "long",
           }),
@@ -64,10 +64,10 @@ const UserProfile = () => {
 
 
   const tabs = [
-    { id: "personal", label: "Informații Personale", icon: "User", component: PersonalInfoTab },
+    { id: "personal", label: "Personal Information", icon: "User", component: PersonalInfoTab },
 
-    { id: "notifications", label: "Notificări", icon: "Bell", component: NotificationSettingsTab },
-    { id: "privacy", label: "Confidențialitate", icon: "Shield", component: DataPrivacyTab },
+    { id: "notifications", label: "Notifications", icon: "Bell", component: NotificationSettingsTab },
+    { id: "privacy", label: "Privacy", icon: "Shield", component: DataPrivacyTab },
 
   ];
 
@@ -91,7 +91,7 @@ const UserProfile = () => {
         {/* Profil */}
         <div className="bg-card border border-border rounded-lg p-6 mb-8">
           {loading ? (
-            <p className="text-muted-foreground">Se încarcă profilul...</p>
+            <p className="text-muted-foreground">Loading profile...</p>
           ) : (
             userInfo && (
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
@@ -112,16 +112,16 @@ const UserProfile = () => {
                   <h1 className="text-2xl font-bold text-foreground">{userInfo.name}</h1>
                   <p className="text-muted-foreground">{userInfo.email}</p>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Membru din {userInfo.memberSince}
+                    Member since {userInfo.memberSince}
                   </p>
                 </div>
 
                 <div>
                   <div className="text-lg font-bold text-success">
-                    Cont activ
+                    Active Account
                   </div>
                   <div className="text-sm text-muted-foreground">
-                    Acces complet la platformă
+                    Full access to the platform
                   </div>
                 </div>
 
@@ -139,7 +139,7 @@ const UserProfile = () => {
               className="w-full bg-primary text-primary-foreground py-3 rounded-lg flex items-center justify-center gap-2 shadow-md"
             >
               <Icon name="Menu" size={20} />
-              <span>Meniu Profil</span>
+              <span>Profile Menu</span>
             </button>
           </div>
 
@@ -153,7 +153,7 @@ const UserProfile = () => {
 
               <div className="fixed top-0 left-0 h-full w-72 bg-white border-r border-border shadow-xl z-50 animate-slide-in">
                 <div className="flex items-center justify-between p-4 border-b border-border">
-                  <h2 className="text-lg font-semibold">Meniu Profil</h2>
+                  <h2 className="text-lg font-semibold">Profile Menu</h2>
                   <button
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="text-gray-600 hover:text-black"

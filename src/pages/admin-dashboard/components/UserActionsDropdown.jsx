@@ -16,7 +16,7 @@ const UserActionsDropdown = ({
   const [open, setOpen] = useState(false);
   const ref = useRef();
 
-  // închide meniul dacă dai click în afară
+  // close menu if clicking outside
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (ref.current && !ref.current.contains(e.target)) {
@@ -47,7 +47,7 @@ const UserActionsDropdown = ({
                 onMakeAdmin(user.id);
               }}
             >
-              <Icon name="Shield" size={16} /> Promovează la admin
+              <Icon name="Shield" size={16} /> Promote to admin
             </button>
           ) : (
             <button
@@ -57,7 +57,7 @@ const UserActionsDropdown = ({
                 onRemoveAdmin(user.id);
               }}
             >
-              <Icon name="UserMinus" size={16} /> Revocă drepturile admin
+              <Icon name="UserMinus" size={16} /> Revoke admin rights
             </button>
           )}
 
@@ -69,7 +69,7 @@ const UserActionsDropdown = ({
               onGrantFreeSub(user.id);
             }}
           >
-            <Icon name="Gift" size={16} /> Abonament gratuit
+            <Icon name="Gift" size={16} /> Free subscription
           </button>
 
           {/* Suspend / activate */}
@@ -81,7 +81,7 @@ const UserActionsDropdown = ({
                 onActivate(user.id);
               }}
             >
-              <Icon name="CheckCircle2" size={16} /> Activează cont
+              <Icon name="CheckCircle2" size={16} /> Activate account
             </button>
           ) : (
             <button
@@ -91,7 +91,7 @@ const UserActionsDropdown = ({
                 onSuspend(user.id);
               }}
             >
-              <Icon name="Ban" size={16} /> Suspendă cont
+              <Icon name="Ban" size={16} /> Suspend account
             </button>
           )}
 
@@ -103,7 +103,7 @@ const UserActionsDropdown = ({
               onViewChats(user.id);
             }}
           >
-            <Icon name="MessageSquare" size={16} /> Convorbiri AI
+            <Icon name="MessageSquare" size={16} /> AI Chats
           </button>
 
           {/* Activity logs */}
@@ -114,7 +114,7 @@ const UserActionsDropdown = ({
               onViewLogs(user.id);
             }}
           >
-            <Icon name="Activity" size={16} /> Activitate
+            <Icon name="Activity" size={16} /> Activity
           </button>
 
           {/* Delete */}
@@ -125,7 +125,7 @@ const UserActionsDropdown = ({
               onDelete(user.id);
             }}
           >
-            <Icon name="Trash2" size={16} /> Șterge contul
+            <Icon name="Trash2" size={16} /> Delete account
           </button>
         </div>
       )}

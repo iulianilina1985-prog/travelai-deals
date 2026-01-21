@@ -26,9 +26,9 @@ const CookieBanner = () => {
       <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
 
         <p className="text-sm text-muted-foreground">
-          Folosim cookie-uri pentru a îmbunătăți experiența ta. 
-          <Link to="/politica-cookie" className="text-blue-600 underline ml-1">
-            Află mai multe
+          We use cookies to improve your experience.
+          <Link to="/cookie-policy" className="text-blue-600 underline ml-1">
+            Learn more
           </Link>
         </p>
 
@@ -37,7 +37,7 @@ const CookieBanner = () => {
             onClick={rejectCookies}
             className="px-4 py-2 bg-muted text-foreground rounded-lg hover:bg-muted/70"
           >
-            Refuz
+            Refuse
           </button>
 
           <button

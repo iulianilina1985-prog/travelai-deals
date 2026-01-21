@@ -81,7 +81,7 @@ const AIChatInterface = () => {
 
   const generateTitle = (text) =>
     !text
-      ? "Conversație nouă"
+      ? "New Conversation"
       : text.split(" ").slice(0, 3).join(" ") +
       (text.split(" ").length > 3 ? "..." : "");
 
@@ -166,7 +166,7 @@ const AIChatInterface = () => {
   }, []);
 
   /**
-   * 🔄 Importă istoricul din localStorage în Supabase
+   * 🔄 Imports history from localStorage to Supabase
    */
   const importChatHistory = async (userId) => {
     try {
@@ -375,7 +375,7 @@ const AIChatInterface = () => {
         currentDbId
       );
 
-      const aiContent = aiResponse?.content || "N-am primit răspuns.";
+      const aiContent = aiResponse?.content || "I didn't receive an answer.";
 
       const aiMsg = {
         id: Date.now() + 1,
@@ -407,7 +407,7 @@ const AIChatInterface = () => {
       console.error("Send error:", err);
       setMessages((prev) => [
         ...prev,
-        { id: Date.now(), sender: "ai", isError: true, content: "Eroare critică." },
+        { id: Date.now(), sender: "ai", isError: true, content: "Critical error." },
       ]);
     } finally {
       setIsTyping(false);
@@ -438,8 +438,8 @@ const AIChatInterface = () => {
   // ======================================================
   const renderPlanInfo = () => {
     if (!plan) return "Plan: ...";
-    if (plan === "pro") return "PRO · Acces nelimitat";
-    return `${plan.toUpperCase()} · Acces activ`;
+    if (plan === "pro") return "PRO · Unlimited Access";
+    return `${plan.toUpperCase()} · Active Access`;
   };
 
   // ======================================================
@@ -452,7 +452,7 @@ const AIChatInterface = () => {
     serviceStatus &&
     {
       healthy: {
-        text: "Online - AI Activ",
+        text: "Online - AI Active",
         color: "bg-green-500",
         icon: "CheckCircle",
       },
@@ -471,7 +471,7 @@ const AIChatInterface = () => {
   const statusDisplay =
     statusInfo ||
     {
-      text: serviceStatus ? "Reconectare..." : "Verificare...",
+      text: serviceStatus ? "Reconnecting..." : "Checking...",
       color: serviceStatus ? "bg-red-500" : "bg-yellow-500",
       icon: serviceStatus ? "AlertTriangle" : "Loader",
     };
@@ -562,7 +562,7 @@ const AIChatInterface = () => {
                       <Icon name="Bot" size={16} color="white" />
                     </div>
                     <span className="text-sm text-muted-foreground">
-                      Se generează răspunsul...
+                      Generating answer...
                     </span>
                   </div>
                 )}

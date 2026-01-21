@@ -2,40 +2,40 @@ import React from "react";
 
 const tips = [
   {
-    title: "1. Evită perioadele de vârf",
+    title: "1. Avoid peak periods",
     image: "/assets/bilet/receptie.jpg",
-    text: `Prețurile hotelurilor cresc semnificativ în timpul concertelor mari, festivalurilor,
-           conferințelor internaționale sau în weekendurile foarte aglomerate. 
-           Uneori tarifele cresc chiar cu 200%. 
-           Dacă poți evita aceste date, diferența de preț va fi uriașă.`,
+    text: `Hotel prices increase significantly during large concerts, festivals,
+           international conferences, or very busy weekends. 
+           Sometimes rates increase even by 200%. 
+           If you can avoid these dates, the price difference will be huge.`,
   },
   {
-    title: "2. Rezervă cu 30–45 de zile înainte",
+    title: "2. Book 30–45 days in advance",
     image: "/assets/bilet/rezervare.jpg",
-    text: `Aceasta este fereastra ideală în majoritatea orașelor din Europa. 
-           Hotelurile optimizează tarifele în funcție de gradul de ocupare estimat, 
-           iar cele mai bune prețuri apar exact în acest interval.`,
+    text: `This is the ideal window in most cities in Europe. 
+           Hotels optimize rates according to estimated occupancy, 
+           and the best prices appear exactly in this interval.`,
   },
   {
-    title: "3. Călătorește în sezonul intermediar",
+    title: "3. Travel in the shoulder season",
     image: "/assets/bilet/intermediar.jpg",
-    text: `Lunile martie–mai și septembrie–noiembrie sunt perioade excelente pentru a găsi 
-           cazări mult mai ieftine, fără aglomerația din sezonul de vârf. 
-           În destinațiile de plajă, diferența de preț poate fi chiar de 50–60%.`,
+    text: `The months March–May and September–November are excellent periods to find 
+           much cheaper accommodation, without the crowds of the peak season. 
+           In beach destinations, the price difference can be even 50–60%.`,
   },
   {
-    title: "4. Alege zilele de duminică–joi",
+    title: "4. Choose Sunday–Thursday",
     image: "/assets/bilet/camera.jpg",
-    text: `În orașele turistice, weekendurile sunt cele mai scumpe. 
-           Dacă poți călători în timpul săptămânii, vei găsi tarife semnificativ reduse. 
-           În destinațiile business, paradoxal, weekendurile sunt mai ieftine.`,
+    text: `In tourist cities, weekends are the most expensive. 
+           If you can travel during the week, you will find significantly reduced rates. 
+           In business destinations, paradoxically, weekends are cheaper.`,
   },
   {
-    title: "5. Folosește platformele de comparare",
+    title: "5. Use comparison platforms",
     image: "/assets/bilet/zile.jpg",
-    text: `Booking, Trip.com, Agoda și Expedia actualizează prețurile în timp real. 
-           Compararea tarifelor înainte de rezervare poate reduce costul final cu 20–40%. 
-           TravelAI Deals analizează automat aceste platforme și îți recomandă cea mai ieftină variantă.`,
+    text: `Booking, Trip.com, Agoda, and Expedia update prices in real-time. 
+           Comparing rates before booking can reduce the final cost by 20–40%. 
+           TravelAI Deals automatically analyzes these platforms and recommends the cheapest option.`,
   },
 ];
 
@@ -44,16 +44,16 @@ const GuideHoteluri = () => {
     <div className="max-w-4xl mx-auto px-6 py-20">
 
       <h1 className="text-3xl font-bold mb-6 text-center">
-        Când este cel mai bun moment să rezervi un hotel
+        When is the best time to book a hotel
       </h1>
 
       <p className="text-gray-700 leading-relaxed text-center max-w-2xl mx-auto mb-10">
-        Alegerea perioadei potrivite pentru rezervarea unui hotel îți poate reduce costurile 
-        chiar și la jumătate. Prețurile variază constant în funcție de sezon, evenimente locale 
-        și cererea de pe piață. Iată cele mai importante reguli pentru a prinde cele mai bune oferte.
+        Choosing the right period to book a hotel can reduce your costs
+        even by half. Prices vary constantly according to season, local events
+        and market demand. Here are the most important rules to catch the best offers.
       </p>
 
-      {/* LISTA SFATURILOR */}
+      {/* TIP LIST */}
       {tips.map((t, index) => (
         <div key={index} className="mb-12">
           <img
@@ -69,7 +69,7 @@ const GuideHoteluri = () => {
       ))}
 
       <p className="mt-12 text-sm text-gray-500 text-center">
-        *Ghid creat de TravelAI – actualizat periodic pe baza datelor reale de piață.*
+        *Guide created by TravelAI – periodically updated based on real market data.*
       </p>
 
     </div>

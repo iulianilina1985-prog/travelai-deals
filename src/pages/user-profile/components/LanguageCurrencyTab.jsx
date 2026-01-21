@@ -15,33 +15,33 @@ const LanguageCurrencyTab = () => {
 
   // 🔹 Opțiuni
   const languageOptions = [
-    { value: 'ro', label: 'Română 🇷🇴' },
-    { value: 'en', label: 'Engleză 🇬🇧' },
-    { value: 'de', label: 'Germană 🇩🇪' },
-    { value: 'fr', label: 'Franceză 🇫🇷' },
-    { value: 'it', label: 'Italiană 🇮🇹' },
-    { value: 'es', label: 'Spaniolă 🇪🇸' },
+    { value: 'ro', label: 'Romanian 🇷🇴' },
+    { value: 'en', label: 'English 🇬🇧' },
+    { value: 'de', label: 'German 🇩🇪' },
+    { value: 'fr', label: 'French 🇫🇷' },
+    { value: 'it', label: 'Italian 🇮🇹' },
+    { value: 'es', label: 'Spanish 🇪🇸' },
   ];
 
   const currencyOptions = [
     { value: 'EUR', label: 'Euro (€)', symbol: '€' },
-    { value: 'RON', label: 'Leu românesc (RON)', symbol: 'RON' },
-    { value: 'USD', label: 'Dolar american ($)', symbol: '$' },
-    { value: 'GBP', label: 'Liră sterlină (£)', symbol: '£' },
-    { value: 'CHF', label: 'Franc elvețian (CHF)', symbol: 'CHF' },
+    { value: 'RON', label: 'Romanian Leu (RON)', symbol: 'RON' },
+    { value: 'USD', label: 'US Dollar ($)', symbol: '$' },
+    { value: 'GBP', label: 'British Pound (£)', symbol: '£' },
+    { value: 'CHF', label: 'Swiss Franc (CHF)', symbol: 'CHF' },
   ];
 
   const dateFormatOptions = [
-    { value: 'DD/MM/YYYY', label: 'DD/MM/YYYY (format european)' },
-    { value: 'MM/DD/YYYY', label: 'MM/DD/YYYY (format american)' },
-    { value: 'YYYY-MM-DD', label: 'YYYY-MM-DD (format ISO)' },
-    { value: 'DD.MM.YYYY', label: 'DD.MM.YYYY (format german)' },
+    { value: 'DD/MM/YYYY', label: 'DD/MM/YYYY (European format)' },
+    { value: 'MM/DD/YYYY', label: 'MM/DD/YYYY (US format)' },
+    { value: 'YYYY-MM-DD', label: 'YYYY-MM-DD (ISO format)' },
+    { value: 'DD.MM.YYYY', label: 'DD.MM.YYYY (German format)' },
   ];
 
   const numberFormatOptions = [
-    { value: 'european', label: '1.234,56 (format european)' },
-    { value: 'us', label: '1,234.56 (format american)' },
-    { value: 'space', label: '1 234,56 (cu spațiu)' },
+    { value: 'european', label: '1.234,56 (European format)' },
+    { value: 'us', label: '1,234.56 (US format)' },
+    { value: 'space', label: '1 234,56 (with space)' },
   ];
 
   // 🔹 Schimbare limbă
@@ -63,7 +63,7 @@ const LanguageCurrencyTab = () => {
       const { data: authData } = await supabase.auth.getUser();
       const user = authData?.user;
       if (!user) {
-        toast.warn("⚠️ Trebuie să fii autentificat pentru a salva setările!");
+        toast.warn("⚠️ You must be authenticated to save settings!");
         return;
       }
 
@@ -79,14 +79,14 @@ const LanguageCurrencyTab = () => {
         .eq("id", user.id);
 
       if (error) {
-        console.error("❌ Eroare la salvare:", error.message);
-        toast.error("❌ Nu s-au putut salva setările!");
+        console.error("❌ Error saving:", error.message);
+        toast.error("❌ Could not save settings!");
       } else {
-        toast.success("✅ Setările au fost salvate cu succes!");
+        toast.success("✅ Settings saved successfully!");
       }
     } catch (err) {
-      console.error("Eroare la sincronizarea cu Supabase:", err.message);
-      toast.error("⚠️ Eroare de conexiune la server!");
+      console.error("Error synchronizing with Supabase:", err.message);
+      toast.error("⚠️ Server connection error!");
     }
   };
 
@@ -126,7 +126,7 @@ const LanguageCurrencyTab = () => {
           .eq("id", user.id)
           .single();
 
-        if (error) return console.warn("⚠️ Nu s-au putut încărca setările:", error.message);
+        if (error) return console.warn("⚠️ Could not load settings:", error.message);
 
         if (data) {
           setCurrentLanguage(data.language || "ro");
@@ -136,7 +136,7 @@ const LanguageCurrencyTab = () => {
           localStorage.setItem("selectedLanguage", data.language || "ro");
         }
       } catch (err) {
-        console.error("Eroare la citirea setărilor:", err.message);
+        console.error("Error reading settings:", err.message);
       }
     };
 
@@ -147,12 +147,12 @@ const LanguageCurrencyTab = () => {
     <>
       <div className="space-y-6">
 
-        {/* LIMBĂ ȘI MONEDĂ */}
+        {/* LANGUAGE AND CURRENCY */}
         <div className="bg-card border border-border rounded-lg p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h3 className="text-lg font-semibold text-foreground">Limbă și monedă</h3>
-              <p className="text-sm text-muted-foreground">Personalizează preferințele tale regionale</p>
+              <h3 className="text-lg font-semibold text-foreground">Language and Currency</h3>
+              <p className="text-sm text-muted-foreground">Personalize your regional preferences</p>
             </div>
             <Button
               variant={isEditing ? "outline" : "default"}
@@ -160,14 +160,14 @@ const LanguageCurrencyTab = () => {
               iconName={isEditing ? "X" : "Edit"}
               onClick={() => setIsEditing(!isEditing)}
             >
-              {isEditing ? "Anulează" : "Editează"}
+              {isEditing ? "Cancel" : "Edit"}
             </Button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Select
-              label="Limba interfeței"
-              description="Alege limba dorită"
+              label="Interface language"
+              description="Choose your desired language"
               options={languageOptions}
               value={currentLanguage}
               onChange={handleLanguageChange}
@@ -175,8 +175,8 @@ const LanguageCurrencyTab = () => {
             />
 
             <Select
-              label="Monedă principală"
-              description="Moneda implicită pentru afișarea prețurilor"
+              label="Primary currency"
+              description="Default currency for price display"
               options={currencyOptions}
               value={currentCurrency}
               onChange={setCurrentCurrency}
@@ -184,8 +184,8 @@ const LanguageCurrencyTab = () => {
             />
 
             <Select
-              label="Format dată"
-              description="Cum sunt afișate datele calendaristice"
+              label="Date format"
+              description="How calendar dates are displayed"
               options={dateFormatOptions}
               value={dateFormat}
               onChange={setDateFormat}
@@ -193,8 +193,8 @@ const LanguageCurrencyTab = () => {
             />
 
             <Select
-              label="Format numere"
-              description="Cum sunt afișate numerele și prețurile"
+              label="Number format"
+              description="How numbers and prices are displayed"
               options={numberFormatOptions}
               value={numberFormat}
               onChange={setNumberFormat}
@@ -204,8 +204,8 @@ const LanguageCurrencyTab = () => {
 
           {isEditing && (
             <div className="flex justify-end mt-6 space-x-3">
-              <Button variant="outline" onClick={() => setIsEditing(false)}>Anulează</Button>
-              <Button onClick={handleSaveSettings} iconName="Save">Salvează setările</Button>
+              <Button variant="outline" onClick={() => setIsEditing(false)}>Cancel</Button>
+              <Button onClick={handleSaveSettings} iconName="Save">Save settings</Button>
             </div>
           )}
         </div>
@@ -217,61 +217,61 @@ const LanguageCurrencyTab = () => {
               <Icon name="Eye" size={20} />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-foreground">Previzualizare</h3>
-              <p className="text-sm text-muted-foreground">Așa vor fi afișate datele tale</p>
+              <h3 className="text-lg font-semibold text-foreground">Preview</h3>
+              <p className="text-sm text-muted-foreground">This is how your data will be displayed</p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="p-4 border border-border rounded-lg bg-muted">
-              <h4 className="font-medium text-foreground mb-3">Ofertă exemplu</h4>
+              <h4 className="font-medium text-foreground mb-3">Example offer</h4>
               <div className="space-y-2">
-                <div className="flex justify-between"><span>Preț zbor:</span><span>{formatSamplePrice(299.99)}</span></div>
-                <div className="flex justify-between"><span>Preț hotel:</span><span>{formatSamplePrice(1250.00)}</span></div>
-                <div className="flex justify-between"><span>Data plecării:</span><span>{formatSampleDate()}</span></div>
+                <div className="flex justify-between"><span>Flight price:</span><span>{formatSamplePrice(299.99)}</span></div>
+                <div className="flex justify-between"><span>Hotel price:</span><span>{formatSamplePrice(1250.00)}</span></div>
+                <div className="flex justify-between"><span>Departure date:</span><span>{formatSampleDate()}</span></div>
               </div>
             </div>
 
             <div className="p-4 border border-border rounded-lg bg-muted">
-              <h4 className="font-medium text-foreground mb-3">Setări curente</h4>
+              <h4 className="font-medium text-foreground mb-3">Current settings</h4>
               <div className="space-y-2">
-                <div className="flex justify-between"><span>Limba:</span><span>{currentLanguage.toUpperCase()}</span></div>
-                <div className="flex justify-between"><span>Monedă:</span><span>{currentCurrency}</span></div>
-                <div className="flex justify-between"><span>Format dată:</span><span>{dateFormat}</span></div>
-                <div className="flex justify-between"><span>Format numere:</span><span>{numberFormat}</span></div>
+                <div className="flex justify-between"><span>Language:</span><span>{currentLanguage.toUpperCase()}</span></div>
+                <div className="flex justify-between"><span>Currency:</span><span>{currentCurrency}</span></div>
+                <div className="flex justify-between"><span>Date format:</span><span>{dateFormat}</span></div>
+                <div className="flex justify-between"><span>Number format:</span><span>{numberFormat}</span></div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* INFORMAȚII REGIONALE */}
+        {/* REGIONAL INFORMATION */}
         <div className="bg-card border border-border rounded-lg p-6">
           <div className="flex items-center space-x-3 mb-6">
             <div className="w-10 h-10 bg-primary text-primary-foreground rounded-full flex items-center justify-center">
               <Icon name="Globe" size={20} />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-foreground">Informații regionale</h3>
-              <p className="text-sm text-muted-foreground">Setări suplimentare specifice regiunii</p>
+              <h3 className="text-lg font-semibold text-foreground">Regional information</h3>
+              <p className="text-sm text-muted-foreground">Additional region-specific settings</p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="p-4 bg-muted rounded-lg">
               <Icon name="MapPin" size={16} className="text-primary inline-block mr-2" />
-              <span className="font-medium">Fus orar:</span> Europa/București (UTC+2)
+              <span className="font-medium">Timezone:</span> Europe/Bucharest (UTC+2)
             </div>
             <div className="p-4 bg-muted rounded-lg">
               <Icon name="Shield" size={16} className="text-success inline-block mr-2" />
-              <span className="font-medium">GDPR:</span> Protecția datelor conform standardelor UE
+              <span className="font-medium">GDPR:</span> Data protection according to EU standards
             </div>
             <div className="p-4 bg-muted rounded-lg">
               <Icon name="Calendar" size={16} className="text-warning inline-block mr-2" />
-              <span className="font-medium">Calendar sărbători:</span> Zile legale românești și europene
+              <span className="font-medium">Holiday calendar:</span> Romanian and European public holidays
             </div>
             <div className="p-4 bg-muted rounded-lg">
               <Icon name="CreditCard" size={16} className="text-accent inline-block mr-2" />
-              <span className="font-medium">Plăți:</span> Metode de plată disponibile în Europa
+              <span className="font-medium">Payments:</span> Payment methods available in Europe
             </div>
           </div>
         </div>

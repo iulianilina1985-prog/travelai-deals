@@ -2,24 +2,24 @@ import React, { useState } from "react";
 import Icon from "../../../components/AppIcon";
 
 export const OFFER_TYPES = [
-  { value: "flight", label: "Zbor", icon: "Plane" },
+  { value: "flight", label: "Flight", icon: "Plane" },
   { value: "car", label: "Rent a car", icon: "Car" },
   { value: "taxi", label: "Taxi / Transfer", icon: "Taxi" },
   { value: "shuttle", label: "Shuttle / Pickup", icon: "Bus" },
-  { value: "intercity", label: "Transport intercity", icon: "Map" },
+  { value: "intercity", label: "Intercity transport", icon: "Map" },
   { value: "yacht", label: "Yacht rental", icon: "Ship" },
 
   { value: "hotel", label: "Hotel", icon: "Hotel" },
-  { value: "vacation", label: "Vacanță", icon: "PalmTree" },
+  { value: "vacation", label: "Vacation", icon: "PalmTree" },
   { value: "camper", label: "Camper / RV", icon: "Camper" },
 
-  { value: "activities", label: "Activități & tururi", icon: "Backpack" },
-  { value: "tickets", label: "Bilete atracții", icon: "Ticket" },
-  { value: "events", label: "Evenimente", icon: "Music" },
+  { value: "activities", label: "Activities & tours", icon: "Backpack" },
+  { value: "tickets", label: "Attraction tickets", icon: "Ticket" },
+  { value: "events", label: "Events", icon: "Music" },
 
   { value: "esim", label: "eSIM", icon: "Wifi" },
-  { value: "insurance", label: "Asigurare", icon: "Shield" },
-  { value: "flight_compensation", label: "Compensație zbor", icon: "Euro" },
+  { value: "insurance", label: "Insurance", icon: "Shield" },
+  { value: "flight_compensation", label: "Flight compensation", icon: "Euro" },
 ];
 
 const OfferTypesSelector = ({ offerType, setOfferType }) => {
@@ -30,7 +30,7 @@ const OfferTypesSelector = ({ offerType, setOfferType }) => {
   return (
     <div className="relative space-y-2">
       <label className="text-sm font-semibold text-slate-600">
-        Tip ofertă
+        Offer type
       </label>
 
       {/* SELECT BOX */}

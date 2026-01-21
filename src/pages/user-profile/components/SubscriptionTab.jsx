@@ -16,7 +16,7 @@ const SubscriptionTab = () => {
   // ======================================================
   const handleDownloadInvoice = async (stripeInvoiceId) => {
     if (!stripeInvoiceId) {
-      alert("Factura nu are un ID Stripe valid.");
+      alert("Invoice does not have a valid Stripe ID.");
       return;
     }
 
@@ -29,8 +29,8 @@ const SubscriptionTab = () => {
       );
 
       if (error) {
-        console.error("Eroare PDF:", error);
-        alert("Eroare la descărcarea facturii.");
+        console.error("PDF Error:", error);
+        alert("Error downloading invoice.");
         return;
       }
 
@@ -44,8 +44,8 @@ const SubscriptionTab = () => {
 
       URL.revokeObjectURL(url);
     } catch (err) {
-      console.error("Eroare la descărcarea facturii:", err);
-      alert("Nu s-a putut descărca factura.");
+      console.error("Error downloading invoice:", err);
+      alert("Could not download invoice.");
     }
   };
 
@@ -110,7 +110,7 @@ const SubscriptionTab = () => {
   const handleCancelSubscription = async () => {
     if (!userId) return;
 
-    if (!confirm("Sigur vrei să anulezi abonamentul?")) return;
+    if (!confirm("Are you sure you want to cancel the subscription?")) return;
 
     await supabase
       .from("subscriptions")
@@ -127,7 +127,7 @@ const SubscriptionTab = () => {
 
     await loadData();
 
-    alert("Abonamentul a fost anulat.");
+    alert("Subscription has been canceled.");
   };
 
   // ======================================================
@@ -140,10 +140,10 @@ const SubscriptionTab = () => {
       price: 0,
       billingCycle: "permanent",
       features: [
-        "Interfață AI de bază",
-        "Limită zilnică: 5 mesaje AI",
-        "Acces la căutarea manuală de oferte",
-        "Istoric conversații nelimitat",
+        "Base AI Interface",
+        "Daily limit: 5 AI messages",
+        "Access to manual deal search",
+        "Unlimited conversation history",
       ],
       current: subscription?.plan_name === "Free",
     },
@@ -151,15 +151,15 @@ const SubscriptionTab = () => {
       id: "pro",
       name: "Pro",
       price: 5,
-      billingCycle: "lună",
+      billingCycle: "month",
       features: [
-        "Conversații AI nelimitate",
-        "Fără limită zilnică",
-        "Viteză AI prioritară",
-        "Recomandări premium",
-        "Top oferte actualizate zilnic",
-        "Alerte inteligente de prețuri",
-        "Itinerarii și planificator AI",
+        "Unlimited AI conversations",
+        "No daily limit",
+        "Priority AI speed",
+        "Premium recommendations",
+        "Daily updated top offers",
+        "Intelligent price alerts",
+        "AI itineraries and planner",
       ],
       current: subscription?.plan_name === "Pro",
       popular: true,
@@ -168,7 +168,7 @@ const SubscriptionTab = () => {
   ];
 
   if (loading)
-    return <p className="text-muted-foreground">Se încarcă...</p>;
+    return <p className="text-muted-foreground">Loading...</p>;
 
   // ======================================================
   // 🔹 UI
@@ -180,15 +180,14 @@ const SubscriptionTab = () => {
       <div className="bg-card border border-border rounded-lg p-8">
         <div className="flex items-center justify-between mb-8">
           <h3 className="text-xl font-semibold text-foreground">
-            Abonamentul curent
+            Current subscription
           </h3>
 
           <div
-            className={`px-4 py-1 rounded-full text-sm font-medium ${
-              subscription?.status === "active"
+            className={`px-4 py-1 rounded-full text-sm font-medium ${subscription?.status === "active"
                 ? "bg-success text-success-foreground"
                 : "bg-muted text-muted-foreground"
-            }`}
+              }`}
           >
             {subscription?.status}
           </div>
@@ -207,7 +206,7 @@ const SubscriptionTab = () => {
               {subscription?.plan_name}
             </div>
             <div className="text-sm text-muted-foreground">
-              €{subscription?.price_per_month}/lună
+              €{subscription?.price_per_month}/month
             </div>
           </div>
 
@@ -215,23 +214,23 @@ const SubscriptionTab = () => {
           <div className="p-4 bg-muted rounded-lg">
             <div className="flex items-center gap-2 mb-2">
               <Icon name="Calendar" size={20} className="text-primary" />
-              <span>Perioadă</span>
+              <span>Period</span>
             </div>
 
             <div className="text-xl font-bold">
               {subscription?.current_period_start
                 ? new Date(
-                    subscription.current_period_start
-                  ).toLocaleDateString()
+                  subscription.current_period_start
+                ).toLocaleDateString()
                 : "-"}
             </div>
 
             <div className="text-sm text-muted-foreground">
-              până la{" "}
+              until{" "}
               {subscription?.current_period_end
                 ? new Date(
-                    subscription.current_period_end
-                  ).toLocaleDateString()
+                  subscription.current_period_end
+                ).toLocaleDateString()
                 : "∞"}
             </div>
           </div>
@@ -240,12 +239,12 @@ const SubscriptionTab = () => {
           <div className="p-4 bg-muted rounded-lg">
             <div className="flex items-center gap-2 mb-2">
               <Icon name="TrendingUp" size={20} className="text-primary" />
-              <span>Statut</span>
+              <span>Status</span>
             </div>
 
             <div className="text-xl font-bold">{subscription?.status}</div>
             <div className="text-sm text-muted-foreground">
-              actualizat
+              updated
             </div>
           </div>
 
@@ -253,19 +252,19 @@ const SubscriptionTab = () => {
           <div className="p-4 bg-muted rounded-lg">
             <div className="flex items-center gap-2 mb-2">
               <Icon name="Zap" size={20} className="text-primary" />
-              <span>Limiă AI</span>
+              <span>AI Limit</span>
             </div>
 
             <div className="text-xl font-bold">
               {subscription?.plan_name === "Pro"
-                ? "Nelimitat"
-                : "5 mesaje / zi"}
+                ? "Unlimited"
+                : "5 messages / day"}
             </div>
 
             <div className="text-sm text-muted-foreground">
               {subscription?.plan_name === "Pro"
-                ? "Acces complet"
-                : "Se resetează la miezul nopții"}
+                ? "Full access"
+                : "Resets at midnight"}
             </div>
           </div>
 
@@ -277,7 +276,7 @@ const SubscriptionTab = () => {
             iconName="X"
             onClick={handleCancelSubscription}
           >
-            Anulează abonamentul
+            Cancel subscription
           </Button>
         </div>
       </div>
@@ -285,18 +284,17 @@ const SubscriptionTab = () => {
       {/* Available plans – PREMIUM UI */}
       <div className="bg-card border border-border rounded-lg p-10">
         <h3 className="text-2xl font-bold mb-10 text-center">
-          Planuri disponibile
+          Available plans
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-5xl mx-auto">
           {plans.map((plan) => (
             <div
               key={plan.id}
-              className={`relative border rounded-2xl p-8 transition shadow-sm hover:shadow-md ${
-                plan.current
+              className={`relative border rounded-2xl p-8 transition shadow-sm hover:shadow-md ${plan.current
                   ? "border-primary bg-primary/5"
                   : "border-border bg-white"
-              } ${plan.popular ? "ring-2 ring-primary" : ""}`}
+                } ${plan.popular ? "ring-2 ring-primary" : ""}`}
             >
               {plan.popular && (
                 <span className="absolute top-4 right-4 bg-primary text-white px-3 py-1 rounded-full text-xs">
@@ -323,13 +321,13 @@ const SubscriptionTab = () => {
 
               {plan.current ? (
                 <Button fullWidth variant="outline" disabled>
-                  Planul actual
+                  Current plan
                 </Button>
               ) : plan.stripe ? (
                 <UpgradeButton planName={plan.name} />
               ) : (
                 <Button fullWidth disabled>
-                  Gratuit
+                  Free
                 </Button>
               )}
             </div>

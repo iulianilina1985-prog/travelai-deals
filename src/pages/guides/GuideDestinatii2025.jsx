@@ -3,43 +3,43 @@ import React from "react";
 const cities = [
   {
     id: 1,
-    name: "Budapesta, Ungaria",
+    name: "Budapest, Hungary",
     image: "/assets/guides/budapesta.jpg",
     description:
-      "Budapesta rămâne una dintre cele mai ieftine capitale europene pentru city-break. Podurile peste Dunăre, băile termale și cartierul evreiesc oferă experiențe memorabile la prețuri accesibile. Transportul public este excelent, iar mâncarea locală este surprinzător de ieftină. Ideal pentru cupluri și grupuri.",
-    link: "https://www.booking.com/city/hu/budapest.ro.html",
+      "Budapest remains one of the cheapest European capitals for a city break. The bridges over the Danube, the thermal baths, and the Jewish quarter offer memorable experiences at affordable prices. Public transport is excellent, and the local food is surprisingly cheap. Ideal for couples and groups.",
+    link: "https://www.booking.com/city/hu/budapest.en-gb.html",
   },
   {
     id: 2,
-    name: "Atena, Grecia",
+    name: "Athens, Greece",
     image: "/assets/guides/atena.jpg",
     description:
-      "Atena combină istoria antică cu plaje accesibile la doar câteva minute de oraș. Prețurile la zboruri sunt mici mare parte din an, iar restaurantele tradiționale oferă meniuri ieftine. Perfectă pentru cei care vor cultură + relaxare fără să dea o avere.",
-    link: "https://www.booking.com/city/gr/athens.ro.html",
+      "Athens combines ancient history with accessible beaches just minutes from the city. Flight prices are low most of the year, and traditional restaurants offer cheap menus. Perfect for those who want culture + relaxation without spending a fortune.",
+    link: "https://www.booking.com/city/gr/athens.en-gb.html",
   },
   {
     id: 3,
-    name: "Praga, Cehia",
+    name: "Prague, Czech Republic",
     image: "/assets/guides/praga.jpg",
     description:
-      "Praga este considerată de mulți cea mai frumoasă capitală europeană. Cu castele gotice, poduri impresionante și cartiere boeme, orașul oferă foarte mult pentru bugete reduse. Cazările sunt ieftine, iar berea cehă este faimoasă pentru prețul mic.",
-    link: "https://www.booking.com/city/cz/prague.ro.html",
+      "Prague is considered by many to be the most beautiful European capital. With gothic castles, impressive bridges, and bohemian neighborhoods, the city offers a lot for small budgets. Accommodation is cheap, and Czech beer is famous for its low price.",
+    link: "https://www.booking.com/city/cz/prague.en-gb.html",
   },
   {
     id: 4,
-    name: "Valencia, Spania",
+    name: "Valencia, Spain",
     image: "/assets/guides/valencia.jpg",
     description:
-      "Un oraș însorit tot anul, cu mâncare excelentă (paella originală!) și plaje late, curate și gratuite. Zborurile spre Valencia sunt printre cele mai ieftine din Spania. Ideal pentru familii și iubitorii de mare.",
-    link: "https://www.booking.com/city/es/valencia.ro.html",
+      "A sunny city all year round, with excellent food (original paella!) and wide, clean, and free beaches. Flights to Valencia are among the cheapest in Spain. Ideal for families and sea lovers.",
+    link: "https://www.booking.com/city/es/valencia.en-gb.html",
   },
   {
     id: 5,
-    name: "Krakow, Polonia",
+    name: "Krakow, Poland",
     image: "/assets/guides/krakow.jpg",
     description:
-      "Krakow este surprinzător de frumoasă și foarte accesibilă ca preț. Centrul istoric este patrimoniu UNESCO, iar mâncarea poloneză este ieftină și consistentă. Transportul și muzeele au prețuri mici, perfecte pentru un city-break buget-friendly.",
-    link: "https://www.booking.com/city/pl/krakow.ro.html",
+      "Krakow is surprisingly beautiful and very affordable. The historical center is a UNESCO heritage site, and Polish food is cheap and consistent. Transport and museums have low prices, perfect for a budget-friendly city break.",
+    link: "https://www.booking.com/city/pl/krakow.en-gb.html",
   },
 ];
 
@@ -47,16 +47,16 @@ const GuideDestinatii2025 = () => {
   return (
     <div className="max-w-4xl mx-auto px-6 py-20">
       <h1 className="text-3xl font-bold mb-6 text-center">
-        Top 5 destinații accesibile în 2025
+        Top 5 affordable destinations in 2025
       </h1>
 
       <p className="text-gray-700 leading-relaxed text-center max-w-2xl mx-auto mb-10">
-        În 2025, călătorii caută destinații frumoase, sigure și accesibile. 
-        Am analizat prețurile medii la zboruri, costurile din orașe, sezonul optim și experiențele locale — 
-        și am selectat cele mai bune 5 orașe pentru un city-break ieftin.
+        In 2025, travelers are looking for beautiful, safe, and affordable destinations.
+        We analyzed average flight prices, city costs, optimal seasons, and local experiences —
+        and selected the 5 best cities for a cheap city break.
       </p>
 
-      {/* LISTA DESTINAȚIILOR */}
+      {/* DESTINATION LIST */}
       {cities.map((c) => (
         <div key={c.id} className="mb-12">
           <img
@@ -75,13 +75,13 @@ const GuideDestinatii2025 = () => {
             rel="noopener noreferrer"
             className="text-blue-600 hover:underline font-medium"
           >
-            Vezi cazare în {c.name} →
+            See accommodation in {c.name} →
           </a>
         </div>
       ))}
 
       <p className="mt-12 text-sm text-gray-500 text-center">
-        *Ghid creat de TravelAI – actualizat periodic în funcție de tendințe și prețuri reale.*
+        *Guide created by TravelAI – periodically updated according to trends and real prices.*
       </p>
     </div>
   );

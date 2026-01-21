@@ -22,15 +22,15 @@ const LoginPage = () => {
     const params = new URLSearchParams(location.search);
 
     if (params.get("signup") === "success") {
-      setStatusMessage("Cont creat cu succes! Verifică emailul pentru confirmare.");
+      setStatusMessage("Account created successfully! Check your email for confirmation.");
     }
 
     if (params.get("email_confirmed") === "true") {
-      setStatusMessage("Email confirmat! Te poți autentifica acum.");
+      setStatusMessage("Email confirmed! You can now log in.");
     }
 
     if (params.get("error") === "email_exists") {
-      setStatusMessage("Această adresă de email este deja folosită.");
+      setStatusMessage("This email address is already in use.");
     }
   }, [location.search]);
 
@@ -58,7 +58,7 @@ const LoginPage = () => {
     });
 
     if (error) {
-      setStatusMessage("Email sau parolă incorecte.");
+      setStatusMessage("Incorrect email or password.");
       setLoading(false);
       return;
     }
@@ -105,9 +105,9 @@ const LoginPage = () => {
     });
 
     if (error) {
-      setStatusMessage("A apărut o eroare. Încearcă din nou.");
+      setStatusMessage("An error occurred. Please try again.");
     } else {
-      setStatusMessage("Verifică emailul pentru link-ul de resetare.");
+      setStatusMessage("Check your email for the reset link.");
     }
 
     setLoading(false);
@@ -127,15 +127,15 @@ const LoginPage = () => {
 
               <div className="bg-card border border-border rounded-lg p-6 md:p-8 shadow-sm">
 
-                {/* TITLU DINAMIC */}
+                {/* DYNAMIC TITLE */}
                 <h2 className="text-2xl font-semibold mb-4">
-                  {mode === "login" ? "Autentificare" : "Resetare parolă"}
+                  {mode === "login" ? "Sign In" : "Reset Password"}
                 </h2>
 
                 <p className="text-muted-foreground mb-6">
                   {mode === "login"
-                    ? "Intră în cont și începe să explorezi recomandările inteligente."
-                    : "Introdu adresa ta de email pentru a primi un link de resetare."}
+                    ? "Log in to your account and start exploring smart recommendations."
+                    : "Enter your email address to receive a reset link."}
                 </p>
 
                 {/* STATUS MESSAGE */}
@@ -155,13 +155,13 @@ const LoginPage = () => {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         className="w-full border border-border rounded-lg px-3 py-2 bg-background focus:ring-2 focus:ring-primary"
-                        placeholder="ex: utilizator@email.com"
+                        placeholder="e.g.: user@email.com"
                         required
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium mb-1">Parolă</label>
+                      <label className="block text-sm font-medium mb-1">Password</label>
                       <input
                         type="password"
                         value={password}
@@ -179,7 +179,7 @@ const LoginPage = () => {
                         onClick={() => setMode("forgot")}
                         className="text-primary text-sm hover:underline"
                       >
-                        Ai uitat parola?
+                        Forgot password?
                       </button>
                     </div>
 
@@ -188,7 +188,7 @@ const LoginPage = () => {
                       disabled={loading}
                       className="w-full bg-primary text-primary-foreground py-2 rounded-lg font-medium hover:bg-primary/90 transition disabled:opacity-50"
                     >
-                      {loading ? "Se conectează..." : "Conectează-te"}
+                      {loading ? "Connecting..." : "Log In"}
                     </button>
 
                     <button
@@ -199,7 +199,7 @@ const LoginPage = () => {
                       <svg width="20" height="20" viewBox="0 0 48 48">
                         <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.4 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.7 1.1 7.8 3l5.7-5.7C34.6 6.5 29.6 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20c11.3 0 20-8.7 20-20 0-1.3-.1-2.7-.4-3.5z" />
                       </svg>
-                      Continuă cu Google
+                      Continue with Google
                     </button>
                   </form>
                 )}
@@ -215,7 +215,7 @@ const LoginPage = () => {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         className="w-full border border-border rounded-lg px-3 py-2 bg-background focus:ring-2 focus:ring-primary"
-                        placeholder="Introdu adresa ta de email"
+                        placeholder="Enter your email address"
                         required
                       />
                     </div>
@@ -225,7 +225,7 @@ const LoginPage = () => {
                       disabled={loading}
                       className="w-full bg-primary text-primary-foreground py-2 rounded-lg font-medium hover:bg-primary/90 transition disabled:opacity-50"
                     >
-                      {loading ? "Se trimite..." : "Trimite link resetare"}
+                      {loading ? "Sending..." : "Send Reset Link"}
                     </button>
 
                     <button
@@ -233,7 +233,7 @@ const LoginPage = () => {
                       onClick={() => setMode("login")}
                       className="w-full text-primary text-sm mt-2 hover:underline"
                     >
-                      ← Înapoi la autentificare
+                      ← Back to sign in
                     </button>
                   </form>
                 )}
@@ -241,9 +241,9 @@ const LoginPage = () => {
                 {/* Sign up link */}
                 {mode === "login" && (
                   <div className="mt-4 text-sm text-center">
-                    Nu ai cont?{" "}
+                    Don't have an account?{" "}
                     <Link to="/register" className="text-primary hover:underline">
-                      Creează unul
+                      Create one
                     </Link>
                   </div>
                 )}
@@ -260,7 +260,7 @@ const LoginPage = () => {
           {/* Footer */}
           <footer className="mt-16 pt-8 border-t border-border text-center">
             <div className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} TravelAI Deals. Toate drepturile rezervate.
+              © {new Date().getFullYear()} TravelAI Deals. All rights reserved.
             </div>
           </footer>
         </div>

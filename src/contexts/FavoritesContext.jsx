@@ -24,7 +24,7 @@ export const FavoritesProvider = ({ children }) => {
 
     const toggleFavorite = async (offer) => {
         if (!user) {
-            alert("Te rog autentifică-te pentru a salva favorite.");
+            alert("Please log in to save favorites.");
             return;
         }
 
@@ -59,7 +59,7 @@ export const FavoritesProvider = ({ children }) => {
                     user_id: user.id,
                     offer_id: offerId,
                     provider: provider,
-                    title: offer.title || "Oferta Salvată",
+                    title: offer.title || "Saved Offer",
                     image: offer.image || offer.image_url || offer.thumbnail || null,
                     price: offer.price ?? null,
                     link: offer.link || offer.cta?.url || null,
@@ -80,7 +80,7 @@ export const FavoritesProvider = ({ children }) => {
             }
         } catch (err) {
             console.error("Error in toggleFavorite:", err);
-            alert("Eroare la procesarea favoritei: " + (err.message || "Eroare necunoscută"));
+            alert("Error processing favorite: " + (err.message || "Unknown error"));
         }
     };
 

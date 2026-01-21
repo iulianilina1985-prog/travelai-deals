@@ -254,10 +254,9 @@ const DataPrivacyTab = () => {
     await supabase.from("user_profiles").delete().eq("user_id", userId);
     await supabase.from("privacy_settings").delete().eq("user_id", userId);
 
-    // ⚠️ aici NU putem șterge auth.users cu clientul public
-    // trebuie făcut cu un edge function / service role
+    // auth.users delete requires edge function
     alert(
-      "Datele tale din aplicație au fost șterse. Pentru închiderea definitivă a contului (auth), contactează suportul."
+      "Your data from the application has been deleted. To permanently close your account (auth), please contact support."
     );
 
     setShowDeleteConfirm(false);
@@ -268,33 +267,33 @@ const DataPrivacyTab = () => {
   const privacyOptions = [
     {
       id: "data_collection",
-      title: "Colectare date",
+      title: "Data collection",
       description:
-        "Permite colectarea datelor de utilizare pentru a îmbunătăți calitatea serviciului.",
+        "Allows collecting usage data to improve service quality.",
       icon: "Database",
       required: true,
     },
     {
       id: "analytics",
-      title: "Analiză și performanță",
+      title: "Analysis and performance",
       description:
-        "Ne ajuți să înțelegem cum folosești platforma pentru a o optimiza.",
+        "Help us understand how you use the platform to optimize it.",
       icon: "BarChart3",
       required: false,
     },
     {
       id: "marketing",
-      title: "Comunicări de marketing",
+      title: "Marketing communications",
       description:
-        "Primești oferte personalizate și recomandări de călătorie.",
+        "Receive personalized offers and travel recommendations.",
       icon: "Mail",
       required: false,
     },
     {
       id: "third_party_sharing",
-      title: "Partajare cu parteneri",
+      title: "Sharing with partners",
       description:
-        "Partajăm date anonimizate cu parteneri de călătorie pentru oferte mai bune.",
+        "We share anonymized data with travel partners for better offers.",
       icon: "Share2",
       required: false,
     },
@@ -302,7 +301,7 @@ const DataPrivacyTab = () => {
 
   if (loading)
     return (
-      <p className="text-muted-foreground">Se încarcă setările de confidențialitate…</p>
+      <p className="text-muted-foreground">Loading privacy settings…</p>
     );
 
   return (
@@ -315,10 +314,10 @@ const DataPrivacyTab = () => {
           </div>
           <div>
             <h3 className="text-lg font-semibold text-foreground">
-              Setări de confidențialitate
+              Privacy Settings
             </h3>
             <p className="text-sm text-muted-foreground">
-              Controlează cum sunt folosite și partajate datele tale
+              Control how your data is used and shared
             </p>
           </div>
         </div>
@@ -345,7 +344,7 @@ const DataPrivacyTab = () => {
                       </h4>
                       {option?.required && (
                         <span className="px-2 py-1 bg-warning text-warning-foreground text-xs rounded-full">
-                          Obligatoriu
+                          Required
                         </span>
                       )}
                     </div>
@@ -375,10 +374,10 @@ const DataPrivacyTab = () => {
           </div>
           <div>
             <h3 className="text-lg font-semibold text-foreground">
-              Panou de utilizare a datelor
+              Data usage panel
             </h3>
             <p className="text-sm text-muted-foreground">
-              O privire rapidă asupra activității tale
+              A quick look at your activity
             </p>
           </div>
         </div>
@@ -387,37 +386,37 @@ const DataPrivacyTab = () => {
           <StatCard
             icon="Search"
             color="text-primary"
-            title="Căutări salvate"
+            title="Saved searches"
             value={dataUsage?.totalSearches}
           />
           <StatCard
             icon="Bookmark"
             color="text-success"
-            title="Oferte salvate"
+            title="Saved deals"
             value={dataUsage?.savedDeals}
           />
           <StatCard
             icon="Eye"
             color="text-warning"
-            title="Interacțiuni / chat"
+            title="Interactions / chat"
             value={dataUsage?.profileViews}
           />
           <StatCard
             icon="HardDrive"
             color="text-accent"
-            title="Dimensiune date"
+            title="Data size"
             value={dataUsage?.dataSize}
           />
           <StatCard
             icon="Download"
             color="text-secondary"
-            title="Ultimul export"
+            title="Last export"
             value={dataUsage?.lastExport}
           />
           <StatCard
             icon="Calendar"
             color="text-primary"
-            title="Membru din"
+            title="Member since"
             value={dataUsage?.accountCreated}
           />
         </div>
@@ -431,10 +430,10 @@ const DataPrivacyTab = () => {
           </div>
           <div>
             <h3 className="text-lg font-semibold text-foreground">
-              Conformitate GDPR
+              GDPR Compliance
             </h3>
             <p className="text-sm text-muted-foreground">
-              Drepturile tale conform legislației europene
+              Your rights under European legislation
             </p>
           </div>
         </div>
@@ -443,10 +442,10 @@ const DataPrivacyTab = () => {
           <div className="p-4 border border-border rounded-lg">
             <div className="flex items-center space-x-3 mb-3">
               <Icon name="Download" size={20} className="text-primary" />
-              <h4 className="font-medium text-foreground">Exportă-ți datele</h4>
+              <h4 className="font-medium text-foreground">Export your data</h4>
             </div>
             <p className="text-sm text-muted-foreground mb-4">
-              Descarcă o copie completă a datelor tale în format JSON.
+              Download a full copy of your data in JSON format.
             </p>
             <Button
               variant="outline"
@@ -454,7 +453,7 @@ const DataPrivacyTab = () => {
               iconName="Download"
               onClick={handleExportData}
             >
-              Exportă datele
+              Export data
             </Button>
           </div>
 
@@ -462,12 +461,11 @@ const DataPrivacyTab = () => {
             <div className="flex items-center space-x-3 mb-3">
               <Icon name="FileText" size={20} className="text-secondary" />
               <h4 className="font-medium text-foreground">
-                Politică de confidențialitate
+                Privacy Policy
               </h4>
             </div>
             <p className="text-sm text-muted-foreground mb-4">
-              Citește politica noastră completă de confidențialitate și
-              prelucrare a datelor.
+              Read our full privacy and data processing policy.
             </p>
             <Button
               variant="outline"
@@ -475,7 +473,7 @@ const DataPrivacyTab = () => {
               iconName="ExternalLink"
               onClick={() => navigate("/politica-confidentialitate")}
             >
-              Vezi politica
+              See policy
             </Button>
 
           </div>
@@ -490,10 +488,10 @@ const DataPrivacyTab = () => {
           </div>
           <div>
             <h3 className="text-lg font-semibold text-foreground">
-              Ștergere cont
+              Delete account
             </h3>
             <p className="text-sm text-muted-foreground">
-              Șterge definitiv contul și toate datele asociate
+              Permanently delete account and all associated data
             </p>
           </div>
         </div>
@@ -509,13 +507,13 @@ const DataPrivacyTab = () => {
                 />
                 <div>
                   <h4 className="font-medium text-destructive mb-2">
-                    Atenție: această acțiune este ireversibilă
+                    Attention: this action is irreversible
                   </h4>
                   <ul className="text-sm text-muted-foreground space-y-1">
-                    <li>• Toate ofertele și căutările salvate vor fi șterse</li>
-                    <li>• Abonamentul tău va fi anulat</li>
-                    <li>• Vei pierde accesul la funcțiile premium</li>
-                    <li>• Această acțiune nu poate fi anulată</li>
+                    <li>• All saved offers and searches will be deleted</li>
+                    <li>• Your subscription will be canceled</li>
+                    <li>• You will lose access to premium features</li>
+                    <li>• This action cannot be undone</li>
                   </ul>
                 </div>
               </div>
@@ -525,21 +523,21 @@ const DataPrivacyTab = () => {
               iconName="Trash2"
               onClick={() => setShowDeleteConfirm(true)}
             >
-              Șterge contul meu
+              Delete my account
             </Button>
           </div>
         ) : (
           <div className="space-y-4">
             <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
               <p className="text-sm text-foreground mb-3">
-                Pentru a confirma ștergerea contului, scrie{" "}
-                <strong>"DELETE MY ACCOUNT"</strong> mai jos:
+                To confirm account deletion, type{" "}
+                <strong>"DELETE MY ACCOUNT"</strong> below:
               </p>
               <input
                 type="text"
                 value={deleteConfirmText}
                 onChange={(e) => setDeleteConfirmText(e?.target?.value)}
-                placeholder='Tastează: "DELETE MY ACCOUNT"'
+                placeholder='Type: "DELETE MY ACCOUNT"'
                 className="w-full px-3 py-2 border border-destructive rounded-md bg-background text-foreground focus:ring-2 focus:ring-destructive focus:border-transparent"
               />
             </div>
@@ -551,7 +549,7 @@ const DataPrivacyTab = () => {
                   setDeleteConfirmText("");
                 }}
               >
-                Anulează
+                Cancel
               </Button>
               <Button
                 variant="destructive"
@@ -559,7 +557,7 @@ const DataPrivacyTab = () => {
                 disabled={deleteConfirmText !== "DELETE MY ACCOUNT"}
                 onClick={handleDeleteAccount}
               >
-                Confirmă ștergerea
+                Confirm deletion
               </Button>
             </div>
           </div>

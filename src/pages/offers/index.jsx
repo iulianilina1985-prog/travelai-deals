@@ -33,6 +33,10 @@ const OffersPage = () => {
   const resultsRef = useRef(null);
   const searchTopRef = useRef(null);
 
+  // ✅ AICI, o singură dată
+  useEffect(() => {
+    loadSavedSearches();
+  }, []);
 
 
   /* ===============================
@@ -58,15 +62,15 @@ const OffersPage = () => {
           const parsed = JSON.parse(item.description);
           return {
             ...item,
-            query: parsed.query || item.destination || "Căutare",
+            query: parsed.query || item.destination || "Search",
             offer_type: parsed.offerType || "hotel",
             payload: parsed.payload || {}
           };
         } catch (e) {
-          // Fallback pentru date vechi sau format simplu
+          // Fallback for old data or simple format
           return {
             ...item,
-            query: item.description || item.destination || "Căutare",
+            query: item.description || item.destination || "Search",
             offer_type: "hotel",
             payload: { destination: item.destination }
           };
@@ -129,12 +133,12 @@ const OffersPage = () => {
       setSavedSearches(prev => prev.filter(s => !selectedSearchIds.includes(s.id)));
       setSelectedSearchIds([]);
     } catch (err) {
-      alert("Eroare la ștergere");
+      alert("Error during deletion");
     }
   };
 
   const deleteAllSearches = async () => {
-    if (!window.confirm("Sigur vrei să ștergi TOATE căutările salvate?")) return;
+    if (!window.confirm("Are you sure you want to delete ALL saved searches?")) return;
 
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
@@ -149,7 +153,7 @@ const OffersPage = () => {
       setSavedSearches([]);
       setSelectedSearchIds([]);
     } catch (err) {
-      alert("Eroare la ștergere");
+      alert("Error during deletion");
     }
   };
 
@@ -199,13 +203,13 @@ const OffersPage = () => {
       setSearchResults(normalized);
       setHasSearched(true);
 
-      // Salvare automată dacă NU este o reluare de căutare
+      // Automatic save if NOT a resumed search
       if (!isAuto && session?.user) {
         await saveSearch(query, offerType, payload);
       }
     } catch (err) {
       console.error("Search error", err);
-      alert("Eroare la căutare");
+      alert("Search error");
     } finally {
       setLoading(false);
     }
@@ -265,7 +269,7 @@ const OffersPage = () => {
           {/* ACTION BAR */}
           <div className="bg-white border rounded-lg p-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <span className="text-sm text-slate-600">
-              {selectedSearchIds.length} selectate
+              {selectedSearchIds.length} selected
             </span>
 
             <div className="flex gap-2">
@@ -277,7 +281,7 @@ const OffersPage = () => {
                 onClick={deleteSelectedSearches}
                 iconName="Trash2"
               >
-                Șterge selectate
+                Delete selected
               </Button>
 
               <Button
@@ -286,7 +290,7 @@ const OffersPage = () => {
                 className="text-slate-500"
                 onClick={deleteAllSearches}
               >
-                Șterge toate
+                Delete all
               </Button>
             </div>
           </div>
@@ -295,7 +299,7 @@ const OffersPage = () => {
           {savedSearches.length === 0 ? (
             <div className="text-center py-16 text-slate-400 border rounded-lg bg-white">
               <Icon name="History" size={40} className="mx-auto mb-3 opacity-30" />
-              <p>Nu ai încă nicio căutare salvată.</p>
+              <p>You don't have any saved searches yet.</p>
             </div>
           ) : (
             <div className="divide-y border rounded-lg bg-white">
@@ -327,7 +331,7 @@ const OffersPage = () => {
 
                       <div className="text-xs text-slate-500 flex items-center gap-1 mt-1">
                         <Icon name="Calendar" size={12} />
-                        {new Date(s.created_at).toLocaleString("ro-RO", {
+                        {new Date(s.created_at).toLocaleString("en-US", {
                           day: "2-digit",
                           month: "short",
                           hour: "2-digit",
@@ -354,7 +358,7 @@ const OffersPage = () => {
                       })
                     }
                   >
-                    Repetă
+                    Repeat
                   </Button>
                 </div>
               ))}
@@ -376,10 +380,10 @@ const OffersPage = () => {
         <div className="max-w-6xl mx-auto px-4 py-6 flex justify-between items-start">
           <div>
             <h1 className="text-3xl font-extrabold text-slate-900">
-              Caută oferte
+              Search offers
             </h1>
             <p className="text-slate-600 mt-2">
-              Motorul tău de găsit vacanțe bune.
+              Your engine for finding great vacations.
             </p>
           </div>
 
@@ -392,9 +396,9 @@ const OffersPage = () => {
         {/* ===== MOBILE TABS – FULL WIDTH ===== */}
         <div className="sm:hidden grid grid-cols-3 text-center border-t">
           {[
-            { id: "search", label: "Caută", icon: "🔍" },
-            { id: "favorites", label: "Favorite", icon: "❤️" },
-            { id: "searches", label: "Căutări", icon: "🕘" },
+            { id: "search", label: "Search", icon: "🔍" },
+            { id: "favorites", label: "Favorites", icon: "❤️" },
+            { id: "searches", label: "Searches", icon: "🕘" },
           ].map(tab => (
             <button
               key={tab.id}
@@ -426,7 +430,7 @@ const OffersPage = () => {
               : "text-slate-500 hover:text-slate-800"
               }`}
           >
-            🔍 Caută
+            🔍 Search
           </button>
 
           <button
@@ -436,20 +440,18 @@ const OffersPage = () => {
               : "text-slate-500 hover:text-slate-800"
               }`}
           >
-            ❤️ Favorite ({favorites.length})
+            ❤️ Favorites ({favorites.length})
           </button>
 
           <button
-            onClick={() => {
-              setActiveTab("searches");
-              loadSavedSearches();
-            }}
+            onClick={() => setActiveTab("searches")}
+
             className={`pb-2 ${activeTab === "searches"
               ? "font-bold text-blue-600 border-b-2 border-blue-600"
               : "text-slate-500 hover:text-slate-800"
               }`}
           >
-            🕘 Căutări ({savedSearches.length})
+            🕘 Searches ({savedSearches.length})
           </button>
         </div>
       </div>
@@ -469,14 +471,6 @@ const OffersPage = () => {
           />
         </div>
 
-        {/* SEARCH FORM – rămâne montat */}
-        <div style={{ display: activeTab === "search" ? "block" : "none" }}>
-          <SearchOffers
-            onSearch={handleSearch}
-            initialFormData={initialFormData}
-            initialOfferType={initialOfferType}
-          />
-        </div>
 
         <div ref={resultsRef} />
 

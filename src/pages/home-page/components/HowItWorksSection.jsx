@@ -5,7 +5,7 @@ const HowItWorksSection = () => {
   return (
     <section className="max-w-6xl mx-auto px-6 py-20">
       <h2 className="text-4xl font-extrabold text-center mb-12 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-        Cum funcționează TravelAI Deals?
+        How does TravelAI Deals work?
       </h2>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-10 text-center">
@@ -36,10 +36,10 @@ const HowItWorksSection = () => {
           </div>
 
           <h3 className="text-2xl font-semibold mt-6 text-gray-900">
-            1. Cauți
+            1. Search
           </h3>
           <p className="text-gray-600 mt-3">
-            Introdu destinația, perioada și preferințele tale. Noi facem restul.
+            Enter your destination, period, and preferences. We do the rest.
           </p>
         </div>
 
@@ -69,10 +69,10 @@ const HowItWorksSection = () => {
           </div>
 
           <h3 className="text-2xl font-semibold mt-6 text-gray-900">
-            2. AI filtrează
+            2. AI filters
           </h3>
           <p className="text-gray-600 mt-3">
-            Analizăm automat mii de oferte și le selectăm pe cele mai bune.
+            We automatically analyze thousands of offers and select the best ones.
           </p>
         </div>
 
@@ -102,10 +102,10 @@ const HowItWorksSection = () => {
           </div>
 
           <h3 className="text-2xl font-semibold mt-6 text-gray-900">
-            3. Rezervi
+            3. Book
           </h3>
           <p className="text-gray-600 mt-3">
-            Te trimitem direct la cel mai bun preț disponibil, fără taxe ascunse.
+            We send you directly to the best available price, with no hidden fees.
           </p>
         </div>
 

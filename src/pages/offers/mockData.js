@@ -7,8 +7,8 @@ export const MOCK_OFFERS = [
         id: "mock-flight-1",
         type: "flight",
         provider: "Demo",
-        title: "Exemplu zbor București → Londra",
-        description: "Acesta este un card demonstrativ. Caută oferte reale pentru rezultate actualizate din sute de companii aeriene.",
+        title: "Example flight Bucharest → London",
+        description: "This is a demonstration card. Search for real offers for updated results from hundreds of airlines.",
         image_url: "/assets/flight/flight.jpg",
         isMock: true,
         provider_meta: {
@@ -17,7 +17,7 @@ export const MOCK_OFFERS = [
             brand_color: "#94a3b8"
         },
         cta: {
-            label: "Caută zboruri reale",
+            label: "Search real flights",
             url: "#search"
         }
     },
@@ -25,8 +25,8 @@ export const MOCK_OFFERS = [
         id: "mock-activity-1",
         type: "activity",
         provider: "Demo",
-        title: "Exemplu activități în Paris",
-        description: "Card demonstrativ pentru activități și atracții turistice. Folosește formularul de căutare pentru oferte reale.",
+        title: "Example activities in Paris",
+        description: "Demonstration card for activities and tourist attractions. Use the search form for real offers.",
         image_url: "/assets/images/activity-default.jpg",
         isMock: true,
         provider_meta: {
@@ -35,7 +35,7 @@ export const MOCK_OFFERS = [
             brand_color: "#94a3b8"
         },
         cta: {
-            label: "Caută activități reale",
+            label: "Search real activities",
             url: "#search"
         }
     },
@@ -43,8 +43,8 @@ export const MOCK_OFFERS = [
         id: "mock-car-1",
         type: "car_rental",
         provider: "Demo",
-        title: "Exemplu închiriere mașină",
-        description: "Card demonstrativ pentru închirieri auto. Caută oferte reale pentru a vedea disponibilitatea și prețurile actuale.",
+        title: "Example car rental",
+        description: "Demonstration card for car rentals. Search for real offers to see current availability and prices.",
         image_url: "/assets/images/car-default.jpg",
         isMock: true,
         provider_meta: {
@@ -53,7 +53,7 @@ export const MOCK_OFFERS = [
             brand_color: "#94a3b8"
         },
         cta: {
-            label: "Caută mașini reale",
+            label: "Search real cars",
             url: "#search"
         }
     },
@@ -61,8 +61,8 @@ export const MOCK_OFFERS = [
         id: "mock-transfer-1",
         type: "transfer",
         provider: "Demo",
-        title: "Exemplu transfer aeroport",
-        description: "Card demonstrativ pentru transferuri. Folosește căutarea pentru oferte reale de la partenerii noștri verificați.",
+        title: "Example airport transfer",
+        description: "Demonstration card for transfers. Use the search for real offers from our verified partners.",
         image_url: "/assets/images/car-default.jpg",
         isMock: true,
         provider_meta: {
@@ -71,7 +71,7 @@ export const MOCK_OFFERS = [
             brand_color: "#94a3b8"
         },
         cta: {
-            label: "Caută transferuri reale",
+            label: "Search real transfers",
             url: "#search"
         }
     },
@@ -79,8 +79,8 @@ export const MOCK_OFFERS = [
         id: "mock-esim-1",
         type: "esim",
         provider: "Demo",
-        title: "Exemplu eSIM călătorii",
-        description: "Card demonstrativ pentru eSIM. Caută oferte reale pentru conectivitate în peste 200 de țări.",
+        title: "Example travel eSIM",
+        description: "Demonstration card for eSIM. Search for real offers for connectivity in over 200 countries.",
         image_url: "/assets/images/no_image.png",
         isMock: true,
         provider_meta: {
@@ -89,7 +89,7 @@ export const MOCK_OFFERS = [
             brand_color: "#94a3b8"
         },
         cta: {
-            label: "Caută eSIM real",
+            label: "Search real eSIM",
             url: "#search"
         }
     },
@@ -97,8 +97,8 @@ export const MOCK_OFFERS = [
         id: "mock-hotel-1",
         type: "hotel",
         provider: "Demo",
-        title: "Exemplu cazare hotel",
-        description: "Card demonstrativ pentru hoteluri. Folosește formularul pentru a găsi cazări reale la cele mai bune prețuri.",
+        title: "Example hotel accommodation",
+        description: "Demonstration card for hotels. Use the form to find real accommodations at the best prices.",
         image_url: "/assets/images/no_image.png",
         isMock: true,
         provider_meta: {
@@ -107,7 +107,7 @@ export const MOCK_OFFERS = [
             brand_color: "#94a3b8"
         },
         cta: {
-            label: "Caută hoteluri reale",
+            label: "Search real hotels",
             url: "#search"
         }
     }

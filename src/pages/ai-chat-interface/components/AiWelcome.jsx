@@ -2,46 +2,47 @@ import React from 'react';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 import {
-  useTranslation } from 'react-i18next';
+  useTranslation
+} from 'react-i18next';
 
 const WelcomeScreen = ({ onStartChat, isServiceAvailable = true, serviceStatus = null, offlineMode = false }) => {
   const { t } = useTranslation();
   const travelSuggestions = [
     {
       icon: 'MapPin',
-      title: 'Destinații Populare',
-      description: 'Descoperă cele mai căutate destinații',
-      query: 'Arată-mi destinațiile cele mai populare pentru acest sezon'
+      title: 'Popular Destinations',
+      description: 'Discover the most searched destinations',
+      query: 'Show me the most popular destinations for this season'
     },
     {
       icon: 'Wallet',
-      title: 'Oferte Buget Redus',
-      description: 'Vacanțe accesibile pentru orice buzunar',
-      query: 'Căut o vacanță ieftină sub 300 de euro'
+      title: 'Low Budget Offers',
+      description: 'Affordable vacations for any budget',
+      query: 'I am looking for a cheap vacation under 300 euros'
     },
     {
       icon: 'Sun',
-      title: 'Vacanțe de Vară',
-      description: 'Soare, plajă și relaxare perfectă',
-      query: 'Vreau o vacanță la mare cu plajă frumoasă'
+      title: 'Summer Vacations',
+      description: 'Sun, beach and perfect relaxation',
+      query: 'I want a sea vacation with a beautiful beach'
     },
     {
       icon: 'Mountain',
-      title: 'Aventuri la Munte',
-      description: 'Drumeții și peisaje spectaculoase',
-      query: 'Recomandă-mi o destinație montană pentru drumeții'
+      title: 'Mountain Adventures',
+      description: 'Hiking and spectacular landscapes',
+      query: 'Recommend a mountain destination for hiking'
     },
     {
       icon: 'Building',
       title: 'City Break',
-      description: 'Explorează marile orașe europene',
-      query: 'Vreau un city break într-un oraș european'
+      description: 'Explore major European cities',
+      query: 'I want a city break in a European city'
     },
     {
       icon: 'Heart',
-      title: 'Călătorii Romantice',
-      description: 'Destinații perfecte pentru cupluri',
-      query: 'Căut o destinație romantică pentru luna de miere'
+      title: 'Romantic Travels',
+      description: 'Perfect destinations for couples',
+      query: 'I am looking for a romantic honeymoon destination'
     }
   ];
 
@@ -56,39 +57,39 @@ const WelcomeScreen = ({ onStartChat, isServiceAvailable = true, serviceStatus =
   const quickStartOptions = [
     {
       icon: 'MapPin',
-      title: offlineMode ? 'Destinații Cache' : 'Destinații Populare',
-      description: offlineMode ? 'Explorează din baza locală' : 'Descoperă cele mai căutate destinații',
-      message: offlineMode ? 'Arată-mi destinațiile din cache-ul local' : 'Arată-mi destinațiile cele mai populare pentru acest sezon'
+      title: offlineMode ? 'Cached Destinations' : 'Popular Destinations',
+      description: offlineMode ? 'Explore from local database' : 'Discover the most searched destinations',
+      message: offlineMode ? 'Show me destinations from local cache' : 'Show me the most popular destinations for this season'
     },
     {
       icon: 'Wallet',
-      title: offlineMode ? 'Oferte Salvate' : 'Oferte Buget Redus',
-      description: offlineMode ? 'Vezi ofertele stocate local' : 'Vacanțe accesibile pentru orice buzunar',
-      message: offlineMode ? 'Afișează ofertele disponibile offline' : 'Căut o vacanță ieftină sub 300 de euro'
+      title: offlineMode ? 'Saved Offers' : 'Low Budget Offers',
+      description: offlineMode ? 'See local stored offers' : 'Affordable vacations for any budget',
+      message: offlineMode ? 'Show offline available offers' : 'I am looking for a cheap vacation under 300 euros'
     },
     {
       icon: offlineMode ? 'BookOpen' : 'Sun',
-      title: offlineMode ? 'Ghiduri Călătorie' : 'Vacanțe de Vară',
-      description: offlineMode ? 'Informații și sfaturi utile' : 'Soare, plajă și relaxare perfectă',
-      message: offlineMode ? 'Dă-mi sfaturi pentru planificarea călătoriilor' : 'Vreau o vacanță la mare cu plajă frumoasă'
+      title: offlineMode ? 'Travel Guides' : 'Summer Vacations',
+      description: offlineMode ? 'Useful info and tips' : 'Sun, beach and perfect relaxation',
+      message: offlineMode ? 'Give me travel planning tips' : 'I want a sea vacation with a beautiful beach'
     },
     {
       icon: 'Mountain',
-      title: offlineMode ? 'România Turistică' : 'Aventuri la Munte',
-      description: offlineMode ? 'Destinații locale din România' : 'Drumeții și peisaje spectaculoase',
-      message: offlineMode ? 'Recomandări pentru turism în România' : 'Recomandă-mi o destinație montană pentru drumeții'
+      title: offlineMode ? 'Tourist Romania' : 'Mountain Adventures',
+      description: offlineMode ? 'Local destinations in Romania' : 'Hiking and spectacular landscapes',
+      message: offlineMode ? 'Recommendations for tourism in Romania' : 'Recommend a mountain destination for hiking'
     },
     {
       icon: 'Building',
-      title: offlineMode ? 'Orașe Europene' : 'City Break',
-      description: offlineMode ? 'Informații despre orașe' : 'Explorează marile orașe europene',
-      message: offlineMode ? 'Informații despre orașele europene din cache' : 'Vreau un city break într-un oraș european'
+      title: offlineMode ? 'European Cities' : 'City Break',
+      description: offlineMode ? 'City information' : 'Explore major European cities',
+      message: offlineMode ? 'Cached European city information' : 'I want a city break in a European city'
     },
     {
       icon: 'Heart',
-      title: offlineMode ? 'Călătorii de Cuplu' : 'Călătorii Romantice',
-      description: offlineMode ? 'Idei pentru cupluri din baza locală' : 'Destinații perfecte pentru cupluri',
-      message: offlineMode ? 'Sugestii romantice din ghidurile locale' : 'Căut o destinație romantică pentru luna de miere'
+      title: offlineMode ? 'Couple Travels' : 'Romantic Travels',
+      description: offlineMode ? 'Couple ideas from local database' : 'Perfect destinations for couples',
+      message: offlineMode ? 'Romantic suggestions from local guides' : 'I am looking for a romantic honeymoon destination'
     }
   ];
 
@@ -96,25 +97,25 @@ const WelcomeScreen = ({ onStartChat, isServiceAvailable = true, serviceStatus =
     {
       title: 'Vacanțe de vară',
       tips: [
-        'Caută destinații cu plajă frumoasă și climă tropicală',
-        'Verifică prețurile pentru sezonul de vară',
-        'Caută oferte de vacanță cu transport inclus'
+        'Look for destinations with a beautiful beach and tropical climate',
+        'Check prices for the summer season',
+        'Search for vacation offers with transport included'
       ]
     },
     {
       title: 'Vacanțe de iarnă',
       tips: [
-        'Caută destinații cu climă rece și activități de iarnă',
-        'Verifică prețurile pentru sezonul de iarnă',
-        'Caută oferte de vacanță cu transport inclus'
+        'Look for destinations with a cold climate and winter activities',
+        'Check prices for the winter season',
+        'Search for vacation offers with transport included'
       ]
     },
     {
       title: 'Vacanțe de familie',
       tips: [
-        'Caută destinații cu activități pentru copii',
-        'Verifică prețurile pentru sezonul de vară',
-        'Caută oferte de vacanță cu transport inclus'
+        'Look for destinations with activities for children',
+        'Check prices for the summer season',
+        'Search for vacation offers with transport included'
       ]
     }
   ];
@@ -123,60 +124,57 @@ const WelcomeScreen = ({ onStartChat, isServiceAvailable = true, serviceStatus =
     <div className="max-w-4xl mx-auto">
       {/* Enhanced Header */}
       <div className="text-center mb-8">
-        <div className={`w-20 h-20 rounded-full mx-auto mb-4 flex items-center justify-center shadow-lg ${
-          offlineMode 
-            ? 'bg-gradient-to-br from-blue-500 to-cyan-500' :'bg-gradient-to-br from-primary to-secondary'
-        }`}>
+        <div className={`w-20 h-20 rounded-full mx-auto mb-4 flex items-center justify-center shadow-lg ${offlineMode
+            ? 'bg-gradient-to-br from-blue-500 to-cyan-500' : 'bg-gradient-to-br from-primary to-secondary'
+          }`}>
           <Icon name={offlineMode ? 'Database' : 'Plane'} size={32} color="white" />
         </div>
         <h1 className="text-3xl font-bold text-foreground mb-2">
-          {offlineMode ? 'TravelAI Offline Mode! 🛄' : 'Bun venit la TravelAI! ✈️'}
+          {offlineMode ? 'TravelAI Offline Mode! 🛄' : 'Welcome to TravelAI! ✈️'}
         </h1>
         <p className="text-lg text-muted-foreground">
-          {offlineMode 
-            ? 'Funcții de bază și recomandări locale disponibile' :'Asistentul tău personal pentru călătorii perfecte'
+          {offlineMode
+            ? 'Basic functions and local recommendations available' : 'Your personal assistant for perfect travels'
           }
         </p>
-        
+
         {/* Enhanced Service Status Message */}
         {serviceStatus && (
-          <div className={`mt-4 p-4 rounded-lg border ${
-            serviceStatus?.status === 'quota_exceeded' ?'bg-orange-50 border-orange-200'
-              : serviceStatus?.status === 'offline' ?'bg-blue-50 border-blue-200' :'bg-yellow-50 border-yellow-200'
-          }`}>
+          <div className={`mt-4 p-4 rounded-lg border ${serviceStatus?.status === 'quota_exceeded' ? 'bg-orange-50 border-orange-200'
+              : serviceStatus?.status === 'offline' ? 'bg-blue-50 border-blue-200' : 'bg-yellow-50 border-yellow-200'
+            }`}>
             <div className="flex items-center justify-center space-x-2">
-              <Icon 
+              <Icon
                 name={
-                  serviceStatus?.status === 'quota_exceeded' ? 'Clock' : 
-                  serviceStatus?.status === 'offline' ? 'Database' : 'AlertTriangle'
-                } 
-                size={20} 
+                  serviceStatus?.status === 'quota_exceeded' ? 'Clock' :
+                    serviceStatus?.status === 'offline' ? 'Database' : 'AlertTriangle'
+                }
+                size={20}
                 className={
                   serviceStatus?.status === 'quota_exceeded' ? 'text-orange-600' :
-                  serviceStatus?.status === 'offline' ? 'text-blue-600' : 'text-yellow-600'
-                } 
+                    serviceStatus?.status === 'offline' ? 'text-blue-600' : 'text-yellow-600'
+                }
               />
-              <span className={`font-medium ${
-                serviceStatus?.status === 'quota_exceeded' ? 'text-orange-800' :
-                serviceStatus?.status === 'offline' ? 'text-blue-800' : 'text-yellow-800'
-              }`}>
-                {serviceStatus?.status === 'quota_exceeded' && 'Serviciul AI este în pauza zilnică'}
-                {serviceStatus?.status === 'offline' && 'Funcționez în mod offline'}
-                {serviceStatus?.status === 'error' && 'Serviciu temporar indisponibil'}
-                {serviceStatus?.status === 'rate_limited' && 'Trafic intens - funcții reduse'}
+              <span className={`font-medium ${serviceStatus?.status === 'quota_exceeded' ? 'text-orange-800' :
+                  serviceStatus?.status === 'offline' ? 'text-blue-800' : 'text-yellow-800'
+                }`}>
+                {serviceStatus?.status === 'quota_exceeded' && 'AI Service is on daily break'}
+                {serviceStatus?.status === 'offline' && 'Operating in offline mode'}
+                {serviceStatus?.status === 'error' && 'Service temporarily unavailable'}
+                {serviceStatus?.status === 'rate_limited' && 'High traffic - reduced functions'}
               </span>
             </div>
             <p className="text-sm text-muted-foreground mt-2 text-center">
-              {serviceStatus?.status === 'quota_exceeded' && `Resetare: ${serviceStatus?.resetTime}. Funcții offline complet funcționale!`}
-              {serviceStatus?.status === 'offline' && 'Toate funcțiile de bază și recomandările locale sunt disponibile'}
-              {serviceStatus?.status === 'error' && 'Încearcă din nou mai târziu sau folosește funcțiile offline'}
-              {serviceStatus?.status === 'rate_limited' && 'Reîncercare automată în curs'}
+              {serviceStatus?.status === 'quota_exceeded' && `Reset: ${serviceStatus?.resetTime}. Offline functions fully functional!`}
+              {serviceStatus?.status === 'offline' && 'All basic functions and local recommendations are available'}
+              {serviceStatus?.status === 'error' && 'Try again later or use offline functions'}
+              {serviceStatus?.status === 'rate_limited' && 'Automatic retry in progress'}
             </p>
-            
+
             {/* Enhanced capabilities display */}
             {serviceStatus?.capabilities && (
               <div className="mt-3 p-3 bg-background/60 rounded-lg">
-                <p className="text-sm font-medium text-muted-foreground mb-2">{t("pages.ai-chat-interface.components.WelcomeScreen.func_ii_active")}</p>
+                <p className="text-sm font-medium text-muted-foreground mb-2">Active functions</p>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                   {serviceStatus?.capabilities?.map((capability, index) => (
                     <div key={index} className="flex items-center space-x-2">
@@ -193,10 +191,10 @@ const WelcomeScreen = ({ onStartChat, isServiceAvailable = true, serviceStatus =
       {/* Enhanced Quick Start Options */}
       <div className="mb-8">
         <h2 className="text-xl font-semibold text-foreground mb-4 text-center flex items-center justify-center space-x-2">
-          <span>{offlineMode ? '📱 Opțiuni offline' : '🚀 Începe rapid'}</span>
+          <span>{offlineMode ? '📱 Offline options' : '🚀 Quick start'}</span>
           {offlineMode && (
             <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">
-              Cache local
+              Local cache
             </span>
           )}
         </h2>
@@ -205,20 +203,18 @@ const WelcomeScreen = ({ onStartChat, isServiceAvailable = true, serviceStatus =
             <Button
               key={index}
               variant="outline"
-              className={`p-6 h-auto text-left justify-start hover:bg-primary/5 transition-all duration-200 group ${
-                offlineMode ? 'border-blue-200 hover:border-blue-300' : ''
-              }`}
+              className={`p-6 h-auto text-left justify-start hover:bg-primary/5 transition-all duration-200 group ${offlineMode ? 'border-blue-200 hover:border-blue-300' : ''
+                }`}
               onClick={() => handleQuickStart(option?.message)}
             >
               <div className="flex items-start space-x-4">
-                <div className={`w-12 h-12 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform ${
-                  offlineMode 
-                    ? 'bg-gradient-to-br from-blue-100 to-cyan-100' :'bg-gradient-to-br from-primary/20 to-secondary/20'
-                }`}>
-                  <Icon 
-                    name={option?.icon} 
-                    size={24} 
-                    className={offlineMode ? 'text-blue-600' : 'text-primary'} 
+                <div className={`w-12 h-12 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform ${offlineMode
+                    ? 'bg-gradient-to-br from-blue-100 to-cyan-100' : 'bg-gradient-to-br from-primary/20 to-secondary/20'
+                  }`}>
+                  <Icon
+                    name={option?.icon}
+                    size={24}
+                    className={offlineMode ? 'text-blue-600' : 'text-primary'}
                   />
                 </div>
                 <div className="flex-1">
@@ -227,7 +223,7 @@ const WelcomeScreen = ({ onStartChat, isServiceAvailable = true, serviceStatus =
                   {offlineMode && (
                     <div className="mt-1 flex items-center space-x-1">
                       <Icon name="Database" size={10} className="text-blue-500" />
-                      <span className="text-xs text-blue-600">{t("pages.ai-chat-interface.components.WelcomeScreen.disponibil_offline")}</span>
+                      <span className="text-xs text-blue-600">Available offline</span>
                     </div>
                   )}
                 </div>
@@ -256,62 +252,60 @@ const WelcomeScreen = ({ onStartChat, isServiceAvailable = true, serviceStatus =
         ))}
       </div>
       {/* Quick Start Examples */}
-      <div className={`bg-card border rounded-lg p-6 ${
-        offlineMode ? 'border-blue-200 bg-blue-50/30' : 'border-border'
-      }`}>
+      <div className={`bg-card border rounded-lg p-6 ${offlineMode ? 'border-blue-200 bg-blue-50/30' : 'border-border'
+        }`}>
         <h3 className="font-semibold text-foreground mb-4">
-          {offlineMode ? 'Exemple întrebări offline:' : 'Exemple de întrebări:'}
+          {offlineMode ? 'Offline question examples:' : 'Question examples:'}
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
           <Button
             variant="ghost"
             className="text-left justify-start h-auto p-3"
-            onClick={() => handleSuggestionClick(offlineMode ? 'Informații despre Grecia din cache' : 'Găsește-mi o vacanță în Grecia sub 500€')}>
+            onClick={() => handleSuggestionClick(offlineMode ? 'Information about Greece from cache' : 'Find me a vacation in Greece under 500€')}>
             <Icon name="MessageSquare" size={16} className={`mr-2 ${offlineMode ? 'text-blue-600' : 'text-primary'}`} />
-            {offlineMode ? '"Informații despre Grecia din cache"' : '"Găsește-mi o vacanță în Grecia sub 500€"'}
+            {offlineMode ? '"Information about Greece from cache"' : '"Find me a vacation in Greece under 500€"'}
           </Button>
-          
+
           <Button
             variant="ghost"
             className="text-left justify-start h-auto p-3"
-            onClick={() => handleSuggestionClick(offlineMode ? 'Ghid turistic Paris offline' : 'Vreau un city break romantic în Paris')}>
+            onClick={() => handleSuggestionClick(offlineMode ? 'Paris tourist guide offline' : 'I want a romantic city break in Paris')}>
             <Icon name="MessageSquare" size={16} className={`mr-2 ${offlineMode ? 'text-blue-600' : 'text-primary'}`} />
-            {offlineMode ? '"Ghid turistic Paris offline"' : '"Vreau un city break romantic în Paris"'}
+            {offlineMode ? '"Paris tourist guide offline"' : '"I want a romantic city break in Paris"'}
           </Button>
-          
+
           <Button
             variant="ghost"
             className="text-left justify-start h-auto p-3"
-            onClick={() => handleSuggestionClick(offlineMode ? 'Destinații România din baza locală' : 'Recomandă-mi o croazieră în Mediterana')}>
+            onClick={() => handleSuggestionClick(offlineMode ? 'Romania destinations from local database' : 'Recommend a Mediterranean cruise')}>
             <Icon name="MessageSquare" size={16} className={`mr-2 ${offlineMode ? 'text-blue-600' : 'text-primary'}`} />
-            {offlineMode ? '"Destinații România din baza locală"' : '"Recomandă-mi o croazieră în Mediterana"'}
+            {offlineMode ? '"Romania destinations from local database"' : '"Recommend a Mediterranean cruise"'}
           </Button>
-          
+
           <Button
             variant="ghost"
             className="text-left justify-start h-auto p-3"
-            onClick={() => handleSuggestionClick(offlineMode ? 'Sfaturi generale pentru călătorii' : 'Căut sejur la schi în Alpi')}>
+            onClick={() => handleSuggestionClick(offlineMode ? 'General travel tips' : 'I am looking for a ski trip in the Alps')}>
             <Icon name="MessageSquare" size={16} className={`mr-2 ${offlineMode ? 'text-blue-600' : 'text-primary'}`} />
-            {offlineMode ? '"Sfaturi generale pentru călătorii"' : '"Căut sejur la schi în Alpi"'}
+            {offlineMode ? '"General travel tips"' : '"I am looking for a ski trip in the Alps"'}
           </Button>
         </div>
       </div>
       {/* AI Features Highlight */}
       <div className="mt-8 text-center">
-        <div className={`inline-flex items-center space-x-2 px-4 py-2 rounded-full ${
-          offlineMode 
-            ? 'bg-blue-100 text-blue-700' :'bg-primary/10 text-primary'
-        }`}>
+        <div className={`inline-flex items-center space-x-2 px-4 py-2 rounded-full ${offlineMode
+            ? 'bg-blue-100 text-blue-700' : 'bg-primary/10 text-primary'
+          }`}>
           <Icon name={offlineMode ? 'Database' : 'Sparkles'} size={16} />
           <span className="text-sm font-medium">
-            {offlineMode 
-              ? 'Mod Offline - Baza locală de destinații și ghiduri' :'Powered by OpenAI GPT-4 - Răspunsuri inteligente și personalizate'
+            {offlineMode
+              ? 'Offline Mode - Local database of destinations and guides' : 'Powered by OpenAI GPT-4 - Intelligent and personalized answers'
             }
           </span>
         </div>
         {offlineMode && (
           <p className="text-xs text-muted-foreground mt-2">
-            Funcții complete disponibile când serviciul AI se va reconecta
+            Full functions available when the AI service reconnects
           </p>
         )}
       </div>

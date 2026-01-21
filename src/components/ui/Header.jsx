@@ -16,10 +16,10 @@ const Header = () => {
     navigate("/login");
   };
 
-  // 🔥 MENIU UNIFICAT
+  // 🔥 UNIFIED MENU
   const navigationItems = [
-    { label: "Caută oferte", path: "/cauta-oferte", icon: "Search" },
-    { label: "Chat AI", path: "/ai-chat-interface", icon: "MessageCircle" },
+    { label: "Search Offers", path: "/search-offers", icon: "Search" },
+    { label: "AI Chat", path: "/ai-chat-interface", icon: "MessageCircle" },
   ];
 
   const isActivePath = (path) => location?.pathname === path;
@@ -64,7 +64,7 @@ const Header = () => {
               >
                 <div className="flex items-center space-x-2">
                   <Icon name="User" size={18} />
-                  <span>Profil</span>
+                  <span>Profile</span>
                 </div>
               </Link>
             )}
@@ -79,7 +79,7 @@ const Header = () => {
                   }`}
               >
                 <Icon name="Shield" size={18} />
-                <span>Panou Admin</span>
+                <span>Admin Panel</span>
               </Link>
             )}
 
@@ -89,7 +89,7 @@ const Header = () => {
                 size="icon"
                 onClick={handleLogout}
                 className="ml-2"
-                title="Delogare"
+                title="Logout"
               >
                 <Icon name="LogOut" size={20} />
               </Button>
@@ -99,13 +99,13 @@ const Header = () => {
                   onClick={() => navigate("/login")}
                   className="ml-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
                 >
-                  Autentificare
+                  Sign In
                 </button>
                 <button
                   onClick={() => navigate("/register")}
                   className="ml-2 border border-blue-600 text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-600 hover:text-white transition"
                 >
-                  Înregistrare
+                  Sign Up
                 </button>
               </>
             )}
@@ -149,7 +149,7 @@ const Header = () => {
                   }`}
               >
                 <Icon name="User" size={20} />
-                <span>Profil</span>
+                <span>Profile</span>
               </Link>
             )}
             {userProfile?.roles?.includes("admin") && (
@@ -157,12 +157,12 @@ const Header = () => {
                 to="/admin-dashboard"
                 onClick={closeMobileMenu}
                 className={`flex items-center space-x-3 px-4 py-3 rounded-lg ${isActivePath("/admin-dashboard")
-                    ? "bg-primary text-primary-foreground"
-                    : "hover:bg-muted"
+                  ? "bg-primary text-primary-foreground"
+                  : "hover:bg-muted"
                   }`}
               >
                 <Icon name="Shield" size={20} />
-                <span>Panou Admin</span>
+                <span>Admin Panel</span>
               </Link>
             )}
 
@@ -177,7 +177,7 @@ const Header = () => {
                 className="flex items-center space-x-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-600 hover:text-white transition"
               >
                 <Icon name="LogOut" size={20} />
-                <span>Delogare</span>
+                <span>Logout</span>
               </button>
             ) : (
               <>
@@ -188,7 +188,7 @@ const Header = () => {
                   }}
                   className="w-full bg-blue-600 text-white py-3 rounded-lg"
                 >
-                  Autentificare
+                  Sign In
                 </button>
                 <button
                   onClick={() => {
@@ -197,7 +197,7 @@ const Header = () => {
                   }}
                   className="w-full border border-blue-600 text-blue-600 py-3 rounded-lg"
                 >
-                  Înregistrare
+                  Sign Up
                 </button>
               </>
             )}

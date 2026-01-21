@@ -6,28 +6,28 @@ const Footer = () => {
     <footer className="bg-background border-t border-border py-3 mt-0">
       <div className="max-w-7xl mx-auto px-6 text-center space-y-3">
 
-        {/* 🔹 Linkuri legale */}
+        {/* 🔹 Legal links */}
         <div className="flex flex-wrap justify-center gap-4 text-sm text-muted-foreground">
-          <Link to="/termeni-si-conditii" className="hover:text-foreground transition">
-            Termeni și Condiții
+          <Link to="/terms-and-conditions" className="hover:text-foreground transition">
+            Terms and Conditions
           </Link>
 
           <span className="text-muted-foreground">•</span>
 
-          <Link to="/politica-confidentialitate" className="hover:text-foreground transition">
-            Politica de Confidențialitate
+          <Link to="/privacy-policy" className="hover:text-foreground transition">
+            Privacy Policy
           </Link>
 
           <span className="text-muted-foreground">•</span>
 
-          <Link to="/politica-cookie" className="hover:text-foreground transition">
-            Politica Cookie
+          <Link to="/cookie-policy" className="hover:text-foreground transition">
+            Cookie Policy
           </Link>
 
           <span className="text-muted-foreground">•</span>
 
-          <Link to="/afiliere-disclosure" className="hover:text-foreground transition">
-            Disclosure Afiliere
+          <Link to="/affiliate-disclosure" className="hover:text-foreground transition">
+            Affiliate Disclosure
           </Link>
 
           <span className="text-muted-foreground">•</span>
@@ -37,16 +37,16 @@ const Footer = () => {
           </Link>
         </div>
 
-        {/* 🔹 Text legal affiliate disclosure (obligatoriu) */}
+        {/* 🔹 Affiliate disclosure legal text (mandatory) */}
         <p className="text-xs text-muted-foreground max-w-3xl mx-auto leading-relaxed px-4">
-          TravelAI Deals utilizează linkuri de afiliere către parteneri precum Booking.com,
-          Klook, Trip.com, Momondo și alții. Este posibil să primim un comision dacă efectuați
-          o rezervare prin linkurile afișate, fără costuri suplimentare pentru dumneavoastră.
+          TravelAI Deals uses affiliate links to partners such as Booking.com,
+          Klook, Trip.com, Momondo and others. We may receive a commission if you make
+          a reservation through the links displayed, at no additional cost to you.
         </p>
 
         {/* 🔹 Copyright */}
         <p className="text-xs text-muted-foreground">
-          © {new Date().getFullYear()} TravelAI Deals — Creat cu 💙 în România.
+          © {new Date().getFullYear()} TravelAI Deals — Created with 💙 in Romania.
         </p>
       </div>
     </footer>

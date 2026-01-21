@@ -33,7 +33,7 @@ const PartnersSection = () => {
       <div className="max-w-7xl mx-auto px-6 text-center">
 
         <h2 className="text-2xl lg:text-3xl font-bold mb-12 text-foreground">
-          Ofertele sunt verificate automat prin partenerii noștri oficiali
+          Deals are automatically verified through our official partners
         </h2>
 
         <div

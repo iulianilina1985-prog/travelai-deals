@@ -14,36 +14,36 @@ const KLOOK_LINK = "https://klook.tpx.lt/IVfayTj9";
 
 const MONTH_DESTINATIONS = [
   // WEEK 1
-  { name: "Paris", country: "Franța", image: "/assets/images/paris.png", tag: "City-break romantic" },
-  { name: "Roma", country: "Italia", image: "/assets/images/roma.png", tag: "Istorie & gastronomie" },
-  { name: "Barcelona", country: "Spania", image: "/assets/images/barcelona.jpg", tag: "Cultură & plajă" },
-  { name: "Viena", country: "Austria", image: "/assets/images/vienna.jpg", tag: "City-break elegant" },
-  { name: "Praga", country: "Cehia", image: "/assets/images/prague.jpg", tag: "Romantic & cultural" },
-  { name: "Budapesta", country: "Ungaria", image: "/assets/images/budapest.jpg", tag: "Relax & băi termale" },
+  { name: "Paris", country: "France", image: "/assets/images/paris.png", tag: "Romantic City-break" },
+  { name: "Rome", country: "Italy", image: "/assets/images/roma.png", tag: "History & Gastronomy" },
+  { name: "Barcelona", country: "Spain", image: "/assets/images/barcelona.jpg", tag: "Culture & Beach" },
+  { name: "Vienna", country: "Austria", image: "/assets/images/vienna.jpg", tag: "Elegant City-break" },
+  { name: "Prague", country: "Czech Republic", image: "/assets/images/prague.jpg", tag: "Romantic & Cultural" },
+  { name: "Budapest", country: "Hungary", image: "/assets/images/budapest.jpg", tag: "Relax & Thermal Baths" },
 
   // WEEK 2
-  { name: "Dubai", country: "EAU", image: "/assets/images/dubai.jpg", tag: "Lux & experiențe" },
-  { name: "Istanbul", country: "Turcia", image: "/assets/images/istanbul.png", tag: "Cultură & shopping" },
-  { name: "Atena", country: "Grecia", image: "/assets/images/athens.jpg", tag: "Istorie & soare" },
-  { name: "Lisabona", country: "Portugalia", image: "/assets/images/lisbon.jpg", tag: "City-break boem" },
-  { name: "Madrid", country: "Spania", image: "/assets/images/madrid.jpg", tag: "Urban & vibrant" },
-  { name: "Milano", country: "Italia", image: "/assets/images/milan.jpg", tag: "Fashion & city" },
+  { name: "Dubai", country: "UAE", image: "/assets/images/dubai.jpg", tag: "Luxury & Experiences" },
+  { name: "Istanbul", country: "Turkey", image: "/assets/images/istanbul.png", tag: "Culture & Shopping" },
+  { name: "Athens", country: "Greece", image: "/assets/images/athens.jpg", tag: "History & Sun" },
+  { name: "Lisbon", country: "Portugal", image: "/assets/images/lisbon.jpg", tag: "Bohemian City-break" },
+  { name: "Madrid", country: "Spain", image: "/assets/images/madrid.jpg", tag: "Urban & Vibrant" },
+  { name: "Milan", country: "Italy", image: "/assets/images/milan.jpg", tag: "Fashion & City" },
 
   // WEEK 3
-  { name: "Tenerife", country: "Spania", image: "/assets/images/tenerife.jpg", tag: "Soare tot anul" },
-  { name: "Madeira", country: "Portugalia", image: "/assets/images/madeira.jpg", tag: "Natură & relax" },
-  { name: "Malta", country: "Malta", image: "/assets/images/malta.jpg", tag: "Insulă & explorare" },
-  { name: "Ibiza", country: "Spania", image: "/assets/images/ibiza.jpg", tag: "Distracție & plajă" },
-  { name: "Creta", country: "Grecia", image: "/assets/images/creta.jpg", tag: "Vacanță completă" },
-  { name: "Sardinia", country: "Italia", image: "/assets/images/sardinia.jpg", tag: "Plaje & relax" },
+  { name: "Tenerife", country: "Spain", image: "/assets/images/tenerife.jpg", tag: "Sun year-round" },
+  { name: "Madeira", country: "Portugal", image: "/assets/images/madeira.jpg", tag: "Nature & Relax" },
+  { name: "Malta", country: "Malta", image: "/assets/images/malta.jpg", tag: "Island & Exploration" },
+  { name: "Ibiza", country: "Spain", image: "/assets/images/ibiza.jpg", tag: "Fun & Beach" },
+  { name: "Crete", country: "Greece", image: "/assets/images/creta.jpg", tag: "Complete Vacation" },
+  { name: "Sardinia", country: "Italy", image: "/assets/images/sardinia.jpg", tag: "Beaches & Relax" },
 
   // WEEK 4
-  { name: "Amsterdam", country: "Olanda", image: "/assets/images/amsterdam.jpg", tag: "City-break cool" },
-  { name: "Copenhaga", country: "Danemarca", image: "/assets/images/copenhagen.jpg", tag: "Nordic & design" },
-  { name: "Stockholm", country: "Suedia", image: "/assets/images/stockholm.jpg", tag: "Natură & oraș" },
-  { name: "Berlin", country: "Germania", image: "/assets/images/berlin.jpg", tag: "Cultură & istorie" },
-  { name: "Edinburgh", country: "Scoția", image: "/assets/images/edinburgh.jpg", tag: "Istorie & mister" },
-  { name: "Zurich", country: "Elveția", image: "/assets/images/zurich.jpg", tag: "Alpin & urban" },
+  { name: "Amsterdam", country: "Netherlands", image: "/assets/images/amsterdam.jpg", tag: "Cool City-break" },
+  { name: "Copenhagen", country: "Denmark", image: "/assets/images/copenhagen.jpg", tag: "Nordic & Design" },
+  { name: "Stockholm", country: "Sweden", image: "/assets/images/stockholm.jpg", tag: "Nature & City" },
+  { name: "Berlin", country: "Germany", image: "/assets/images/berlin.jpg", tag: "Culture & History" },
+  { name: "Edinburgh", country: "Scotland", image: "/assets/images/edinburgh.jpg", tag: "History & Mystery" },
+  { name: "Zurich", country: "Switzerland", image: "/assets/images/zurich.jpg", tag: "Alpine & Urban" },
 ];
 
 /* ==============================
@@ -69,14 +69,14 @@ const FeaturedDestinationsSection = () => {
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-10">
           <div>
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
-              Destinații populare recomandate de TravelAI
+              Popular Destinations Recommended by TravelAI
             </h2>
             <p className="mt-2 text-gray-600 max-w-2xl">
-              Selecție editorială actualizată săptămânal, bazată pe sezon și interesul călătorilor.
+              Weekly updated editorial selection based on season and traveler interest.
             </p>
           </div>
           <p className="text-sm text-gray-500">
-            Actualizat săptămânal • Conținut editorial
+            Updated Weekly • Editorial Content
           </p>
         </div>
 
@@ -113,7 +113,7 @@ const FeaturedDestinationsSection = () => {
                   rel="noopener noreferrer"
                   className="text-sm font-medium text-blue-600 hover:underline"
                 >
-                  Vezi experiențe și activități →
+                  See experiences and activities →
                 </a>
               </div>
             </article>

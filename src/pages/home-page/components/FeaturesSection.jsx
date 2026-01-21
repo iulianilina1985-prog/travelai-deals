@@ -5,20 +5,20 @@ const FeaturesSection = () => {
   const features = [
     {
       icon: "Bot",
-      title: "Căutare automată AI",
-      desc: "Algoritmul nostru analizează în timp real mii de oferte și găsește cele mai bune variante pentru tine.",
+      title: "Automatic AI Search",
+      desc: "Our algorithm analyzes thousands of offers in real-time and finds the best options for you.",
       color: "from-blue-500 to-indigo-600",
     },
     {
       icon: "Bell",
-      title: "Notificări instant",
-      desc: "Primești alerte inteligente când prețurile scad sau apare o ofertă mai bună.",
+      title: "Instant Notifications",
+      desc: "Get intelligent alerts when prices drop or a better offer appears.",
       color: "from-indigo-500 to-violet-600",
     },
     {
       icon: "ShieldCheck",
-      title: "Date sigure",
-      desc: "Respectăm cele mai stricte standarde GDPR. Datele tale rămân mereu în siguranță.",
+      title: "Secure Data",
+      desc: "We comply with the strictest GDPR standards. Your data always stays safe.",
       color: "from-violet-500 to-purple-600",
     },
   ];
@@ -26,7 +26,7 @@ const FeaturesSection = () => {
   return (
     <section className="py-20 px-6 bg-gradient-to-b from-white to-gray-50">
       <h2 className="text-4xl font-extrabold text-center mb-14 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-        Ce îți oferă TravelAI Deals
+        What TravelAI Deals Offers You
       </h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 max-w-6xl mx-auto">

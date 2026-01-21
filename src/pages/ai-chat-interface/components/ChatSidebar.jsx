@@ -27,7 +27,7 @@ const ChatSidebar = ({ isOpen, onClose, history = [] }) => {
         return [
           {
             id: conv.id,
-            title: conv.title || "Conversație nouă",
+            title: conv.title || "New Conversation",
             created_at: conv.created_at || new Date().toISOString(),
           },
           ...prev,
@@ -57,9 +57,9 @@ const ChatSidebar = ({ isOpen, onClose, history = [] }) => {
     if (!ts) return "";
     const diff = new Date() - new Date(ts);
     const hours = diff / 3600000;
-    if (hours < 1) return "Acum";
-    if (hours < 24) return `${Math.floor(hours)}h în urmă`;
-    return `${Math.floor(hours / 24)} zile în urmă`;
+    if (hours < 1) return "Just now";
+    if (hours < 24) return `${Math.floor(hours)}h ago`;
+    return `${Math.floor(hours / 24)} days ago`;
   };
 
   const openConversation = (conv) => {
@@ -81,7 +81,7 @@ const ChatSidebar = ({ isOpen, onClose, history = [] }) => {
   // SHARE
   // ===============================
   const handleShare = async (deal) => {
-    const text = `🔥 Ofertă TravelAI\n${deal.title}\n${deal.link}`;
+    const text = `🔥 TravelAI Deal\n${deal.title}\n${deal.link}`;
 
     try {
       if (navigator.share) {
@@ -92,7 +92,7 @@ const ChatSidebar = ({ isOpen, onClose, history = [] }) => {
         });
       } else {
         await navigator.clipboard.writeText(deal.link);
-        alert("Link copiat în clipboard");
+        alert("Link copied to clipboard");
       }
     } catch (err) {
       console.error("Share failed", err);
@@ -100,9 +100,9 @@ const ChatSidebar = ({ isOpen, onClose, history = [] }) => {
   };
 
   const tabs = [
-    { id: "history", icon: "MessageSquare", label: "Conversații" },
-    { id: "saved", icon: "Heart", label: "Salvate" },
-    { id: "notifications", icon: "Bell", label: "Notificări" },
+    { id: "history", icon: "MessageSquare", label: "Conversations" },
+    { id: "saved", icon: "Heart", label: "Saved" },
+    { id: "notifications", icon: "Bell", label: "Notifications" },
   ];
 
   return (
@@ -121,7 +121,7 @@ const ChatSidebar = ({ isOpen, onClose, history = [] }) => {
       >
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b shrink-0">
-          <h3 className="font-semibold">Activitate</h3>
+          <h3 className="font-semibold">Activity</h3>
           <Button
             variant="ghost"
             size="icon"
@@ -155,7 +155,7 @@ const ChatSidebar = ({ isOpen, onClose, history = [] }) => {
           {activeTab === "history" && (
             <div className="space-y-3">
               <Button size="sm" onClick={handleNewConversation}>
-                Chat nou
+                New chat
               </Button>
 
               {conversations.map((c) => (
@@ -201,7 +201,7 @@ const ChatSidebar = ({ isOpen, onClose, history = [] }) => {
                         size="sm"
                         onClick={() => window.open(deal.link, "_blank")}
                       >
-                        Vezi
+                        See
                       </Button>
 
                       <Button
@@ -209,7 +209,7 @@ const ChatSidebar = ({ isOpen, onClose, history = [] }) => {
                         variant="outline"
                         onClick={() => toggleFavorite(deal)}
                       >
-                        Șterge
+                        Delete
                       </Button>
 
                       <Button
@@ -224,7 +224,7 @@ const ChatSidebar = ({ isOpen, onClose, history = [] }) => {
                 ))
               ) : (
                 <p className="text-sm text-muted-foreground">
-                  Nicio ofertă salvată.
+                  No saved offers.
                 </p>
               )}
             </div>
@@ -233,7 +233,7 @@ const ChatSidebar = ({ isOpen, onClose, history = [] }) => {
           {/* NOTIFICATIONS */}
           {activeTab === "notifications" && (
             <p className="text-sm text-muted-foreground">
-              În curând…
+              Coming soon…
             </p>
           )}
         </div>

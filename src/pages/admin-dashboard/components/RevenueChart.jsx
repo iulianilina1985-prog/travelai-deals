@@ -33,16 +33,16 @@ const RevenueChart = () => {
       .select("amount, payment_date, type");
 
     if (error) {
-      console.error("Eroare la extragerea veniturilor:", error);
+      console.error("Error fetching revenue:", error);
       setLoading(false);
       return;
     }
 
-    // Grupare pe luni (REVENUE TOTAL pentru chart)
+    // Grouping by months (TOTAL REVENUE for chart)
     const grouped = {};
     data?.forEach((item) => {
       const d = new Date(item.payment_date);
-      const key = d.toLocaleString("ro-RO", { month: "short" });
+      const key = d.toLocaleString("en-US", { month: "short" });
       grouped[key] = (grouped[key] || 0) + (item.amount || 0);
     });
 
@@ -94,7 +94,7 @@ const RevenueChart = () => {
   if (loading) {
     return (
       <div className="bg-card border border-border rounded-lg p-6 shadow-card">
-        <p className="text-muted-foreground">Se încarcă datele...</p>
+        <p className="text-muted-foreground">Loading data...</p>
       </div>
     );
   }
@@ -105,10 +105,10 @@ const RevenueChart = () => {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h3 className="text-lg font-semibold text-foreground">
-              Analiză venituri
+              Revenue analysis
             </h3>
             <p className="text-sm text-muted-foreground">
-              Evoluția veniturilor reale pe lună
+              Real monthly revenue evolution
             </p>
           </div>
 
@@ -119,7 +119,7 @@ const RevenueChart = () => {
               onClick={() => setChartType("bar")}
               iconName="BarChart3"
             >
-              Bară
+              Bar
             </Button>
             <Button
               variant={chartType === "line" ? "default" : "outline"}
@@ -127,7 +127,7 @@ const RevenueChart = () => {
               onClick={() => setChartType("line")}
               iconName="TrendingUp"
             >
-              Linie
+              Line
             </Button>
             <Button variant="outline" size="sm" iconName="Download">
               Export
@@ -137,24 +137,24 @@ const RevenueChart = () => {
       </div>
 
       <div className="p-6">
-        {/* Carduri sumar */}
+        {/* Summary cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <div className="text-center p-4 bg-muted/30 rounded-lg">
-            <p className="text-sm text-muted-foreground">Venit total</p>
+            <p className="text-sm text-muted-foreground">Total revenue</p>
             <p className="text-2xl font-bold text-foreground">
               €{totals.totalRevenue.toLocaleString()}
             </p>
           </div>
 
           <div className="text-center p-4 bg-muted/30 rounded-lg">
-            <p className="text-sm text-muted-foreground">Abonamente</p>
+            <p className="text-sm text-muted-foreground">Subscriptions</p>
             <p className="text-2xl font-bold text-foreground">
               €{totals.totalSubscriptions.toLocaleString()}
             </p>
           </div>
 
           <div className="text-center p-4 bg-muted/30 rounded-lg">
-            <p className="text-sm text-muted-foreground">Comisioane</p>
+            <p className="text-sm text-muted-foreground">Commissions</p>
             <p className="text-2xl font-bold text-foreground">€0</p>
           </div>
         </div>

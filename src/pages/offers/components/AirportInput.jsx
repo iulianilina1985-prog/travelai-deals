@@ -7,29 +7,29 @@ const AirportInput = ({ formData, handleChange, offerType }) => {
   return (
     <section className="space-y-4">
       <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
-        {isFlight ? "Aeroporturi" : "Destinație"}
+        {isFlight ? "Airports" : "Destination"}
       </h2>
 
       {isFlight ? (
         /* ======================
-           ZBOR / VACANȚĂ
+                    FLIGHT / VACATION
            ====================== */
         <div className="grid gap-4 md:grid-cols-2">
           <div>
             <label className="text-xs font-medium text-slate-600">
-              Aeroport plecare
+              Departure airport
             </label>
             <input
               value={formData.fromAirport}
               onChange={(e) => handleChange("fromAirport", e.target.value)}
-              placeholder="Ex: București OTP"
+              placeholder="E.g.: Bucharest OTP"
               className="w-full rounded-xl border px-3 py-2.5 text-sm"
             />
           </div>
 
           <div>
             <label className="text-xs font-medium text-slate-600">
-              Aeroport destinație
+              Destination airport
             </label>
             <input
               value={formData.toAirport}
@@ -45,12 +45,12 @@ const AirportInput = ({ formData, handleChange, offerType }) => {
            ====================== */
         <div>
           <label className="text-xs font-medium text-slate-600">
-            Oraș / țară
+            City / country
           </label>
           <input
             value={formData.destination}
             onChange={(e) => handleChange("destination", e.target.value)}
-            placeholder="Ex: Paris, Italia, Spania"
+            placeholder="E.g.: Paris, Italy, Spain"
             className="w-full rounded-xl border px-3 py-2.5 text-sm"
           />
         </div>

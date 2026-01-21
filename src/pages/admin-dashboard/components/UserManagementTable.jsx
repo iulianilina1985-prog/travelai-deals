@@ -14,7 +14,7 @@ const PAGE_SIZE = 20;
 // UTIL
 // -------------------------------------------------------
 const formatDate = (d) =>
-  d ? new Date(d).toLocaleDateString("ro-RO") : "-";
+  d ? new Date(d).toLocaleDateString("en-US") : "-";
 
 // 👉 BLINDAT: nu mai crapă dacă email e null / undefined
 const safeName = (p = {}) => {
@@ -29,7 +29,7 @@ const safeName = (p = {}) => {
     return p.email;
   }
 
-  return "Utilizator fără nume";
+  return "User without name";
 };
 
 // -------------------------------------------------------
@@ -63,13 +63,13 @@ const UserManagementTable = () => {
       const data = await res.text();
 
       if (!res.ok) {
-        console.error("EROARE FUNCȚIE:", data);
-        alert("Nu s-a trimis emailul");
+        console.error("FUNCTION ERROR:", data);
+        alert("Email not sent");
       } else {
-        console.log("TRIMIS:", data);
+        console.log("SENT:", data);
       }
     } catch (e) {
-      console.error("Eroare:", e);
+      console.error("Error:", e);
     }
   };
 
@@ -112,10 +112,10 @@ const UserManagementTable = () => {
         if (!payError && payData) {
           payments = payData;
         } else if (payError) {
-          console.warn("Tabela payments lipsește sau are eroare:", payError.message);
+          console.warn("Payments table is missing or has an error:", payError.message);
         }
       } catch (e) {
-        console.warn("Nu s-a putut încărca tabela payments (probabil nu există încă).", e);
+        console.warn("Could not load payments table (probably doesn't exist yet).", e);
       }
 
       const { data: events, error: eventsError } = await supabase
@@ -155,8 +155,8 @@ const UserManagementTable = () => {
       setHasLoaded(true);
       setError(null);
     } catch (err) {
-      console.error("Eroare la fetchAll:", err);
-      setError("Eroare încărcare: " + (err?.message || "necunoscută"));
+      console.error("Error in fetchAll:", err);
+      setError("Load error: " + (err?.message || "unknown"));
     }
     setLoading(false);
   };
@@ -197,16 +197,16 @@ const UserManagementTable = () => {
 
     if (error) {
       console.error(error);
-      alert("Nu s-a putut retrimite emailul.");
+      alert("Could not resend email.");
       return;
     }
 
-    alert("Emailul a fost retrimis!");
+    alert("Email resent!");
   };
 
   const sendPasswordReset = async (email) => {
     await supabase.auth.resetPasswordForEmail(email);
-    alert("Email de resetare parolă trimis");
+    alert("Password reset email sent");
   };
 
   const confirmEmailManual = async (id) => {
@@ -218,7 +218,7 @@ const UserManagementTable = () => {
   };
 
   const deleteUser = async (id) => {
-    if (!confirm("Sigur ștergi acest cont?")) return;
+    if (!confirm("Are you sure you want to delete this account?")) return;
 
     try {
       const res = await fetch(
@@ -233,16 +233,16 @@ const UserManagementTable = () => {
       const data = await res.json();
 
       if (!res.ok) {
-        console.error("Eroare delete:", data);
-        alert("Nu s-a putut șterge userul.");
+        console.error("Delete error:", data);
+        alert("Could not delete user.");
         return;
       }
 
-      alert("User șters cu succes.");
+      alert("User deleted successfully.");
       fetchAll();
     } catch (e) {
-      console.error("Eșec request:", e);
-      alert("Eroare conexiune.");
+      console.error("Request failed:", e);
+      alert("Connection error.");
     }
   };
 
@@ -254,8 +254,8 @@ const UserManagementTable = () => {
 
     await sendSystemEmail(
       email,
-      "Contul tău a fost suspendat",
-      "Contul tău a fost suspendat temporar de către administrator.<br>Te rugăm să ne contactezi pentru detalii."
+      "Your account has been suspended",
+      "Your account has been temporarily suspended by an administrator.<br>Please contact us for details."
     );
 
     fetchAll();
@@ -269,8 +269,8 @@ const UserManagementTable = () => {
 
     await sendSystemEmail(
       email,
-      "Contul tău a fost reactivat",
-      "Salut! Contul tău a fost reactivat și îl poți folosi din nou. Bine ai revenit!"
+      "Your account has been reactivated",
+      "Hello! Your account has been reactivated and you can use it again. Welcome back!"
     );
 
     fetchAll();
@@ -290,7 +290,7 @@ const UserManagementTable = () => {
 
   const removeAdmin = async (id) => {
     if (getAdminCount() === 1) {
-      alert("Nu poți elimina ultimul admin!");
+      alert("You cannot remove the last admin!");
       return;
     }
 
@@ -342,10 +342,10 @@ const UserManagementTable = () => {
   // -------------------------------------------------------
   const sendCustomEmail = (email, msg) => {
     if (!msg.trim()) {
-      alert("Mesajul nu poate fi gol.");
+      alert("Message cannot be empty.");
       return;
     }
-    alert(`Email trimis către ${email}: ${msg}`);
+    alert(`Email sent to ${email}: ${msg}`);
   };
 
   // -------------------------------------------------------
@@ -387,7 +387,7 @@ const UserManagementTable = () => {
   // UI
   // -------------------------------------------------------
   if (loading && !hasLoaded) {
-    return <p className="p-6">Se încarcă…</p>;
+    return <p className="p-6">Loading…</p>;
   }
   if (error) {
     return <p className="p-6 text-red-500">{error}</p>;
@@ -399,12 +399,12 @@ const UserManagementTable = () => {
       <div className="p-6 border-b border-border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h3 className="text-lg font-semibold flex items-center gap-2">
           <Icon name="Users" size={18} />
-          Management utilizatori
+          User management
         </h3>
 
         <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
           <Input
-            placeholder="Caută nume sau email…"
+            placeholder="Search name or email…"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full sm:w-72"
@@ -414,7 +414,7 @@ const UserManagementTable = () => {
             value={statusFilter}
             onChange={setStatusFilter}
             options={[
-              { value: "all", label: "Toate" },
+              { value: "all", label: "All" },
               { value: "active", label: "Active" },
               { value: "inactive", label: "Inactive" },
             ]}
@@ -437,17 +437,16 @@ const UserManagementTable = () => {
             }}
             disabled={loading}
           >
-            {!hasLoaded ? "Încarcă utilizatorii" : "Ascunde utilizatorii"}
+            {!hasLoaded ? "Load users" : "Hide users"}
           </Button>
         </div>
       </div>
 
-      {/* Dacă nu am încărcat încă lista */}
+      {/* If I haven't loaded the list yet */}
       {!hasLoaded && !loading && (
         <div className="p-6 text-sm text-muted-foreground">
-          Nu ai încărcat încă lista de utilizatori. Apasă pe{" "}
-          <strong>„Încarcă utilizatorii”</strong> sau începe să cauți după nume
-          / email.
+          You haven't loaded the users list yet. Click on{" "}
+          <strong>“Load users”</strong> or start searching by name / email.
         </div>
       )}
 
@@ -458,12 +457,12 @@ const UserManagementTable = () => {
             <thead className="bg-muted/20">
               <tr>
                 <th className="p-4"></th>
-                <th className="p-4 text-left">Utilizator</th>
-                <th className="p-4 text-left">Abonament</th>
-                <th className="p-4 text-left">Roluri</th>
+                <th className="p-4 text-left">User</th>
+                <th className="p-4 text-left">Subscription</th>
+                <th className="p-4 text-left">Roles</th>
                 <th className="p-4 text-left">Status</th>
-                <th className="p-4 text-left">Creat la</th>
-                <th className="p-4 text-left">Ultima activitate</th>
+                <th className="p-4 text-left">Created at</th>
+                <th className="p-4 text-left">Last activity</th>
               </tr>
             </thead>
 
@@ -508,7 +507,7 @@ const UserManagementTable = () => {
                             : "px-2 py-1 rounded bg-red-100 text-red-700 text-xs font-medium"
                         }
                       >
-                        {u.is_active ? "Activ" : "Suspendat"}
+                        {u.is_active ? "Active" : "Suspended"}
                       </span>
                     </td>
 
@@ -522,7 +521,7 @@ const UserManagementTable = () => {
                       <td colSpan={7} className="p-6">
                         {/* HEADER */}
                         <h4 className="text-lg font-semibold mb-1">
-                          Detalii utilizator
+                          User details
                         </h4>
                         <p className="text-muted-foreground text-sm mb-4">
                           ID: {u.id}
@@ -533,50 +532,50 @@ const UserManagementTable = () => {
                           {/* PROFILE */}
                           <div>
                             <h5 className="font-semibold mb-2 flex items-center gap-2">
-                              <Icon name="User" size={16} /> Profil
+                              <Icon name="User" size={16} /> Profile
                             </h5>
                             <p>
-                              Nume: <strong>{u.name}</strong>
+                              Name: <strong>{u.name}</strong>
                             </p>
                             <p>Email: {u.email}</p>
-                            <p>Roluri: {u.roles.join(", ")}</p>
+                            <p>Roles: {u.roles.join(", ")}</p>
                             <p>
-                              Status: {u.is_active ? "Activ" : "Suspendat"}
+                              Status: {u.is_active ? "Active" : "Suspended"}
                             </p>
                             <p>
-                              Email verificat:{" "}
-                              {u.email_verified ? "Da" : "Nu"}
+                              Email verified:{" "}
+                              {u.email_verified ? "Yes" : "No"}
                             </p>
                             <p>
-                              Termeni acceptați:{" "}
-                              {u.accepted_terms ? "Da" : "Nu"}
+                              Terms accepted:{" "}
+                              {u.accepted_terms ? "Yes" : "No"}
                             </p>
                             <p>
-                              Data acceptării:{" "}
+                              Acceptance date:{" "}
                               {formatDate(u.accepted_terms_at)}
                             </p>
-                            <p>Creat la: {formatDate(u.created_at)}</p>
+                            <p>Created at: {formatDate(u.created_at)}</p>
                           </div>
 
                           {/* ACTIVITY & SUBSCRIPTIONS */}
                           <div>
                             <h5 className="font-semibold mb-2 flex items-center gap-2">
-                              <Icon name="Activity" size={16} /> Activitate
+                              <Icon name="Activity" size={16} /> Activity
                             </h5>
                             <p>
-                              Ultima activitate:{" "}
+                              Last activity:{" "}
                               {formatDate(u.last_active)}
                             </p>
 
                             <h5 className="font-semibold mt-4 mb-2 flex items-center gap-2">
-                              <Icon name="CreditCard" size={16} /> Abonament
-                              curent
+                              <Icon name="CreditCard" size={16} /> Current
+                              subscription
                             </h5>
                             <p>{u.sub_label}</p>
 
                             <h5 className="font-semibold mt-4 mb-2 flex items-center gap-2">
-                              <Icon name="Calendar" size={16} /> Istoric
-                              abonamente
+                              <Icon name="Calendar" size={16} /> Subscription
+                              history
                             </h5>
 
                             <ul className="text-sm pl-4 list-disc">
@@ -592,7 +591,7 @@ const UserManagementTable = () => {
                               <>
                                 <h5 className="font-semibold mt-4 mb-2 flex items-center gap-2">
                                   <Icon name="DollarSign" size={16} /> Total
-                                  plăți
+                                  payments
                                 </h5>
                                 <p>
                                   {u.payments.reduce(
@@ -614,14 +613,14 @@ const UserManagementTable = () => {
                               variant="outline"
                               onClick={() => suspendUser(u.id, u.email)}
                             >
-                              Suspendă
+                              Suspend
                             </Button>
                           ) : (
                             <Button
                               variant="outline"
                               onClick={() => activateUser(u.id, u.email)}
                             >
-                              Activează
+                              Activate
                             </Button>
                           )}
 
@@ -631,14 +630,14 @@ const UserManagementTable = () => {
                               variant="outline"
                               onClick={() => makeAdmin(u.id)}
                             >
-                              Fă admin
+                              Make admin
                             </Button>
                           ) : (
                             <Button
                               variant="outline"
                               onClick={() => removeAdmin(u.id)}
                             >
-                              Scoate admin
+                              Remove admin
                             </Button>
                           )}
 
@@ -648,7 +647,7 @@ const UserManagementTable = () => {
                               variant="outline"
                               onClick={() => confirmEmailManual(u.id)}
                             >
-                              Confirmă email manual
+                              Confirm email manually
                             </Button>
                           )}
 
@@ -657,7 +656,7 @@ const UserManagementTable = () => {
                             variant="outline"
                             onClick={() => resendConfirmation(u.email)}
                           >
-                            Retrimite email confirmare
+                            Resend confirmation email
                           </Button>
 
                           {/* Resetare parolă */}
@@ -665,7 +664,7 @@ const UserManagementTable = () => {
                             variant="outline"
                             onClick={() => sendPasswordReset(u.email)}
                           >
-                            Resetare parolă
+                            Reset password
                           </Button>
 
                           {/* Delete */}
@@ -673,31 +672,31 @@ const UserManagementTable = () => {
                             variant="destructive"
                             onClick={() => deleteUser(u.id)}
                           >
-                            Șterge cont
+                            Delete account
                           </Button>
                         </div>
 
                         {/* ABONAMENTE */}
                         <div className="p-4 bg-white rounded-lg border mb-6">
                           <h5 className="font-semibold mb-3 flex items-center gap-2">
-                            <Icon name="Crown" size={16} /> Administrare
-                            abonamente
+                            <Icon name="Crown" size={16} /> Subscription
+                            management
                           </h5>
 
                           <div className="flex flex-wrap gap-3">
                             <Button onClick={() => grantPremium(u.id)}>
-                              Acordă Premium
+                              Grant Premium
                             </Button>
 
                             <Button onClick={() => giveTrial(u.id, 7)}>
-                              Acordă trial 7 zile
+                              Grant 7 days trial
                             </Button>
 
                             <Button
                               variant="destructive"
                               onClick={() => removeSubscription(u.id)}
                             >
-                              Elimină abonament
+                              Remove subscription
                             </Button>
                           </div>
                         </div>
@@ -705,12 +704,12 @@ const UserManagementTable = () => {
                         {/* NOTIFICĂRI / EMAIL CUSTOM */}
                         <div className="p-4 bg-white rounded-lg border">
                           <h5 className="font-semibold mb-3 flex items-center gap-2">
-                            <Icon name="Mail" size={16} /> Notificări & email
-                            custom
+                            <Icon name="Mail" size={16} /> Notifications & custom
+                            email
                           </h5>
 
                           <Input
-                            placeholder="Mesaj custom către utilizator"
+                            placeholder="Custom message to user"
                             value={customMessage}
                             onChange={(e) =>
                               setCustomMessage(e.target.value)
@@ -723,7 +722,7 @@ const UserManagementTable = () => {
                               sendCustomEmail(u.email, customMessage)
                             }
                           >
-                            Trimite email
+                            Send email
                           </Button>
                         </div>
                       </td>
@@ -738,7 +737,7 @@ const UserManagementTable = () => {
                     colSpan={7}
                     className="p-6 text-center text-muted-foreground"
                   >
-                    Niciun utilizator găsit pentru criteriile curente.
+                    No user found for the current criteria.
                   </td>
                 </tr>
               )}
@@ -751,8 +750,8 @@ const UserManagementTable = () => {
       {hasLoaded && filtered.length > 0 && (
         <div className="flex flex-col sm:flex-row items-center justify-between px-6 py-4 border-t border-border gap-3 text-sm">
           <span className="text-muted-foreground">
-            Pagina {currentPage} din {totalPages} • Afișați {PAGE_SIZE} /
-            pagină • Total {filtered.length} utilizatori
+            Page {currentPage} of {totalPages} • Show {PAGE_SIZE} /
+            page • Total {filtered.length} users
           </span>
 
           <div className="flex items-center gap-2">
@@ -762,7 +761,7 @@ const UserManagementTable = () => {
               disabled={currentPage === 1}
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
             >
-              <Icon name="ChevronLeft" size={16} /> Anterior
+              <Icon name="ChevronLeft" size={16} /> Previous
             </Button>
             <Button
               variant="outline"
@@ -772,7 +771,7 @@ const UserManagementTable = () => {
                 setCurrentPage((p) => Math.min(totalPages, p + 1))
               }
             >
-              Următor <Icon name="ChevronRight" size={16} />
+              Next <Icon name="ChevronRight" size={16} />
             </Button>
           </div>
         </div>

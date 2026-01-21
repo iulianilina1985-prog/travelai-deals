@@ -5,20 +5,20 @@ import { supabase } from "../../../lib/supabase";
 /* ==================== GREETINGS ==================== */
 
 const greetings = [
-  "Unde te poartă gândul azi, {{name}}?",
-  "La ce te gândești astăzi, {{name}}?",
-  "Ai chef de o aventură, {{name}}?",
-  "Ce destinație îți face cu ochiul, {{name}}?",
-  "Hai să plecăm undeva, {{name}} ✈️",
-  "Ce plan de vacanță ai azi, {{name}}?",
-  "Unde vrei să ajungem, {{name}}?",
-  "Ce explorăm azi, {{name}}?",
-  "Cu ce te pot ajuta, {{name}}?",
-  "Pregătit de drum, {{name}}? 🌍"
+  "Where are you dreaming of going today, {{name}}?",
+  "What's on your mind today, {{name}}?",
+  "Feel like an adventure, {{name}}?",
+  "Which destination is calling you, {{name}}?",
+  "Let's go somewhere, {{name}} ✈️",
+  "What's your travel plan for today, {{name}}?",
+  "Where do you want to reach, {{name}}?",
+  "What are we exploring today, {{name}}?",
+  "How can I help you, {{name}}?",
+  "Ready to hit the road, {{name}}? 🌍"
 ];
 
 function getFirstName(user) {
-  if (!user) return "prietene";
+  if (!user) return "friend";
 
   const full =
     user.user_metadata?.full_name ||
@@ -26,7 +26,7 @@ function getFirstName(user) {
     user.email ||
     "";
 
-  return full.split("@")[0].split(" ")[0] || "prietene";
+  return full.split("@")[0].split(" ")[0] || "friend";
 }
 
 /* ==================== COMPONENT ==================== */
@@ -57,10 +57,10 @@ const WelcomeScreen = () => {
           <Icon name="Plane" size={32} color="white" />
         </div>
         <h1 className="text-3xl font-bold text-foreground mb-2">
-          Bun venit la TravelAI ✈️
+          Welcome to TravelAI ✈️
         </h1>
         <p className="text-muted-foreground">
-          Asistentul tău personal pentru călătorii perfecte
+          Your personal assistant for perfect travels
         </p>
       </div>
 
@@ -68,11 +68,11 @@ const WelcomeScreen = () => {
       <div className="flex flex-col items-center justify-center flex-1 text-center px-6">
 
         <h2 className="text-4xl md:text-5xl font-semibold text-foreground mb-4">
-          {heroMessage || "La ce te gândești astăzi?"}
+          {heroMessage || "What's on your mind today?"}
         </h2>
 
         <p className="text-muted-foreground text-lg">
-          Întreabă-mă orice despre călătorii.
+          Ask me anything about travel.
         </p>
 
       </div>
@@ -83,7 +83,7 @@ const WelcomeScreen = () => {
           <div className="inline-flex items-center space-x-2 text-primary text-sm font-medium">
             <Icon name="Sparkles" size={14} />
             <span>
-              Powered by OpenAI GPT-4 — Răspunsuri inteligente și personalizate
+              Powered by OpenAI GPT-4 — Intelligent and personalized answers
             </span>
           </div>
         </div>

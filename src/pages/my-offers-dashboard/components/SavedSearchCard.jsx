@@ -4,7 +4,7 @@ import Button from '../../../components/ui/Button';
 
 const SavedSearchCard = ({ search, onEdit, onDelete, onToggleMonitoring }) => {
   const formatDate = (dateString) => {
-    return new Date(dateString)?.toLocaleDateString('ro-RO', {
+    return new Date(dateString)?.toLocaleDateString('en-US', {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric'
@@ -40,13 +40,13 @@ const SavedSearchCard = ({ search, onEdit, onDelete, onToggleMonitoring }) => {
   const getStatusText = (status) => {
     switch (status) {
       case 'active':
-        return 'Activ';
+        return 'Active';
       case 'paused':
-        return 'Pauzat';
+        return 'Paused';
       case 'expired':
-        return 'Expirat';
+        return 'Expired';
       default:
-        return 'Necunoscut';
+        return 'Unknown';
     }
   };
 
@@ -76,7 +76,7 @@ const SavedSearchCard = ({ search, onEdit, onDelete, onToggleMonitoring }) => {
           </div>
           <div className="flex items-center gap-2 text-muted-foreground">
             <Icon name="Users" size={14} />
-            <span>{search?.travelers} persoane</span>
+            <span>{search?.travelers} persons</span>
           </div>
         </div>
         <div className="space-y-2">
@@ -86,7 +86,7 @@ const SavedSearchCard = ({ search, onEdit, onDelete, onToggleMonitoring }) => {
           </div>
           <div className="flex items-center gap-2 text-muted-foreground">
             <Icon name="RefreshCw" size={14} />
-            <span>Ultima verificare: {formatDate(search?.lastChecked)}</span>
+            <span>Last checked: {formatDate(search?.lastChecked)}</span>
           </div>
         </div>
       </div>
@@ -96,12 +96,12 @@ const SavedSearchCard = ({ search, onEdit, onDelete, onToggleMonitoring }) => {
             <div className="flex items-center gap-2">
               <Icon name="Gift" size={16} className="text-success" />
               <span className="text-sm font-medium">
-                {search?.foundDeals} oferte găsite
+                {search?.foundDeals} deals found
               </span>
             </div>
             {search?.newDeals > 0 && (
               <span className="bg-success text-success-foreground px-2 py-1 rounded-md text-xs font-medium">
-                {search?.newDeals} noi
+                {search?.newDeals} new
               </span>
             )}
           </div>
@@ -115,19 +115,19 @@ const SavedSearchCard = ({ search, onEdit, onDelete, onToggleMonitoring }) => {
             onClick={() => onEdit(search)}
           >
             <Icon name="Edit2" size={14} className="mr-1" />
-            Editează
+            Edit
           </Button>
           <Button
             variant={search?.status === 'active' ? 'secondary' : 'default'}
             size="sm"
             onClick={() => onToggleMonitoring(search?.id)}
           >
-            <Icon 
-              name={search?.status === 'active' ? 'Pause' : 'Play'} 
-              size={14} 
-              className="mr-1" 
+            <Icon
+              name={search?.status === 'active' ? 'Pause' : 'Play'}
+              size={14}
+              className="mr-1"
             />
-            {search?.status === 'active' ? 'Pauzează' : 'Activează'}
+            {search?.status === 'active' ? 'Pause' : 'Activate'}
           </Button>
         </div>
         <Button

@@ -47,8 +47,8 @@ const ChatInput = ({
   };
 
   const placeholderText = isTyping
-    ? "Se generează răspunsul..."
-    : "Întreabă-mă orice despre călătorii…";
+    ? "Generating response..."
+    : "Ask me anything about travel…";
 
   return (
     <div className="px-3 py-2 border-t bg-white sticky bottom-0">

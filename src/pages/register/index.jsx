@@ -27,7 +27,7 @@ const Register = () => {
 
     try {
       if (!formData?.email || !formData?.password) {
-        setErrorMessage("Te rugăm să completezi emailul și parola.");
+        setErrorMessage("Please fill in your email and password.");
         setLoading(false);
         return;
       }
@@ -47,7 +47,7 @@ const Register = () => {
       );
 
       if (error) {
-        setErrorMessage(error.message || "A apărut o eroare la înregistrare.");
+        setErrorMessage(error.message || "An error occurred during registration.");
         setLoading(false);
         return;
       }
@@ -57,7 +57,7 @@ const Register = () => {
 
     } catch (err) {
       console.error("Eroare la înregistrare:", err);
-      setErrorMessage("A apărut o eroare neașteptată.");
+      setErrorMessage("An unexpected error occurred.");
     } finally {
       setLoading(false);
     }
@@ -80,7 +80,7 @@ const Register = () => {
                     <Icon name="Plane" size={24} color="white" />
                   </div>
                   <h1 className="text-2xl font-bold text-foreground">
-                    Creează-ți un cont TravelAI Deals
+                    Create your TravelAI Deals account
                   </h1>
                 </div>
 
@@ -95,7 +95,7 @@ const Register = () => {
                 {currentStep === 1 && (
                   <>
                     <p className="text-muted-foreground text-sm mb-6 text-center">
-                      Completează datele pentru a începe aventura ta.
+                      Fill in your details to start your adventure.
                     </p>
                     <RegistrationForm onSubmit={handleFormSubmit} loading={loading} />
                   </>
@@ -105,7 +105,7 @@ const Register = () => {
                 {currentStep === 2 && (
                   <>
                     <h2 className="text-lg font-semibold mb-3 text-center">
-                      Alege planul potrivit ție
+                      Choose the right plan for you
                     </h2>
 
                     <SubscriptionTierSelector
@@ -119,7 +119,7 @@ const Register = () => {
                         className="text-muted-foreground hover:text-foreground flex items-center space-x-2"
                       >
                         <Icon name="ArrowLeft" size={16} />
-                        <span>Înapoi</span>
+                        <span>Back</span>
                       </button>
 
                       <button
@@ -127,7 +127,7 @@ const Register = () => {
                         disabled={loading}
                         className="bg-primary text-primary-foreground px-6 py-2 rounded-lg hover:bg-primary/90 disabled:opacity-50 flex items-center space-x-2"
                       >
-                        {loading ? "Se creează..." : "Finalizează înregistrarea"}
+                        {loading ? "Creating..." : "Finish Registration"}
                       </button>
                     </div>
                   </>
@@ -147,7 +147,7 @@ const Register = () => {
       <footer className="mt-16 pt-8 border-t border-border text-center">
         <div className="container mx-auto px-4">
           <div className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} TravelAI Deals. Toate drepturile rezervate.
+            © {new Date().getFullYear()} TravelAI Deals. All rights reserved.
           </div>
         </div>
       </footer>

@@ -70,10 +70,10 @@ const PersonalInfoTab = () => {
       if (error) throw error;
 
       setIsEditing(false);
-      alert('✅ Informațiile personale au fost actualizate.');
+      alert('✅ Personal information has been updated.');
     } catch (err) {
       console.error(err.message);
-      alert('❌ Eroare la salvarea datelor.');
+      alert('❌ Error saving data.');
     }
   };
 
@@ -87,12 +87,12 @@ const PersonalInfoTab = () => {
     } = personalInfo;
 
     if (!currentPassword) {
-      alert('Introdu parola actuală.');
+      alert('Enter current password.');
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      alert('Parolele noi nu coincid.');
+      alert('New passwords do not match.');
       return;
     }
 
@@ -104,7 +104,7 @@ const PersonalInfoTab = () => {
       });
 
       if (signInError) {
-        alert('Parola actuală este incorectă.');
+        alert('Current password is incorrect.');
         return;
       }
 
@@ -123,15 +123,15 @@ const PersonalInfoTab = () => {
       }));
 
       setShowPasswordSection(false);
-      alert('🔐 Parola a fost schimbată cu succes.');
+      alert('🔐 Password changed successfully.');
     } catch (err) {
       console.error(err.message);
-      alert('❌ Eroare la schimbarea parolei.');
+      alert('❌ Error changing password.');
     }
   };
 
   if (loading) {
-    return <p className="text-muted-foreground">Se încarcă datele contului...</p>;
+    return <p className="text-muted-foreground">Loading account data...</p>;
   }
 
   return (
@@ -140,36 +140,36 @@ const PersonalInfoTab = () => {
       {/* ===================== PERSONAL INFO ===================== */}
       <div className="bg-card border border-border rounded-lg p-6">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-semibold">Informații personale</h3>
+          <h3 className="text-lg font-semibold">Personal Information</h3>
           <Button
             size="sm"
             variant={isEditing ? 'outline' : 'default'}
             iconName={isEditing ? 'X' : 'Edit'}
             onClick={() => setIsEditing(!isEditing)}
           >
-            {isEditing ? 'Renunță' : 'Editează'}
+            {isEditing ? 'Cancel' : 'Edit'}
           </Button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Input label="Prenume" name="firstName" value={personalInfo.firstName} onChange={handleInputChange} disabled={!isEditing} />
-          <Input label="Nume" name="lastName" value={personalInfo.lastName} onChange={handleInputChange} disabled={!isEditing} />
-          <Input label="Email" value={personalInfo.email} disabled description="Email folosit la autentificare" />
-          <Input label="Telefon" name="phone" value={personalInfo.phone} onChange={handleInputChange} disabled={!isEditing} />
-          <Input label="Data nașterii" type="date" name="dateOfBirth" value={personalInfo.dateOfBirth} onChange={handleInputChange} disabled={!isEditing} />
+          <Input label="First Name" name="firstName" value={personalInfo.firstName} onChange={handleInputChange} disabled={!isEditing} />
+          <Input label="Last Name" name="lastName" value={personalInfo.lastName} onChange={handleInputChange} disabled={!isEditing} />
+          <Input label="Email" value={personalInfo.email} disabled description="Email used for authentication" />
+          <Input label="Phone" name="phone" value={personalInfo.phone} onChange={handleInputChange} disabled={!isEditing} />
+          <Input label="Date of Birth" type="date" name="dateOfBirth" value={personalInfo.dateOfBirth} onChange={handleInputChange} disabled={!isEditing} />
         </div>
 
         {isEditing && (
           <div className="flex justify-end mt-6 gap-3">
-            <Button variant="outline" onClick={() => setIsEditing(false)}>Anulează</Button>
-            <Button iconName="Save" onClick={handleSaveChanges}>Salvează</Button>
+            <Button variant="outline" onClick={() => setIsEditing(false)}>Cancel</Button>
+            <Button iconName="Save" onClick={handleSaveChanges}>Save</Button>
           </div>
         )}
       </div>
 
       {/* ===================== SECURITY ===================== */}
       <div className="bg-card border border-border rounded-lg p-6">
-        <h3 className="text-lg font-semibold mb-6">Securitate</h3>
+        <h3 className="text-lg font-semibold mb-6">Security</h3>
 
         <div className="p-4 bg-muted rounded-lg">
           <div className="flex items-center justify-between mb-4">
@@ -178,22 +178,22 @@ const PersonalInfoTab = () => {
                 <Icon name="Key" size={20} />
               </div>
               <div>
-                <h4 className="font-medium">Parolă</h4>
+                <h4 className="font-medium">Password</h4>
                 <p className="text-sm text-muted-foreground">
-                  Pentru siguranță, confirmă parola actuală
+                  For safety, confirm current password
                 </p>
               </div>
             </div>
 
             <Button size="sm" variant="outline" onClick={() => setShowPasswordSection(!showPasswordSection)}>
-              Schimbă parola
+              Change password
             </Button>
           </div>
 
           {showPasswordSection && (
             <div className="space-y-4 pt-4 border-t border-border">
               <Input
-                label="Parola actuală"
+                label="Current Password"
                 type="password"
                 name="currentPassword"
                 value={personalInfo.currentPassword}
@@ -201,7 +201,7 @@ const PersonalInfoTab = () => {
                 required
               />
               <Input
-                label="Parola nouă"
+                label="New Password"
                 type="password"
                 name="newPassword"
                 value={personalInfo.newPassword}
@@ -209,11 +209,11 @@ const PersonalInfoTab = () => {
                 required
               />
               <p className="text-xs text-muted-foreground">
-                Parola trebuie să conțină minimum 8 caractere, o literă mare, o literă mică,
-                o cifră și un caracter special.
+                The password must contain at least 8 characters, one uppercase letter, one lowercase letter,
+                one digit, and one special character.
               </p>
               <Input
-                label="Confirmă parola nouă"
+                label="Confirm New Password"
                 type="password"
                 name="confirmPassword"
                 value={personalInfo.confirmPassword}
@@ -222,8 +222,8 @@ const PersonalInfoTab = () => {
               />
 
               <div className="flex justify-end gap-3">
-                <Button variant="outline" onClick={() => setShowPasswordSection(false)}>Anulează</Button>
-                <Button iconName="Save" onClick={handlePasswordChange}>Actualizează</Button>
+                <Button variant="outline" onClick={() => setShowPasswordSection(false)}>Cancel</Button>
+                <Button iconName="Save" onClick={handlePasswordChange}>Update</Button>
               </div>
             </div>
           )}

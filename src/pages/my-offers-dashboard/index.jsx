@@ -114,7 +114,7 @@ const MyOffersDashboard = () => {
       }
     } catch (error) {
       console.error('Error toggling favorite:', error);
-      alert('A apărut o eroare. Te rog încearcă din nou.');
+      alert('An error occurred. Please try again.');
     }
   };
 
@@ -130,8 +130,8 @@ const MyOffersDashboard = () => {
       <main className="pt-16">
         <div className="text-center py-12">
           <Icon name="Lock" size={48} className="text-muted-foreground mx-auto mb-4" />
-          <h2 className="text-2xl font-bold">Te rog autentifică-te</h2>
-          <p className="text-muted-foreground mb-4">Această pagină este disponibilă doar pentru utilizatori autentificați.</p>
+          <h2 className="text-2xl font-bold">Please log in</h2>
+          <p className="text-muted-foreground mb-4">This page is only available for authenticated users.</p>
           <Link to="/login"><Button>Login</Button></Link>
         </div>
       </main>
@@ -151,14 +151,14 @@ const MyOffersDashboard = () => {
           {/* PAGE HEADER */}
           <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold">Ofertele mele</h1>
-              <p className="text-muted-foreground">Favorite și căutări monitorizate</p>
+              <h1 className="text-3xl font-bold">My Offers</h1>
+              <p className="text-muted-foreground">Favorites and monitored searches</p>
             </div>
 
             <Link to="/ai-chat-interface">
               <Button>
                 <Icon name="MessageCircle" size={18} className="mr-2" />
-                Caută oferte noi
+                Search for new offers
               </Button>
             </Link>
           </div>
@@ -179,7 +179,7 @@ const MyOffersDashboard = () => {
               >
                 <div className="flex items-center gap-2">
                   <Icon name="Heart" size={18} />
-                  <span>Favorite</span>
+                  <span>Favorites</span>
                   <span className="bg-rose-500 text-white px-2 py-1 rounded-full text-xs">
                     {favorites.length}
                   </span>
@@ -193,7 +193,7 @@ const MyOffersDashboard = () => {
               >
                 <div className="flex items-center gap-2">
                   <Icon name="Search" size={18} />
-                  <span>Căutări</span>
+                  <span>Searches</span>
                   <span className="bg-secondary px-2 py-1 rounded-full text-xs">
                     {savedSearches.length}
                   </span>
@@ -251,18 +251,18 @@ const MyOffersDashboard = () => {
                   {activeTab === "favorites" && (
                     <>
                       <div className="text-sm text-muted-foreground mb-4">
-                        {sortedFavorites.length} favorite
+                        {sortedFavorites.length} favorites
                       </div>
 
                       {sortedFavorites.length === 0 ? (
                         <div className="text-center py-12">
                           <Icon name="HeartOff" size={48} className="text-muted-foreground mx-auto mb-4" />
-                          <h3 className="text-lg font-semibold">Nicio ofertă favorită</h3>
+                          <h3 className="text-lg font-semibold">No favorite offers</h3>
                           <p className="text-muted-foreground mb-4">
-                            Salvează ofertele pentru a le regăsi aici
+                            Save offers to find them here
                           </p>
-                          <Link to="/cauta-oferte">
-                            <Button>Caută oferte</Button>
+                          <Link to="/search-offers">
+                            <Button>Search offers</Button>
                           </Link>
                         </div>
                       ) : (
@@ -286,9 +286,9 @@ const MyOffersDashboard = () => {
                       {savedSearches.length === 0 ? (
                         <div className="text-center py-12">
                           <Icon name="SearchX" size={48} className="text-muted-foreground mx-auto mb-4" />
-                          <h3 className="text-lg font-semibold">Nicio căutare salvată</h3>
+                          <h3 className="text-lg font-semibold">No saved searches</h3>
                           <p className="text-muted-foreground mb-4">
-                            Salvează căutările pentru a le monitoriza
+                            Save searches to monitor them
                           </p>
                         </div>
                       ) : (

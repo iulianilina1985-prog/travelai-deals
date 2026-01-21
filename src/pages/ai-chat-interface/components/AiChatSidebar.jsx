@@ -1,5 +1,6 @@
 import React, {
-  useState, useEffect } from "react";
+  useState, useEffect
+} from "react";
 import { Link } from "react-router-dom";
 import Icon from "../../../components/AppIcon";
 import Button from "../../../components/ui/Button";
@@ -29,7 +30,7 @@ const ChatSidebar = ({ isOpen, onClose, history = [] }) => {
       setConversations((prev) => [
         {
           id: conv.id,
-          title: conv.title || "Conversație nouă",
+          title: conv.title || "New conversation",
           created_at: conv.created_at || new Date().toISOString(),
           messages: conv.messages || [],
         },
@@ -72,9 +73,9 @@ const ChatSidebar = ({ isOpen, onClose, history = [] }) => {
     const diff = new Date() - new Date(ts);
     const hours = diff / 3600000;
 
-    if (hours < 1) return "Acum";
-    if (hours < 24) return `${Math.floor(hours)}h în urmă`;
-    return `${Math.floor(hours / 24)} zile în urmă`;
+    if (hours < 1) return "Now";
+    if (hours < 24) return `${Math.floor(hours)}h ago`;
+    return `${Math.floor(hours / 24)} days ago`;
   };
 
   // =====================================================
@@ -105,7 +106,7 @@ const ChatSidebar = ({ isOpen, onClose, history = [] }) => {
       new CustomEvent("startNewChat", {
         detail: {
           id: Date.now(),
-          title: "Conversație nouă",
+          title: "New conversation",
           messages: [],
           created_at: new Date().toISOString(),
         },
@@ -117,9 +118,9 @@ const ChatSidebar = ({ isOpen, onClose, history = [] }) => {
   // Sidebar UI
   // =====================================================
   const tabs = [
-    { id: "history", icon: "MessageSquare", label: "Conversații" },
-    { id: "saved", icon: "Heart", label: "Salvate" },
-    { id: "notifications", icon: "Bell", label: "Notificări" },
+    { id: "history", icon: "MessageSquare", label: "Conversations" },
+    { id: "saved", icon: "Heart", label: "Saved" },
+    { id: "notifications", icon: "Bell", label: "Notifications" },
   ];
 
   const unread = notifications.filter((n) => !n.isRead).length;
@@ -141,7 +142,7 @@ const ChatSidebar = ({ isOpen, onClose, history = [] }) => {
 
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b">
-          <h3 className="font-semibold text-foreground">{t("pages.ai-chat-interface.components.ChatSidebar.activitate")}</h3>
+          <h3 className="font-semibold text-foreground">Activity</h3>
 
           <Button variant="ghost" size="icon" className="lg:hidden" onClick={onClose}>
             <Icon name="X" size={20} />
@@ -154,11 +155,10 @@ const ChatSidebar = ({ isOpen, onClose, history = [] }) => {
             <button
               key={t.id}
               onClick={() => setActiveTab(t.id)}
-              className={`relative flex-1 flex items-center justify-center py-3 text-sm ${
-                activeTab === t.id
+              className={`relative flex-1 flex items-center justify-center py-3 text-sm ${activeTab === t.id
                   ? "text-primary border-b-2 border-primary"
                   : "text-muted-foreground hover:text-foreground"
-              }`}
+                }`}
             >
               <Icon name={t.icon} size={16} />
               <span className="hidden sm:inline ml-2">{t.label}</span>
@@ -179,9 +179,9 @@ const ChatSidebar = ({ isOpen, onClose, history = [] }) => {
           {activeTab === "history" && (
             <div className="space-y-3">
               <div className="flex items-center justify-between mb-3">
-                <h4 className="text-sm font-medium">{t("pages.ai-chat-interface.components.ChatSidebar.conversa_iile_mele")}</h4>
+                <h4 className="text-sm font-medium">My conversations</h4>
                 <Button variant="ghost" size="sm" iconName="MessageSquarePlus" onClick={handleNewConversation}>
-                  Chat nou
+                  New chat
                 </Button>
               </div>
 
@@ -201,14 +201,14 @@ const ChatSidebar = ({ isOpen, onClose, history = [] }) => {
                     <button
                       onClick={() => deleteConversation(conv.id)}
                       className="ml-3 text-destructive hover:text-red-700"
-                      title={t("pages.ai-chat-interface.components.ChatSidebar.terge_conversa_ia")}
+                      title="Delete conversation"
                     >
                       <Icon name="Trash2" size={18} />
                     </button>
                   </div>
                 ))
               ) : (
-                <p className="text-sm text-muted-foreground">{t("pages.ai-chat-interface.components.ChatSidebar.nu_ai_conversa_ii_salvate")}</p>
+                <p className="text-sm text-muted-foreground">You have no saved conversations</p>
               )}
             </div>
           )}
@@ -216,7 +216,7 @@ const ChatSidebar = ({ isOpen, onClose, history = [] }) => {
           {/* SAVED DEALS */}
           {activeTab === "saved" && (
             <div className="space-y-4">
-              <h4 className="text-sm font-medium">{t("pages.ai-chat-interface.components.ChatSidebar.oferte_salvate")}</h4>
+              <h4 className="text-sm font-medium">Saved offers</h4>
 
               {savedDeals.length ? (
                 savedDeals.map((deal) => (
@@ -226,7 +226,7 @@ const ChatSidebar = ({ isOpen, onClose, history = [] }) => {
 
                       {deal.days && (
                         <span className="absolute top-2 right-2 bg-orange-500 text-white text-xs font-semibold px-2 py-1 rounded-md">
-                          {deal.days} zile
+                          {deal.days} days
                         </span>
                       )}
                     </div>
@@ -255,13 +255,13 @@ const ChatSidebar = ({ isOpen, onClose, history = [] }) => {
                         iconName="ShoppingCart"
                         onClick={() => window.location.href = `/checkout/${deal.id}`}
                       >
-                        Rezervă
+                        Book
                       </Button>
                     </div>
                   </div>
                 ))
               ) : (
-                <p className="text-sm text-muted-foreground">{t("pages.ai-chat-interface.components.ChatSidebar.nicio_ofert_salvat")}</p>
+                <p className="text-sm text-muted-foreground">No saved offers</p>
               )}
             </div>
           )}
@@ -270,14 +270,14 @@ const ChatSidebar = ({ isOpen, onClose, history = [] }) => {
           {activeTab === "notifications" && (
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <h4 className="text-sm font-medium">{t("pages.ai-chat-interface.components.ChatSidebar.notific_ri")}</h4>
+                <h4 className="text-sm font-medium">Notifications</h4>
                 <Button
                   variant="ghost"
                   size="sm"
                   iconName="Check"
                   onClick={() => setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })))}
                 >
-                  Marchează toate
+                  Mark all
                 </Button>
               </div>
 
@@ -285,9 +285,8 @@ const ChatSidebar = ({ isOpen, onClose, history = [] }) => {
                 notifications.map((n) => (
                   <div
                     key={n.id}
-                    className={`p-3 border rounded-lg flex justify-between items-start ${
-                      n.isRead ? "bg-card" : "bg-primary/10"
-                    }`}
+                    className={`p-3 border rounded-lg flex justify-between items-start ${n.isRead ? "bg-card" : "bg-primary/10"
+                      }`}
                   >
                     <div className="flex-1">
                       <h5 className="font-medium">{n.title}</h5>
@@ -305,7 +304,7 @@ const ChatSidebar = ({ isOpen, onClose, history = [] }) => {
                   </div>
                 ))
               ) : (
-                <p className="text-sm text-muted-foreground">{t("pages.ai-chat-interface.components.ChatSidebar.nicio_notificare")}</p>
+                <p className="text-sm text-muted-foreground">No notifications</p>
               )}
             </div>
           )}
@@ -315,12 +314,12 @@ const ChatSidebar = ({ isOpen, onClose, history = [] }) => {
         <div className="p-4 border-t">
           <div className="grid grid-cols-2 gap-2">
             <Link to="/my-offers-dashboard">
-              <Button variant="outline" size="sm" iconName="Gift" className="w-full">{t("pages.my-offers-dashboard.index.ofertele_mele")}</Button>
+              <Button variant="outline" size="sm" iconName="Gift" className="w-full">My offers</Button>
             </Link>
 
             <Link to="/user-profile">
               <Button variant="outline" size="sm" iconName="Settings" className="w-full">
-                Setări
+                Settings
               </Button>
             </Link>
           </div>

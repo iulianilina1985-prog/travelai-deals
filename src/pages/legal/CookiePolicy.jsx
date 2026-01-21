@@ -15,15 +15,15 @@ const CookiePolicy = () => {
                           bg-gradient-to-r from-primary/20 via-primary/10 to-secondary/20
                           border-b border-border shadow-inner px-4">
         <h1 className="text-3xl md:text-5xl font-bold text-foreground mb-4 flex justify-center items-center gap-3">
-          Politica de Cookie-uri 🍪
+          Cookie Policy 🍪
         </h1>
 
         <p className="text-muted-foreground text-base md:text-lg max-w-2xl mx-auto">
-          Află cum folosim cookie-urile pentru o experiență rapidă, sigură și personalizată.
+          Find out how we use cookies for a fast, secure and personalized experience.
         </p>
 
         <p className="text-xs md:text-sm text-muted-foreground mt-4">
-          Ultima actualizare: {new Date().toLocaleDateString("ro-RO")}
+          Last update: {new Date().toLocaleDateString("en-US")}
         </p>
       </section>
 
@@ -36,21 +36,21 @@ const CookiePolicy = () => {
 
           {/* INTRO */}
           <p className="text-muted-foreground text-base md:text-lg leading-relaxed">
-            Această politică explică modul în care <strong>GLOBAL LINKNET SRL</strong> 
-            (CUI 48291648, J03/1287/2023, Pitești, Str. Dorobanților Nr. 14)
-            folosește cookie-uri și tehnologii similare în platforma TravelAI Deals.
+            This policy explains how <strong>GLOBAL LINKNET SRL</strong>
+            (CIF 48291648, J03/1287/2023, Pitesti, Str. Dorobantilor Nr. 14)
+            uses cookies and similar technologies in the TravelAI Deals platform.
           </p>
 
           {/* 1 */}
           <section>
             <h2 className="flex items-center gap-2 text-xl md:text-2xl font-semibold mb-3">
               <Icon name="Info" size={20} className="text-primary" />
-              1. Ce sunt cookie-urile?
+              1. What are cookies?
             </h2>
 
             <p className="text-muted-foreground">
-              Cookie-urile sunt fișiere mici stocate pe dispozitivul tău, necesare pentru o
-              experiență personalizată, rapidă și sigură în platformă.
+              Cookies are small files stored on your device, necessary for a
+              personalized, fast and secure experience in the platform.
             </p>
           </section>
 
@@ -58,35 +58,35 @@ const CookiePolicy = () => {
           <section>
             <h2 className="flex items-center gap-2 text-xl md:text-2xl font-semibold mb-3">
               <Icon name="List" size={20} className="text-primary" />
-              2. Tipuri de cookie-uri folosite
+              2. Types of cookies used
             </h2>
 
             <div className="space-y-6 mt-4 text-muted-foreground">
 
               {/* a */}
               <div>
-                <h3 className="text-lg font-semibold">a) Cookie-uri esențiale</h3>
+                <h3 className="text-lg font-semibold">a) Essential cookies</h3>
                 <p>
-                  Necesare funcționării platformei: autentificare, securitate, preferințe UI.
-                  Nu pot fi dezactivate.
+                  Necessary for the operation of the platform: authentication, security, UI preferences.
+                  They cannot be deactivated.
                 </p>
               </div>
 
               {/* b */}
               <div>
-                <h3 className="text-lg font-semibold">b) Cookie-uri de analiză</h3>
+                <h3 className="text-lg font-semibold">b) Analytics cookies</h3>
                 <p>
-                  Folosite pentru îmbunătățirea serviciului prin statistici anonime
-                  (ex. Google Analytics). Necesită consimțământul utilizatorului.
+                  Used to improve the service through anonymous statistics
+                  (e.g. Google Analytics). Requires user consent.
                 </p>
               </div>
 
               {/* c */}
               <div>
-                <h3 className="text-lg font-semibold">c) Cookie-uri de marketing și afiliere</h3>
+                <h3 className="text-lg font-semibold">c) Marketing and affiliate cookies</h3>
                 <p>
-                  Utilizate pentru tracking afiliere și măsurarea conversiilor venite din link-uri
-                  partenerilor (Booking, companii aeriene etc.). Necesită consimțământ.
+                  Used for affiliate tracking and measuring conversions from
+                  partner links (Booking, airlines, etc.). Requires consent.
                 </p>
               </div>
 
@@ -97,13 +97,13 @@ const CookiePolicy = () => {
           <section>
             <h2 className="flex items-center gap-2 text-xl md:text-2xl font-semibold mb-3">
               <Icon name="Globe" size={20} className="text-primary" />
-              3. Cookie-uri terțe
+              3. Third-party cookies
             </h2>
 
             <ul className="list-disc ml-6 space-y-2 text-muted-foreground">
-              <li>Google Analytics – statistici anonime</li>
-              <li>Stripe – plăți sigure și prevenție fraudă</li>
-              <li>Platforme de afiliere – tracking conversii</li>
+              <li>Google Analytics – anonymous statistics</li>
+              <li>Stripe – secure payments and fraud prevention</li>
+              <li>Affiliation platforms – conversion tracking</li>
             </ul>
           </section>
 
@@ -111,12 +111,12 @@ const CookiePolicy = () => {
           <section>
             <h2 className="flex items-center gap-2 text-xl md:text-2xl font-semibold mb-3">
               <Icon name="Sliders" size={20} className="text-primary" />
-              4. Cum poți controla cookie-urile?
+              4. How can you control cookies?
             </h2>
 
             <p className="text-muted-foreground">
-              Poți gestiona cookie-urile din browser (ștergere, blocare parțială sau totală).
-              În curând vei putea gestiona cookie-urile direct din platformă printr-un modul dedicat.
+              You can manage cookies from your browser (deletion, partial or total blocking).
+              Soon you will be able to manage cookies directly from the platform through a dedicated module.
             </p>
           </section>
 
@@ -124,12 +124,12 @@ const CookiePolicy = () => {
           <section>
             <h2 className="flex items-center gap-2 text-xl md:text-2xl font-semibold mb-3">
               <Icon name="RotateCcw" size={20} className="text-primary" />
-              5. Retragerea consimțământului
+              5. Withdrawing consent
             </h2>
 
             <p className="text-muted-foreground">
-              Poți retrage oricând consimțământul prin ștergerea cookie-urilor sau dezactivarea
-              celor opționale.
+              You can withdraw your consent at any time by deleting cookies or disabling
+              optional ones.
             </p>
           </section>
 
@@ -141,7 +141,7 @@ const CookiePolicy = () => {
             </h2>
 
             <p className="text-muted-foreground">
-              Pentru orice întrebări despre cookie-uri, ne poți contacta la:
+              For any questions about cookies, you can contact us at:
               <br />
               <a href="mailto:contact@travelai.ro" className="text-primary underline">
                 contact@travelai.ro
@@ -151,6 +151,7 @@ const CookiePolicy = () => {
 
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

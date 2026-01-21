@@ -14,7 +14,7 @@ const LoginHeader = () => {
           </div>
           <div>
             <h1 className="text-xl font-bold text-foreground">TravelAI Deals</h1>
-            <p className="text-xs text-muted-foreground">Oferte inteligente de călătorie</p>
+            <p className="text-xs text-muted-foreground">Smart travel deals</p>
           </div>
         </Link>
 
@@ -35,30 +35,30 @@ const LoginHeader = () => {
       {/* Hero Section */}
       <div className="text-center mb-12">
         <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-          Descoperă ofertele perfecte de călătorie
+          Discover perfect travel deals
         </h2>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-6">
-          Asistentul nostru AI îți găsește automat cele mai bune oferte de vacanțe, 
-          zboruri și pachete turistice personalizate pentru tine.
+          Our AI assistant automatically finds the best vacation deals for you,
+          flights and tour packages personalized for you.
         </p>
-        
+
         {/* Key Features */}
         <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">
           <div className="flex items-center space-x-2">
             <Icon name="Zap" size={16} className="text-primary" />
-            <span>Căutare automată AI</span>
+            <span>AI Automated Search</span>
           </div>
           <div className="flex items-center space-x-2">
             <Icon name="Bell" size={16} className="text-primary" />
-            <span>Notificări în timp real</span>
+            <span>Real-time notifications</span>
           </div>
           <div className="flex items-center space-x-2">
             <Icon name="Euro" size={16} className="text-primary" />
-            <span>Economii până la 70%</span>
+            <span>Savings up to 70%</span>
           </div>
           <div className="flex items-center space-x-2">
             <Icon name="MapPin" size={16} className="text-primary" />
-            <span>Destinații europene</span>
+            <span>European destinations</span>
           </div>
         </div>
       </div>
@@ -67,15 +67,15 @@ const LoginHeader = () => {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-12">
         <div className="text-center">
           <div className="text-2xl font-bold text-primary mb-1">50,000+</div>
-          <div className="text-sm text-muted-foreground">Utilizatori activi</div>
+          <div className="text-sm text-muted-foreground">Active users</div>
         </div>
         <div className="text-center">
           <div className="text-2xl font-bold text-primary mb-1">€2.5M</div>
-          <div className="text-sm text-muted-foreground">Economii generate</div>
+          <div className="text-sm text-muted-foreground">Savings generated</div>
         </div>
         <div className="text-center">
           <div className="text-2xl font-bold text-primary mb-1">95%</div>
-          <div className="text-sm text-muted-foreground">Satisfacție clienți</div>
+          <div className="text-sm text-muted-foreground">Customer satisfaction</div>
         </div>
       </div>
     </div>

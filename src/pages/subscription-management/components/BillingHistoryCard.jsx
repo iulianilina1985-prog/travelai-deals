@@ -42,9 +42,9 @@ const BillingHistoryCard = ({ billingHistory, onDownloadInvoice }) => {
           <Icon name="Receipt" size={20} color="var(--color-secondary)" />
         </div>
         <div>
-          <h3 className="text-lg font-semibold text-foreground">Istoric plăți</h3>
+          <h3 className="text-lg font-semibold text-foreground">Payment History</h3>
           <p className="text-sm text-muted-foreground">
-            Facturile și plățile tale
+            Your invoices and payments
           </p>
         </div>
       </div>
@@ -68,18 +68,18 @@ const BillingHistoryCard = ({ billingHistory, onDownloadInvoice }) => {
                       invoice?.status === "paid"
                         ? "var(--color-success)"
                         : invoice?.status === "pending"
-                        ? "var(--color-warning)"
-                        : "var(--color-error)"
+                          ? "var(--color-warning)"
+                          : "var(--color-error)"
                     }
                   />
 
                   <div>
                     <div className="font-medium text-foreground">
-                      Factura #{invoice?.invoice_number}
+                      Invoice #{invoice?.invoice_number}
                     </div>
                     <div className="text-sm text-muted-foreground">
                       {new Date(invoice?.payment_date).toLocaleDateString(
-                        "ro-RO"
+                        "en-US"
                       )}
                     </div>
                   </div>
@@ -140,7 +140,7 @@ const BillingHistoryCard = ({ billingHistory, onDownloadInvoice }) => {
         <div className="text-center py-8">
           <Icon name="Receipt" size={48} color="var(--color-muted-foreground)" />
           <p className="text-muted-foreground mt-2">
-            Nu există plăți înregistrate.
+            No payments recorded.
           </p>
         </div>
       )}

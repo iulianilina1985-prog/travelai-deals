@@ -3,11 +3,11 @@ import React from "react";
 const CalendarFields = ({ checkIn, checkOut, onChange }) => {
   return (
     <div className="grid gap-4 md:grid-cols-2">
-      
+
       {/* Check-in */}
       <div className="space-y-1">
         <label className="text-xs font-medium text-slate-600">
-          De la (check-in / plecare)
+          From (check-in / departure)
         </label>
         <input
           type="date"
@@ -21,7 +21,7 @@ const CalendarFields = ({ checkIn, checkOut, onChange }) => {
       {/* Check-out */}
       <div className="space-y-1">
         <label className="text-xs font-medium text-slate-600">
-          Până la (check-out / retur)
+          To (check-out / return)
         </label>
         <input
           type="date"

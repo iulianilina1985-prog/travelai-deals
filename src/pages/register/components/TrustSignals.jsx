@@ -5,33 +5,33 @@ const TrustSignals = () => {
   const trustBadges = [
     {
       icon: 'Shield',
-      title: 'Conform GDPR',
-      description: 'Respectăm integral normele europene privind protecția datelor'
+      title: 'GDPR Compliant',
+      description: 'Fully compliant with European data protection regulations'
     },
     {
       icon: 'Lock',
-      title: 'Securizat SSL',
-      description: 'Criptare de 256 de biți pentru toate transmisiile de date'
+      title: 'SSL Secured',
+      description: '256-bit encryption for all data transmissions'
     },
     {
       icon: 'MapPin',
-      title: 'Afacere românească',
-      description: 'Înregistrată și licențiată în România'
+      title: 'European Business',
+      description: 'Registered and licensed in Romania'
     },
     {
       icon: 'Users',
-      title: '10.000+ utilizatori',
-      description: 'De încredere pentru călători din întreaga Europă'
+      title: '10,000+ Users',
+      description: 'Trusted by travelers from all over Europe'
     }
   ];
 
   const securityFeatures = [
-    'Criptare de nivel bancar pentru date',
-    'Audituri de securitate periodice',
-    'Fără partajarea datelor cu terți',
-    'Dreptul la ștergerea datelor (Art. 17 GDPR)',
-    'Politică de confidențialitate transparentă',
-    'Monitorizare 24/7 a securității sistemului'
+    'Bank-level data encryption',
+    'Regular security audits',
+    'No data sharing with third parties',
+    'Right to data deletion (Art. 17 GDPR)',
+    'Transparent privacy policy',
+    '24/7 system security monitoring'
   ];
 
   return (
@@ -60,10 +60,10 @@ const TrustSignals = () => {
           </div>
           <div>
             <h3 className="text-lg font-semibold text-foreground">
-              Datele tale sunt în siguranță
+              Your data is safe
             </h3>
             <p className="text-sm text-muted-foreground">
-              Tratăm confidențialitatea cu seriozitate și respectăm cele mai stricte standarde europene de protecție a datelor.
+              We take privacy seriously and comply with the strictest European data protection standards.
             </p>
           </div>
         </div>
@@ -103,7 +103,7 @@ const TrustSignals = () => {
       {/* Informații de contact */}
       <div className="text-center text-xs text-muted-foreground">
         <p>
-          Întrebări despre protecția datelor? Contactează responsabilul nostru cu protecția datelor la{' '}
+          Questions about data protection? Contact our Data Protection Officer at{' '}
           <a
             href="mailto:dpo@travelaideals.ro"
             className="text-primary hover:underline"

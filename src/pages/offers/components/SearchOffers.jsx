@@ -142,52 +142,52 @@ function buildSearchPayload(offerType, formData) {
 
   switch (offerType) {
     case "flight":
-      queryText = `zbor ${base.airports.from || "București"} ${base.airports.to || base.destination || "destinație"}`;
+      queryText = `flight ${base.airports.from || "Bucharest"} ${base.airports.to || base.destination || "destination"}`;
       if (base.dates.start) queryText += ` ${base.dates.start}`;
       if (base.dates.end) queryText += ` - ${base.dates.end}`;
       break;
 
     case "hotel":
-      queryText = `hotel ${base.destination || "destinație"}`;
+      queryText = `hotel ${base.destination || "destination"}`;
       if (base.dates.start) queryText += ` ${base.dates.start}`;
       if (base.dates.end) queryText += ` - ${base.dates.end}`;
       break;
 
     case "vacation":
-      queryText = `vacanță ${base.destination || base.airports.to || "destinație"}`;
+      queryText = `vacation ${base.destination || base.airports.to || "destination"}`;
       if (base.dates.start) queryText += ` ${base.dates.start}`;
       if (base.dates.end) queryText += ` - ${base.dates.end}`;
       break;
 
     case "car":
-      queryText = `închiriere mașină ${base.destination || "destinație"}`;
+      queryText = `car rental ${base.destination || "destination"}`;
       if (base.dates.start) queryText += ` ${base.dates.start}`;
       if (base.dates.end) queryText += ` - ${base.dates.end}`;
       break;
 
     case "esim":
-      queryText = `esim ${base.destination || "țară/region"}`;
+      queryText = `esim ${base.destination || "country/region"}`;
       break;
 
     case "activities":
-      queryText = `activități ${base.destination || "oraș"}`;
+      queryText = `activities ${base.destination || "city"}`;
       if (base.dates.start) queryText += ` ${base.dates.start}`;
       break;
 
     case "transfer":
     case "taxi":
-      queryText = `transfer ${base.destination || "destinație"}`;
+      queryText = `transfer ${base.destination || "destination"}`;
       if (base.dates.start) queryText += ` ${base.dates.start}`;
       break;
 
     case "insurance":
-      queryText = `asigurare călătorie ${base.destination || "destinație"}`;
+      queryText = `travel insurance ${base.destination || "destination"}`;
       if (base.dates.start) queryText += ` ${base.dates.start}`;
       if (base.dates.end) queryText += ` - ${base.dates.end}`;
       break;
 
     case "flight_compensation":
-      queryText = `compensație zbor ${base.airports.from || ""} ${base.airports.to || ""}`.trim();
+      queryText = `flight compensation ${base.airports.from || ""} ${base.airports.to || ""}`.trim();
       if (base.dates.start) queryText += ` ${base.dates.start}`;
       break;
 
@@ -391,32 +391,32 @@ const SearchOffers = ({ onSearch, initialOfferType, initialFormData }) => {
         onClick={handleSubmit}
         className="px-6 py-2.5 bg-blue-600 text-white rounded-full text-sm font-semibold shadow-sm hover:bg-blue-700"
       >
-        Caută oferte
+        Search offers
       </button>
 
       {/* Travelpayouts info */}
       <div className="p-5 rounded-xl bg-blue-50 border border-blue-100 text-sm leading-relaxed">
         <h3 className="font-semibold mb-2 text-blue-900">
-          Despre căutarea ofertelor
+          About searching for offers
         </h3>
         <p className="text-blue-900/90">
-          Această funcție utilizează infrastructura și partenerii integrați prin
-          platforma <strong>Travelpayouts</strong>, un hub global de agregare
-          a ofertelor de zboruri, hoteluri și servicii turistice. Rezultatele afișate
-          provin exclusiv de la furnizorii parteneri și respectă tarifele, disponibilitatea
-          și politicile acestora.
+          This function uses the infrastructure and partners integrated through the
+          <strong>Travelpayouts</strong> platform, a global hub for aggregating
+          flight, hotel, and tourist service offers. The displayed results
+          come exclusively from partner providers and respect their rates, availability,
+          and policies.
         </p>
         <p className="mt-2 text-blue-900/90">
-          În etapa de verificare tehnică (audit Travelpayouts), anumite rezultate pot fi
-          simulate (mock data) până la activarea completă a API-urilor.
+          During the technical verification stage (Travelpayouts audit), certain results may be
+          simulated (mock data) until full activation of the APIs.
         </p>
       </div>
 
       {/* DISCLAIMER LEGAL */}
       <p className="text-xs text-slate-500 border-t pt-4">
-        TravelAI Deals nu vinde direct servicii turistice. Toate rezervările sunt procesate de
-        operatorii parteneri. Prețurile și disponibilitatea sunt furnizate în timp real de aceștia
-        prin intermediul rețelei Travelpayouts.
+        TravelAI Deals does not sell travel services directly. All bookings are processed by
+        partner operators. Prices and availability are provided in real time by them
+        through the Travelpayouts network.
       </p>
     </div>
   );

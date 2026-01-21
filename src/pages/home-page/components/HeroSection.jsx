@@ -12,25 +12,25 @@ const HERO_IMAGES = [
   "/assets/hero/pexels-greta-soave-7237647.jpg",
 ];
 
-/* 📝 TEXTE HERO */
+/* 📝 HERO TEXTS */
 const HERO_TEXTS = [
   {
-    title: "Descoperă cele mai bune oferte de călătorie cu",
+    title: "Discover the best travel deals with",
     highlight: "TravelAI Deals",
     subtitle:
-      "Inteligență artificială care compară automat zboruri și vacanțe din peste 100 de surse.",
+      "Artificial intelligence that automatically compares flights and vacations from over 100 sources.",
   },
   {
-    title: "Planifică vacanțe inteligente cu",
-    highlight: "AI-ul tău personal",
+    title: "Plan smart vacations with",
+    highlight: "your personal AI",
     subtitle:
-      "Spune unde vrei să mergi, iar TravelAI îți găsește cele mai bune opțiuni.",
+      "Tell us where you want to go, and TravelAI finds the best options for you.",
   },
   {
-    title: "Călătorește mai mult, plătește mai puțin cu",
+    title: "Travel more, pay less with",
     highlight: "TravelAI Deals",
     subtitle:
-      "Oferte reale, actualizate constant, fără să pierzi ore pe zeci de site-uri.",
+      "Real deals, constantly updated, without losing hours on dozens of websites.",
   },
 ];
 
@@ -100,10 +100,10 @@ const HeroSection = () => {
           {/* CTA */}
           <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
             <button
-              onClick={() => navigate("/cauta-oferte")}
+              onClick={() => navigate("/search-offers")}
               className="w-full sm:w-auto px-8 py-3 bg-white text-black rounded-lg text-lg font-semibold hover:bg-gray-200 shadow-md"
             >
-              Caută oferte
+              Search deals
             </button>
 
             <button
@@ -119,7 +119,7 @@ const HeroSection = () => {
               "
             >
               <Icon name="MessageCircle" size={18} />
-              Chat AI
+              AI Chat
             </button>
           </div>
         </div>

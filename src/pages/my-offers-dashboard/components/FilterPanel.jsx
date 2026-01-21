@@ -15,26 +15,26 @@ const FilterPanel = ({
   onToggleCollapse,
   onApplyFilters,
 }) => {
-  // 🔹 Tipuri de oferte — EXTINS cu Klook, eSIM, Asigurări
+  // 🔹 Deal types — EXTENDED with Klook, eSIM, Insurance
   const dealTypeOptions = [
-    { value: "all", label: "Toate tipurile" },
-    { value: "flight", label: "Zboruri ✈️" },
-    { value: "hotel", label: "Hoteluri 🏨" },
-    { value: "package", label: "Pachete complete 🎁" },
+    { value: "all", label: "All types" },
+    { value: "flight", label: "Flights ✈️" },
+    { value: "hotel", label: "Hotels 🏨" },
+    { value: "package", label: "Complete packages 🎁" },
     { value: "car", label: "Rent a Car 🚗" },
 
-    // 🔥 NOU
-    { value: "activity", label: "Activități 🎟️" },     // Klook
-    { value: "esim", label: "eSIM 🌐" },                // eSIM afiliere
-    { value: "insurance", label: "Asigurări 🛡️" },     // Asigurări travel
+    // 🔥 NEW
+    { value: "activity", label: "Activities 🎟️" },     // Klook
+    { value: "esim", label: "eSIM 🌐" },                // eSIM affiliation
+    { value: "insurance", label: "Insurance 🛡️" },     // Travel insurance
   ];
 
   const sortOptions = [
-    { value: "newest", label: "Cele mai noi" },
-    { value: "price_low", label: "Preț crescător" },
-    { value: "price_high", label: "Preț descrescător" },
-    { value: "expiry", label: "Expiră în curând" },
-    { value: "rating", label: "Rating înalt" },
+    { value: "newest", label: "Newest" },
+    { value: "price_low", label: "Price ascending" },
+    { value: "price_high", label: "Price descending" },
+    { value: "expiry", label: "Expiring soon" },
+    { value: "rating", label: "High rating" },
   ];
 
   const [dateRange, setDateRange] = useState([
@@ -60,10 +60,10 @@ const FilterPanel = ({
 
   return (
     <div className="bg-card border border-border rounded-lg overflow-hidden">
-      
-      {/* Header mobile */}
+
+      {/* Mobile header */}
       <div className="md:hidden flex items-center justify-between p-4 border-b border-border">
-        <h3 className="font-semibold text-foreground">Filtre și sortare</h3>
+        <h3 className="font-semibold text-foreground">Filters and sorting</h3>
         <Button variant="ghost" size="icon" onClick={onToggleCollapse}>
           <Icon name={isCollapsed ? "ChevronDown" : "ChevronUp"} size={20} />
         </Button>
@@ -72,36 +72,36 @@ const FilterPanel = ({
       <div className={`${isCollapsed ? "hidden md:block" : "block"}`}>
         <div className="p-4 space-y-4">
 
-          {/* 🔍 Căutare */}
+          {/* 🔍 Search */}
           <Input
             type="search"
-            placeholder="Caută destinații, orașe, hoteluri..."
+            placeholder="Search destinations, cities, hotels..."
             value={filters?.search || ""}
             onChange={(e) => handleFilterChange("search", e.target.value)}
           />
 
-          {/* 🏙 Destinație */}
+          {/* 🏙 Destination */}
           <Input
             type="text"
-            label="Destinație"
-            placeholder="Ex: Roma, Atena, Dubai..."
+            label="Destination"
+            placeholder="Ex: Rome, Athens, Dubai..."
             value={filters?.destination || ""}
             onChange={(e) => handleFilterChange("destination", e.target.value)}
           />
 
-          {/* 🎁 Tip ofertă */}
+          {/* 🎁 Deal type */}
           <Select
-            label="Tip ofertă"
+            label="Deal type"
             options={dealTypeOptions}
             value={filters?.dealType || "all"}
             onChange={(value) => handleFilterChange("dealType", value)}
           />
 
-          {/* 💶 Preț */}
+          {/* 💶 Price */}
           <div className="grid grid-cols-2 gap-2">
             <Input
               type="number"
-              label="Preț minim (€)"
+              label="Min price (€)"
               placeholder="0"
               min="0"
               value={filters?.minPrice || ""}
@@ -109,7 +109,7 @@ const FilterPanel = ({
             />
             <Input
               type="number"
-              label="Preț maxim (€)"
+              label="Max price (€)"
               placeholder="5000"
               min="0"
               value={filters?.maxPrice || ""}
@@ -117,10 +117,10 @@ const FilterPanel = ({
             />
           </div>
 
-          {/* 📅 Interval date */}
+          {/* 📅 Date interval */}
           <div>
             <label className="text-sm font-medium text-foreground">
-              Perioada călătoriei
+              Travel period
             </label>
 
             <DatePicker
@@ -130,7 +130,7 @@ const FilterPanel = ({
               onChange={(update) => setDateRange(update)}
               minDate={new Date()}
               dateFormat="dd/MM/yyyy"
-              placeholderText="Selectează perioada..."
+              placeholderText="Select period..."
               monthsShown={2}
               showMonthDropdown
               showYearDropdown
@@ -139,9 +139,9 @@ const FilterPanel = ({
             />
           </div>
 
-          {/* 🔽 Sortare */}
+          {/* 🔽 Sort */}
           <Select
-            label="Sortează după"
+            label="Sort by"
             options={sortOptions}
             value={filters?.sortBy || "newest"}
             onChange={(value) => handleFilterChange("sortBy", value)}
@@ -156,7 +156,7 @@ const FilterPanel = ({
               onClick={onApplyFilters}
             >
               <Icon name="Search" size={14} className="mr-1" />
-              Caută oferte
+              Search offers
             </Button>
 
             <Button
@@ -166,7 +166,7 @@ const FilterPanel = ({
               onClick={onClearFilters}
             >
               <Icon name="X" size={14} className="mr-1" />
-              Resetează
+              Reset
             </Button>
           </div>
         </div>

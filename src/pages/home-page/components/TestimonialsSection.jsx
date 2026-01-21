@@ -8,73 +8,73 @@ const ALL_TESTIMONIALS = [
     name: "Andrei Popescu",
     gender: "male",
     rating: 5,
-    text: "TravelAI Deals mi-a redus enorm timpul de căutare. Totul e clar, rapid și fără stres."
+    text: "TravelAI Deals has significantly reduced my search time. Everything is clear, fast, and stress-free."
   },
   {
     name: "Maria Lungu",
     gender: "female",
     rating: 5,
-    text: "Îmi place că primesc alerte exact când apar oferte bune. Am prins city-break-uri excelente."
+    text: "I love getting alerts exactly when good deals appear. I've caught some excellent city-breaks."
   },
   {
     name: "Radu Ciobanu",
     gender: "male",
     rating: 5,
-    text: "Ideal pentru escapade spontane. În câteva minute verific zboruri, hoteluri și reduceri."
+    text: "Ideal for spontaneous getaways. In a few minutes, I check flights, hotels, and discounts."
   },
   {
     name: "Elena Dobre",
     gender: "female",
     rating: 4,
-    text: "Interfață simplă și recomandări utile. Fără reclame inutile sau informații confuze."
+    text: "Simple interface and useful recommendations. No useless ads or confusing information."
   },
   {
     name: "Mihai Ionescu",
     gender: "male",
     rating: 5,
-    text: "Un tool care chiar te ajută să economisești bani. L-am recomandat deja prietenilor."
+    text: "A tool that really helps you save money. I've already recommended it to friends."
   },
   {
     name: "Ioana Marinescu",
     gender: "female",
     rating: 5,
-    text: "Perfect pentru planificări rapide. AI-ul face toată munca grea."
+    text: "Perfect for quick planning. The AI does all the heavy lifting."
   },
   {
     name: "Alex Stoica",
     gender: "male",
     rating: 4,
-    text: "Găsesc rapid cele mai bune opțiuni fără să pierd timp pe zeci de site-uri."
+    text: "I quickly find the best options without wasting time on dozens of websites."
   },
   {
     name: "Cristina Pavel",
     gender: "female",
     rating: 5,
-    text: "Foarte util pentru vacanțe last-minute. Recomand cu încredere."
+    text: "Very useful for last-minute vacations. I highly recommend it."
   },
   {
     name: "Daniel Rusu",
     gender: "male",
     rating: 5,
-    text: "Totul e centralizat și ușor de folosit. Exact ce aveam nevoie."
+    text: "Everything is centralized and easy to use. Exactly what I needed."
   },
   {
     name: "Ana Petrescu",
     gender: "female",
     rating: 4,
-    text: "Îmi place că recomandările sunt clare și relevante, nu la întâmplare."
+    text: "I like that the recommendations are clear and relevant, not random."
   },
   {
     name: "Bogdan Ilie",
     gender: "male",
     rating: 5,
-    text: "Un instrument smart care chiar face diferența la buget."
+    text: "A smart tool that really makes a difference to the budget."
   },
   {
     name: "Laura Dumitrescu",
     gender: "female",
     rating: 5,
-    text: "TravelAI Deals m-a ajutat să planific vacanțe fără bătăi de cap."
+    text: "TravelAI Deals helped me plan vacations with no headaches."
   },
 ];
 
@@ -109,7 +109,7 @@ const TestimonialsSection = () => {
       <div className="max-w-6xl mx-auto px-6">
 
         <h2 className="text-4xl font-extrabold text-center mb-14 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-          Ce spun utilizatorii noștri
+          What our users are saying
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
@@ -151,9 +151,9 @@ const TestimonialsSection = () => {
           ))}
         </div>
 
-        {/* Mic disclaimer smart */}
+        {/* Smart disclaimer */}
         <p className="text-xs text-gray-400 text-center mt-10">
-          Feedback agregat de la utilizatori și testări interne • actualizat periodic
+          Aggregated feedback from users and internal testing • updated periodically
         </p>
 
       </div>

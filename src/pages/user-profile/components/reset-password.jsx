@@ -11,18 +11,18 @@ const ResetPasswordPage = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    document.title = "Resetare parolă - TravelAI Deals";
+    document.title = "Reset Password - TravelAI Deals";
   }, []);
 
   const handleReset = async (e) => {
     e.preventDefault();
 
     if (password.length < 6) {
-      setStatus("Parola trebuie să aibă cel puțin 6 caractere.");
+      setStatus("Password must be at least 6 characters long.");
       return;
     }
     if (password !== confirm) {
-      setStatus("Parolele nu coincid.");
+      setStatus("Passwords do not match.");
       return;
     }
 
@@ -33,9 +33,9 @@ const ResetPasswordPage = () => {
     });
 
     if (error) {
-      setStatus("A apărut o eroare. Încearcă din nou.");
+      setStatus("An error occurred. Try again.");
     } else {
-      setStatus("Parola a fost schimbată cu succes!");
+      setStatus("Password has been changed successfully!");
       setTimeout(() => navigate("/login"), 2000);
     }
 
@@ -46,10 +46,10 @@ const ResetPasswordPage = () => {
     <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="bg-card border border-border p-8 rounded-lg shadow-sm w-full max-w-md">
 
-        <h2 className="text-2xl font-semibold mb-4">Resetare parolă</h2>
+        <h2 className="text-2xl font-semibold mb-4">Reset password</h2>
 
         <p className="text-muted-foreground mb-6">
-          Introdu noua parolă pentru contul tău TravelAI Deals.
+          Enter the new password for your TravelAI Deals account.
         </p>
 
         {status && (
@@ -61,7 +61,7 @@ const ResetPasswordPage = () => {
         <form onSubmit={handleReset} className="space-y-4">
 
           <div>
-            <label className="block mb-1 text-sm font-medium">Parolă nouă</label>
+            <label className="block mb-1 text-sm font-medium">New password</label>
             <input
               type="password"
               className="w-full border border-border rounded-lg px-3 py-2 bg-background"
@@ -72,7 +72,7 @@ const ResetPasswordPage = () => {
           </div>
 
           <div>
-            <label className="block mb-1 text-sm font-medium">Confirmă parola</label>
+            <label className="block mb-1 text-sm font-medium">Confirm password</label>
             <input
               type="password"
               className="w-full border border-border rounded-lg px-3 py-2 bg-background"
@@ -87,7 +87,7 @@ const ResetPasswordPage = () => {
             disabled={loading}
             className="w-full bg-primary text-white py-2 rounded-lg hover:bg-primary/90 disabled:opacity-50"
           >
-            {loading ? "Se actualizează..." : "Resetează parola"}
+            {loading ? "Updating..." : "Reset password"}
           </button>
         </form>
       </div>

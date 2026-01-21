@@ -5,21 +5,21 @@ const SubscriptionTierSelector = ({ selectedTier, onTierChange }) => {
   const tiers = [
     {
       id: 'free',
-      name: 'Gratuit',
+      name: 'Free',
       price: '€0',
-      period: '/lună',
-      description: 'Perfect pentru călătorii ocazionali',
+      period: '/month',
+      description: 'Perfect for occasional travelers',
       features: [
-        'Căutare inteligentă cu AI',
-        'Până la 2 notificări salvate',
-        'Alerte de oferte de bază',
-        'Notificări prin email',
-        'Suport standard'
+        'AI Intelligent Search',
+        'Up to 2 saved notifications',
+        'Basic offer alerts',
+        'Email notifications',
+        'Standard support'
       ],
       limitations: [
-        'Limitat la 2 căutări salvate',
-        'Prioritate standard pentru oferte',
-        'Suport doar prin email'
+        'Limited to 2 saved searches',
+        'Standard offer priority',
+        'Email-only support'
       ],
       popular: false,
       color: 'border-border'
@@ -28,18 +28,18 @@ const SubscriptionTierSelector = ({ selectedTier, onTierChange }) => {
       id: 'premium',
       name: 'Premium',
       price: '€9.99',
-      period: '/lună',
-      description: 'Acces nelimitat la toate funcțiile',
+      period: '/month',
+      description: 'Unlimited access to all features',
       features: [
-        'Tot ce include planul Gratuit',
-        'Notificări nelimitate',
-        'Oferte exclusive Premium',
-        'Alerte prioritare pentru oferte',
-        'Notificări prin SMS și push',
-        'Filtrare avansată a ofertelor',
-        'Predicții AI pentru scăderi de preț',
-        'Suport clienți prioritar',
-        'Acces anticipat la funcții noi'
+        'Everything in Free plan',
+        'Unlimited notifications',
+        'Exclusive Premium offers',
+        'Priority offer alerts',
+        'SMS and push notifications',
+        'Advanced offer filtering',
+        'AI price drop predictions',
+        'Priority customer support',
+        'Early access to new features'
       ],
       limitations: [],
       popular: true,
@@ -50,9 +50,9 @@ const SubscriptionTierSelector = ({ selectedTier, onTierChange }) => {
   return (
     <div className="space-y-4">
       <div className="text-center">
-        <h3 className="text-lg font-semibold text-foreground mb-2">Alege planul dorit</h3>
+        <h3 className="text-lg font-semibold text-foreground mb-2">Choose your plan</h3>
         <p className="text-sm text-muted-foreground">
-          Selectează planul care se potrivește cel mai bine nevoilor tale. Poți face upgrade oricând.
+          Select the plan that best fits your needs. You can upgrade at any time.
         </p>
       </div>
 
@@ -61,17 +61,16 @@ const SubscriptionTierSelector = ({ selectedTier, onTierChange }) => {
           <div
             key={tier?.id}
             onClick={() => onTierChange(tier?.id)}
-            className={`relative cursor-pointer rounded-lg border-2 p-6 transition-all duration-200 hover:shadow-elevated ${
-              selectedTier === tier?.id
+            className={`relative cursor-pointer rounded-lg border-2 p-6 transition-all duration-200 hover:shadow-elevated ${selectedTier === tier?.id
                 ? `${tier?.color} bg-primary/5`
                 : 'border-border bg-card hover:border-primary/30'
-            }`}
+              }`}
           >
             {/* Insignă plan popular */}
             {tier?.popular && (
               <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                 <span className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-medium">
-                  Cel mai popular
+                  Most Popular
                 </span>
               </div>
             )}
@@ -79,11 +78,10 @@ const SubscriptionTierSelector = ({ selectedTier, onTierChange }) => {
             {/* Indicator selecție */}
             <div className="absolute top-4 right-4">
               <div
-                className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                  selectedTier === tier?.id
+                className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedTier === tier?.id
                     ? 'border-primary bg-primary'
                     : 'border-muted-foreground'
-                }`}
+                  }`}
               >
                 {selectedTier === tier?.id && (
                   <Icon name="Check" size={12} color="white" />
@@ -101,10 +99,10 @@ const SubscriptionTierSelector = ({ selectedTier, onTierChange }) => {
               <p className="text-sm text-muted-foreground mt-2">{tier?.description}</p>
             </div>
 
-            {/* Lista funcționalități */}
+            {/* Features list */}
             <div className="space-y-3">
               <div>
-                <h5 className="text-sm font-medium text-foreground mb-2">Funcționalități incluse:</h5>
+                <h5 className="text-sm font-medium text-foreground mb-2">Included features:</h5>
                 <ul className="space-y-2">
                   {tier?.features?.map((feature, index) => (
                     <li key={index} className="flex items-start space-x-2 text-sm">
@@ -115,10 +113,10 @@ const SubscriptionTierSelector = ({ selectedTier, onTierChange }) => {
                 </ul>
               </div>
 
-              {/* Limitări */}
+              {/* Limitations */}
               {tier?.limitations?.length > 0 && (
                 <div>
-                  <h5 className="text-sm font-medium text-foreground mb-2">Limitări:</h5>
+                  <h5 className="text-sm font-medium text-foreground mb-2">Limitations:</h5>
                   <ul className="space-y-2">
                     {tier?.limitations?.map((limitation, index) => (
                       <li key={index} className="flex items-start space-x-2 text-sm">
@@ -131,11 +129,11 @@ const SubscriptionTierSelector = ({ selectedTier, onTierChange }) => {
               )}
             </div>
 
-            {/* Notificare pentru planul gratuit */}
+            {/* Free plan notice */}
             {tier?.id === 'free' && (
               <div className="mt-4 p-3 bg-muted rounded-lg">
                 <p className="text-xs text-muted-foreground text-center">
-                  Poți trece oricând la planul Premium din setările contului tău.
+                  You can upgrade to Premium at any time from your account settings.
                 </p>
               </div>
             )}
@@ -143,29 +141,29 @@ const SubscriptionTierSelector = ({ selectedTier, onTierChange }) => {
         ))}
       </div>
 
-      {/* Secțiune GDPR */}
+      {/* GDPR Section */}
       <div className="bg-muted/50 rounded-lg p-4 border border-border">
         <div className="flex items-start space-x-3">
           <Icon name="Shield" size={20} className="text-primary mt-0.5 flex-shrink-0" />
           <div className="space-y-2">
-            <h5 className="text-sm font-medium text-foreground">Conformitate GDPR și protecția datelor</h5>
+            <h5 className="text-sm font-medium text-foreground">GDPR Compliance and Data Protection</h5>
             <p className="text-xs text-muted-foreground">
-              Datele tale personale sunt prelucrate în conformitate cu Regulamentul GDPR al Uniunii Europene.
-              Folosim informațiile exclusiv pentru furnizarea serviciilor TravelAI Deals și nu le partajăm
-              cu terți fără consimțământul tău explicit. Poți solicita oricând accesul, modificarea sau ștergerea datelor tale.
+              Your personal data is processed in accordance with the EU GDPR Regulation.
+              We use information exclusively for providing TravelAI Deals services and do not share it
+              with third parties without your explicit consent. You can request access, modification, or deletion of your data at any time.
             </p>
             <div className="flex items-center space-x-4 text-xs text-muted-foreground">
               <div className="flex items-center space-x-1">
                 <Icon name="Lock" size={12} />
-                <span>Criptare SSL</span>
+                <span>SSL Encryption</span>
               </div>
               <div className="flex items-center space-x-1">
                 <Icon name="Shield" size={12} />
-                <span>Conform GDPR</span>
+                <span>GDPR Compliant</span>
               </div>
               <div className="flex items-center space-x-1">
                 <Icon name="MapPin" size={12} />
-                <span>Centre de date în UE</span>
+                <span>EU Data Centers</span>
               </div>
             </div>
           </div>

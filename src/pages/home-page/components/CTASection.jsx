@@ -32,15 +32,15 @@ const CTASection = ({ onStart }) => {
           {/* Title */}
           <h2 className="text-4xl font-extrabold mb-4">
             {isAuthenticated
-              ? "Spune-i AI-ului ce vacanță vrei"
-              : "Gata să descoperi cele mai bune oferte?"}
+              ? "Tell the AI what vacation you want"
+              : "Ready to discover the best deals?"}
           </h2>
 
           {/* Subtitle */}
           <p className="text-lg text-white/90 mb-10 max-w-3xl mx-auto">
             {isAuthenticated
-              ? "Caută zboruri, hoteluri și experiențe personalizate în timp real, fără stres."
-              : "Creează-ți cont gratuit și lasă AI-ul să caute automat pentru tine cele mai mici prețuri."}
+              ? "Search for flights, hotels, and personalized experiences in real-time, stress-free."
+              : "Create your free account and let the AI automatically search for the lowest prices for you."}
           </p>
 
           {/* Button */}
@@ -53,7 +53,7 @@ const CTASection = ({ onStart }) => {
                 shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all
               "
             >
-              Deschide Chat AI
+              Open AI Chat
             </button>
           ) : (
             <button
@@ -64,7 +64,7 @@ const CTASection = ({ onStart }) => {
                 shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all
               "
             >
-              Creează contul gratuit
+              Create Free Account
             </button>
           )}
         </div>

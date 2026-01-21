@@ -17,7 +17,7 @@ const ChatMessage = ({ message }) => {
   ======================= */
   const formatTime = (timestamp) => {
     try {
-      return new Date(timestamp).toLocaleTimeString("ro-RO", {
+      return new Date(timestamp).toLocaleTimeString("en-US", {
         hour: "2-digit",
         minute: "2-digit",
       });
@@ -34,7 +34,7 @@ const ChatMessage = ({ message }) => {
   const renderSingleCard = (card, index) => {
     if (!card) return null;
 
-    const providerName = card.provider_meta?.name ?? card.provider ?? "Partener";
+    const providerName = card.provider_meta?.name ?? card.provider ?? "Partner";
     const brandColor = card.provider_meta?.brand_color ?? "#2563eb";
     const imageUrl = card.image_url ?? "/assets/affiliates/default.jpg";
     const isSaved = favorites.some(
@@ -50,7 +50,7 @@ const ChatMessage = ({ message }) => {
 
     const handleShare = () => {
       const url = card.cta?.url || window.location.href;
-      const text = `🔥 Oferta TravelAI\n${card.title}\n${url}`;
+      const text = `🔥 TravelAI Deal\n${card.title}\n${url}`;
 
       if (navigator.share) {
         navigator.share({
@@ -60,7 +60,7 @@ const ChatMessage = ({ message }) => {
         });
       } else {
         navigator.clipboard.writeText(text);
-        alert("Link copiat 📋");
+        alert("Link copied 📋");
       }
     };
 
@@ -137,7 +137,7 @@ const ChatMessage = ({ message }) => {
                   style={{ backgroundColor: brandColor }}
                 >
                   <Icon name="ExternalLink" size={16} />
-                  {card.cta?.label ?? "Vezi detalii"}
+                  {card.cta?.label ?? "See details"}
                 </Button>
               </a>
             </div>

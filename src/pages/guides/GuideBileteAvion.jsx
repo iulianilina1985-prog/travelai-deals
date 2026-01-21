@@ -2,47 +2,47 @@ import React from "react";
 
 const tips = [
   {
-    title: "1. Folosește flexibilitatea datelor",
+    title: "1. Use date flexibility",
     image: "/assets/bilet/flex.jpg",
-    text: `Zborurile de marți și miercuri sunt în general cele mai ieftine. 
-           Diferența de preț între un zbor de vineri și unul de marți poate ajunge și la 40%.
-           Dacă poți pleca cu o zi mai devreme sau mai târziu, ai șanse mari să economisești.`,
+    text: `Tuesday and Wednesday flights are generally the cheapest. 
+           The price difference between a Friday and a Tuesday flight can reach up to 40 %.
+           If you can leave a day earlier or later, you have a high chance of saving.`,
   },
   {
-    title: "2. Verifică aeroporturile alternative",
+    title: "2. Check alternative airports",
     image: "/assets/bilet/aeroport.jpg",
-    text: `Aeroporturile mai mici au adesea taxe reduse și sunt folosite de companii low-cost.
-           Exemple: Milano Bergamo, Paris Beauvais, Barcelona Girona.
-           Poți găsi prețuri chiar și cu 60% mai mici față de aeroporturile principale.`,
+    text: `Smaller airports often have reduced fees and are used by low - cost companies.
+  Examples: Milan Bergamo, Paris Beauvais, Barcelona Girona.
+           You can find prices even 60 % lower than at main airports.`,
   },
   {
-    title: "3. Caută din timp, dar nu prea devreme",
+    title: "3. Search in advance, but not too early",
     image: "/assets/bilet/zbor.jpg",
-    text: `Pentru zborurile europene, cel mai bun moment pentru rezervare este cu 35–70 de zile înainte.
-           Pentru zborurile intercontinentale, ferestrele optime sunt între 2 și 5 luni. 
-           Prea devreme sau prea târziu = prețuri crescute.`,
+    text: `For European flights, the best time to book is 35–70 days in advance.
+           For intercontinental flights, the optimal windows are between 2 and 5 months. 
+           Too early or too late = increased prices.`,
   },
   {
-    title: "4. Folosește navigarea incognito",
+    title: "4. Use incognito browsing",
     image: "/assets/bilet/incognito.jpg",
-    text: `Unele motoare de căutare pot ajusta prețurile în funcție de interesul tău repetat 
-           pentru aceeași rută. 
-           Caută bilete în fereastră incognito pentru rezultate mai curate.`,
+    text: `Some search engines may adjust prices based on your repeated interest
+for the same route. 
+           Search for tickets in an incognito window for cleaner results.`,
   },
   {
-    title: "5. Alege curse cu escală",
+    title: "5. Choose connecting flights",
     image: "/assets/bilet/escala.jpg",
-    text: `Zborurile directe sunt mai rapide, dar de multe ori mai scumpe.
-           O escală inteligent aleasă poate reduce prețul total și cu 30–50%.`,
+    text: `Direct flights are faster, but often more expensive.
+           A cleverly chosen layover can reduce the total price by 30–50 %.`,
   },
   {
-  title: "6. Activează alertele inteligente de preț în TravelAI Deals",
-  image: "/assets/bilet/alerta.jpg",
-  text: `Prețurile la bilete se modifică rapid, iar ofertele bune dispar în câteva ore. Aboneaza-te la TravelAi-Deals
-         si poți activa alerte personalizate pentru rutele tale preferate. 
-         De fiecare dată când AI-ul detectează o scădere semnificativă de preț, primești notificare 
-         instant și poți rezerva la cel mai bun tarif disponibil.`,
-},
+    title: "6. Activate smart price alerts in TravelAI Deals",
+    image: "/assets/bilet/alerta.jpg",
+    text: `Ticket prices change rapidly, and good offers disappear in a few hours.Subscribe to TravelAI Deals
+          and you can activate personalized alerts for your favorite routes. 
+          Every time the AI detects a significant price drop, you get a notification 
+          instantly and can book at the best available rate.`,
+  },
 
 ];
 
@@ -50,26 +50,26 @@ const GuideBileteAvion = () => {
   return (
     <div className="max-w-4xl mx-auto px-6 py-20">
       <h1 className="text-3xl font-bold mb-6 text-center">
-        Cum găsești cele mai ieftine bilete de avion
+        How to find the cheapest air tickets
       </h1>
 
       <p className="text-gray-700 leading-relaxed text-center max-w-2xl mx-auto mb-10">
-        Prețurile la bilete de avion se schimbă rapid — uneori chiar de 5 ori în aceeași zi. 
-        Cu strategiile potrivite, poți economisi sume semnificative la fiecare călătorie.
-        Iată cele mai eficiente metode folosite de călătorii experimentați în 2025.
+        Air ticket prices change quickly — sometimes even 5 times in the same day.
+        With the right strategies, you can save significant amounts on every trip.
+        Here are the most effective methods used by experienced travelers in 2025.
       </p>
 
-      {/* LISTA TEHNICILOR */}
+      {/* LIST OF TECHNIQUES */}
       {tips.map((t, index) => (
         <div key={index} className="mb-12">
-          {/* Imagine */}
+          {/* Image */}
           <img
             src={t.image}
             alt={t.title}
             className="w-full h-64 object-cover rounded-xl shadow mb-4"
           />
 
-          {/* Titlu */}
+          {/* Title */}
           <h2 className="text-2xl font-semibold mt-2 mb-2">{t.title}</h2>
 
           {/* Text */}
@@ -78,7 +78,7 @@ const GuideBileteAvion = () => {
       ))}
 
       <p className="mt-12 text-sm text-gray-500 text-center">
-        *Ghid creat de TravelAI – actualizat periodic cu tehnici noi de smart-booking.*
+        *Guide created by TravelAI – periodically updated with new smart-booking techniques.*
       </p>
     </div>
   );

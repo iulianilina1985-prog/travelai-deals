@@ -69,7 +69,7 @@ const AdminDashboard = () => {
 
       setLoading(false);
     } catch (err) {
-      console.error('Eroare la fetchStats:', err);
+      console.error('Error in fetchStats:', err);
       setLoading(false);
     }
   };
@@ -79,26 +79,26 @@ const AdminDashboard = () => {
   }, []);
 
   const cards = [
-    { title: 'Utilizatori înregistrați', value: stats.totalUsers, icon: 'Users' },
-    { title: 'Abonamente active', value: stats.activeSubscriptions, icon: 'Crown' },
-    { title: 'Venit lunar', value: `${stats.monthlyRevenue} €`, icon: 'TrendingUp' },
-    { title: 'Căutări active', value: stats.activeSearches, icon: 'Search' },
-    { title: 'Cereri API', value: stats.apiRequests, icon: 'Activity' },
-    { title: 'Disponibilitate sistem', value: '99.9%', icon: 'Shield' },
+    { title: 'Registered Users', value: stats.totalUsers, icon: 'Users' },
+    { title: 'Active Subscriptions', value: stats.activeSubscriptions, icon: 'Crown' },
+    { title: 'Monthly Revenue', value: `${stats.monthlyRevenue} €`, icon: 'TrendingUp' },
+    { title: 'Active Searches', value: stats.activeSearches, icon: 'Search' },
+    { title: 'API Requests', value: stats.apiRequests, icon: 'Activity' },
+    { title: 'System Uptime', value: '99.9%', icon: 'Shield' },
   ];
 
   const quickActions = [
-    { label: 'Export utilizatori', icon: 'Download', action: () => console.log('Export utilizatori') },
-    { label: 'Trimite notificare', icon: 'Bell', action: () => console.log('Trimite notificare') },
-    { label: 'Setări sistem', icon: 'Settings', action: () => console.log('Setări sistem') },
-    { label: 'Vizualizează rapoarte', icon: 'FileText', action: () => console.log('Vizualizează rapoarte') },
+    { label: 'Export users', icon: 'Download', action: () => console.log('Export users') },
+    { label: 'Send notification', icon: 'Bell', action: () => console.log('Send notification') },
+    { label: 'System settings', icon: 'Settings', action: () => console.log('System settings') },
+    { label: 'View reports', icon: 'FileText', action: () => console.log('View reports') },
   ];
 
   return (
     <div className="min-h-screen bg-background">
       <Helmet>
-        <title>Panou Administrator - TravelAI Deals</title>
-        <meta name="description" content="Panou administrativ TravelAI Deals" />
+        <title>Admin Panel - TravelAI Deals</title>
+        <meta name="description" content="TravelAI Deals Administrative Panel" />
       </Helmet>
 
       <Header />
@@ -110,17 +110,17 @@ const AdminDashboard = () => {
           <div className="mb-8">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
-                <h1 className="text-3xl font-bold text-foreground">Panou Administrator</h1>
+                <h1 className="text-3xl font-bold text-foreground">Admin Panel</h1>
                 <p className="text-muted-foreground mt-1">
-                  Monitorizează și administrează platforma TravelAI Deals
+                  Monitor and manage the TravelAI Deals platform
                 </p>
               </div>
               <div className="flex items-center gap-3">
                 <Button variant="outline" iconName="RefreshCw" onClick={fetchStats}>
-                  Reîncarcă datele
+                  Reload data
                 </Button>
                 <Button variant="default" iconName="Plus">
-                  Acțiune rapidă
+                  Quick action
                 </Button>
               </div>
             </div>
@@ -128,7 +128,7 @@ const AdminDashboard = () => {
 
           {/* Stats Grid */}
           {loading ? (
-            <p className="text-muted-foreground mb-8">Se încarcă datele...</p>
+            <p className="text-muted-foreground mb-8">Loading data...</p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6 mb-8">
               {cards.map((c, i) => (
@@ -139,7 +139,7 @@ const AdminDashboard = () => {
 
           {/* Quick Actions */}
           <div className="bg-card border border-border rounded-lg p-6 mb-8 shadow-card">
-            <h2 className="text-lg font-semibold text-foreground mb-4">Acțiuni rapide</h2>
+            <h2 className="text-lg font-semibold text-foreground mb-4">Quick actions</h2>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               {quickActions.map((action, index) => (
                 <Button
@@ -183,18 +183,18 @@ const AdminDashboard = () => {
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 bg-success rounded-full" />
                   <span className="text-sm text-muted-foreground">
-                    Toate sistemele funcționează normal
+                    All systems are operating normally
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Icon name="Clock" size={16} className="text-muted-foreground" />
                   <span className="text-sm text-muted-foreground">
-                    Ultima actualizare: {new Date().toLocaleTimeString('ro-RO')}
+                    Last update: {new Date().toLocaleTimeString('en-US')}
                   </span>
                 </div>
               </div>
               <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                <span>Versiunea 2.1.0</span>
+                <span>Version 2.1.0</span>
                 <span>•</span>
                 <span>© {new Date().getFullYear()} TravelAI Deals</span>
               </div>

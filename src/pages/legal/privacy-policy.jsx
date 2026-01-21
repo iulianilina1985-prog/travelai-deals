@@ -14,19 +14,19 @@ const PrivacyPolicy = () => {
       <div className="w-full bg-gradient-to-r from-primary/20 via-primary/10 to-secondary/20 
                       py-14 md:py-24 px-4 md:px-6 text-center border-b border-border shadow-inner">
         <h1 className="text-3xl md:text-5xl font-bold text-foreground mb-4">
-          Politica de Confidențialitate 🔐
+          Privacy Policy 🔐
         </h1>
 
         <p className="text-muted-foreground text-base md:text-lg max-w-2xl mx-auto">
-          Înțelege cum îți protejăm datele și cum funcționează platforma TravelAI Deals.
+          Understand how we protect your data and how the TravelAI Deals platform works.
         </p>
 
         <p className="text-xs md:text-sm text-muted-foreground mt-4">
-          Ultima actualizare: {new Date().toLocaleDateString("ro-RO")}
+          Last update: {new Date().toLocaleDateString("en-US")}
         </p>
       </div>
 
-      {/* CONȚINUT */}
+      {/* CONTENT */}
       <div className="py-10 md:py-20 px-4 md:px-6 flex-1">
         <div className="max-w-4xl mx-auto bg-card border border-border 
                         rounded-2xl md:rounded-3xl 
@@ -34,9 +34,9 @@ const PrivacyPolicy = () => {
 
           {/* Intro */}
           <p className="text-muted-foreground mb-10 text-base md:text-lg">
-            Această Politică de Confidențialitate descrie modul în care platforma{" "}
-            <strong>TravelAI Deals</strong>, operată de <strong>GLOBAL LINKNET SRL</strong>,
-            prelucrează datele personale ale utilizatorilor, conform Regulamentului (UE)
+            This Privacy Policy describes how the{" "}
+            <strong>TravelAI Deals</strong> platform, operated by <strong>GLOBAL LINKNET SRL</strong>,
+            processes the personal data of users, according to Regulation (EU)
             2016/679 (GDPR).
           </p>
 
@@ -46,16 +46,16 @@ const PrivacyPolicy = () => {
             <section>
               <h2 className="flex items-center gap-2 text-xl md:text-2xl font-semibold mb-3">
                 <Icon name="User" size={20} className="text-primary" />
-                1. Operatorul Datelor
+                1. Data Controller
               </h2>
 
               <p className="text-muted-foreground">
-                Operatorul responsabil pentru datele tale este:
+                The controller responsible for your data is:
                 <br /><br />
                 <strong>GLOBAL LINKNET SRL</strong><br />
-                CUI: 48291648<br />
+                CIF: 48291648<br />
                 J03/1287/2023<br />
-                Str. Dorobanților 14, Bl. 51, Sc. A, Pitești, Argeș<br />
+                Str. Dorobantilor 14, Bl. 51, Sc. A, Pitesti, Arges<br />
                 Email:{" "}
                 <a href="mailto:contact@travelai.ro" className="text-primary underline">
                   contact@travelai.ro
@@ -67,18 +67,18 @@ const PrivacyPolicy = () => {
             <section>
               <h2 className="flex items-center gap-2 text-xl md:text-2xl font-semibold mb-3">
                 <Icon name="Database" size={20} className="text-primary" />
-                2. Ce date colectăm
+                2. What data we collect
               </h2>
 
               <p className="text-muted-foreground mb-3">
-                Colectăm următoarele tipuri de date:
+                We collect the following types of data:
               </p>
 
               <ul className="list-disc ml-6 space-y-2 text-muted-foreground">
-                <li>Email, nume, avatar (opțional)</li>
-                <li>Preferințe de călătorie și interacțiuni cu funcțiile platformei</li>
-                <li>IP, device, browser, cookie-uri</li>
-                <li>Date tehnice transmise către Stripe pentru plăți</li>
+                <li>Email, name, avatar (optional)</li>
+                <li>Travel preferences and interactions with platform features</li>
+                <li>IP, device, browser, cookies</li>
+                <li>Technical data transmitted to Stripe for payments</li>
               </ul>
             </section>
 
@@ -86,15 +86,15 @@ const PrivacyPolicy = () => {
             <section>
               <h2 className="flex items-center gap-2 text-xl md:text-2xl font-semibold mb-3">
                 <Icon name="Target" size={20} className="text-primary" />
-                3. Scopul prelucrării datelor
+                3. Purpose of data processing
               </h2>
 
               <ul className="list-disc ml-6 space-y-2 text-muted-foreground">
-                <li>Crearea și administrarea contului</li>
-                <li>Generarea de recomandări AI</li>
-                <li>Procesarea abonamentelor prin Stripe</li>
-                <li>Analiză internă pentru îmbunătățirea platformei</li>
-                <li>Securitate și prevenirea abuzului</li>
+                <li>Account creation and administration</li>
+                <li>Generating AI recommendations</li>
+                <li>Processing subscriptions through Stripe</li>
+                <li>Internal analysis to improve the platform</li>
+                <li>Security and abuse prevention</li>
               </ul>
             </section>
 
@@ -102,12 +102,12 @@ const PrivacyPolicy = () => {
             <section>
               <h2 className="flex items-center gap-2 text-xl md:text-2xl font-semibold mb-3">
                 <Icon name="Shield" size={20} className="text-primary" />
-                4. Temeiul legal
+                4. Legal basis
               </h2>
 
               <p className="text-muted-foreground">
-                Prelucrarea are loc în baza art. 6 GDPR: contract, consimțământ,
-                obligații legale și interes legitim.
+                Processing takes place based on art. 6 GDPR: contract, consent,
+                legal obligations and legitimate interest.
               </p>
             </section>
 
@@ -115,12 +115,12 @@ const PrivacyPolicy = () => {
             <section>
               <h2 className="flex items-center gap-2 text-xl md:text-2xl font-semibold mb-3">
                 <Icon name="Cookie" size={20} className="text-primary" />
-                5. Cookie-uri
+                5. Cookies
               </h2>
 
               <p className="text-muted-foreground">
-                Folosim cookie-uri esențiale, analitice și de marketing pentru buna
-                funcționare a platformei și pentru optimizare.
+                We use essential, analytical and marketing cookies for the good
+                functioning of the platform and for optimization.
               </p>
             </section>
 
@@ -128,17 +128,17 @@ const PrivacyPolicy = () => {
             <section>
               <h2 className="flex items-center gap-2 text-xl md:text-2xl font-semibold mb-3">
                 <Icon name="Share2" size={20} className="text-primary" />
-                6. Cui transmitem datele
+                6. To whom we transmit the data
               </h2>
 
               <ul className="list-disc ml-6 space-y-2 text-muted-foreground">
-                <li><strong>Stripe</strong> – procesare plăți</li>
-                <li><strong>Supabase</strong> – baze de date, autentificare și securitate</li>
-                <li>Servicii analytics (date agregate și anonimizate)</li>
+                <li><strong>Stripe</strong> – payment processing</li>
+                <li><strong>Supabase</strong> – databases, authentication and security</li>
+                <li>Analytics services (aggregated and anonymized data)</li>
               </ul>
 
               <p className="text-muted-foreground mt-3">
-                Nu vindem și nu cedăm datele personale către terți.
+                We do not sell or pass on personal data to third parties.
               </p>
             </section>
 
@@ -146,12 +146,12 @@ const PrivacyPolicy = () => {
             <section>
               <h2 className="flex items-center gap-2 text-xl md:text-2xl font-semibold mb-3">
                 <Icon name="Clock" size={20} className="text-primary" />
-                7. Perioada de stocare
+                7. Storage period
               </h2>
 
               <p className="text-muted-foreground">
-                Datele sunt păstrate atât timp cât contul este activ.  
-                Datele fiscale sunt păstrate conform legislației – 10 ani.
+                The data is kept as long as the account is active.
+                Fiscal data is kept according to legislation – 10 years.
               </p>
             </section>
 
@@ -159,16 +159,16 @@ const PrivacyPolicy = () => {
             <section>
               <h2 className="flex items-center gap-2 text-xl md:text-2xl font-semibold mb-3">
                 <Icon name="Key" size={20} className="text-primary" />
-                8. Drepturile tale GDPR
+                8. Your GDPR rights
               </h2>
 
               <ul className="list-disc ml-6 space-y-2 text-muted-foreground">
-                <li>Drept de acces</li>
-                <li>Drept de rectificare</li>
-                <li>Drept de ștergere („dreptul de a fi uitat”)</li>
-                <li>Drept de portabilitate</li>
-                <li>Drept de opoziție</li>
-                <li>Dreptul de a depune plângere la ANSPDCP</li>
+                <li>Right of access</li>
+                <li>Right to rectification</li>
+                <li>Right to erasure ("right to be forgotten")</li>
+                <li>Right to portability</li>
+                <li>Right to object</li>
+                <li>The right to file a complaint with ANSPDCP</li>
               </ul>
             </section>
 
@@ -176,12 +176,12 @@ const PrivacyPolicy = () => {
             <section>
               <h2 className="flex items-center gap-2 text-xl md:text-2xl font-semibold mb-3">
                 <Icon name="Lock" size={20} className="text-primary" />
-                9. Securitatea datelor
+                9. Data security
               </h2>
 
               <p className="text-muted-foreground">
-                Folosim criptare, autentificare pe token, sisteme anti-abuz și
-                monitorizare activă pentru a proteja datele utilizatorilor.
+                We use encryption, token authentication, anti-abuse systems and
+                active monitoring to protect user data.
               </p>
             </section>
 
@@ -189,12 +189,12 @@ const PrivacyPolicy = () => {
             <section>
               <h2 className="flex items-center gap-2 text-xl md:text-2xl font-semibold mb-3">
                 <Icon name="RefreshCw" size={20} className="text-primary" />
-                10. Modificări ale politicii
+                10. Policy changes
               </h2>
 
               <p className="text-muted-foreground">
-                Politica poate fi actualizată periodic. Versiunea curentă este afișată
-                și disponibilă în platformă.
+                The policy can be updated periodically. The current version is displayed
+                and available on the platform.
               </p>
             </section>
 
@@ -206,7 +206,7 @@ const PrivacyPolicy = () => {
               </h2>
 
               <p className="text-muted-foreground">
-                Pentru orice întrebare legată de datele tale personale, ne poți scrie la:{" "}
+                For any question related to your personal data, you can write to us at:{" "}
                 <a href="mailto:contact@travelai.ro" className="text-primary underline">
                   contact@travelai.ro
                 </a>
@@ -216,6 +216,7 @@ const PrivacyPolicy = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

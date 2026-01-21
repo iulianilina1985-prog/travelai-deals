@@ -44,20 +44,20 @@ const ContactPage = () => {
         border-b border-border shadow-inner
       ">
         <h1 className="text-3xl md:text-5xl font-bold text-foreground mb-4">
-          Hai să vorbim! 👋
+          Let's talk! 👋
         </h1>
 
         <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-          Suntem aici ca să-ți facem experiența cât mai clară. Fie că ai întrebări,
-          feedback sau propuneri, scrie-ne și îți răspundem rapid.
+          We are here to make your experience as clear as possible. Whether you have questions,
+          feedback or proposals, write to us and we will answer you quickly.
         </p>
       </div>
 
-      {/* GRID CONTACT */}
+      {/* CONTACT GRID */}
       <div className="w-full px-4 md:px-10 py-12 md:py-20 flex-1">
         <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-[1fr_1.3fr] gap-10 md:gap-16">
 
-          {/* CARD DATE */}
+          {/* COMPANY DATA CARD */}
           <div className="
             bg-card border border-border 
             p-6 md:p-12 
@@ -68,17 +68,17 @@ const ContactPage = () => {
           ">
             <h2 className="text-2xl md:text-3xl font-semibold text-foreground mb-6 flex items-center gap-3">
               <Icon name="Building" size={26} className="text-primary" />
-              Date Companie
+              Company Data
             </h2>
 
-            <p><strong>Companie:</strong> Global Linknet SRL</p>
-            <p><strong>CUI:</strong> 48291648</p>
-            <p><strong>Registrul Comerțului:</strong> J03/1287/2023</p>
+            <p><strong>Company:</strong> Global Linknet SRL</p>
+            <p><strong>CIF:</strong> 48291648</p>
+            <p><strong>Trade Register:</strong> J03/1287/2023</p>
 
             <p>
-              <strong>Adresă:</strong><br />
-              Jud. Argeș, Mun. Pitești<br />
-              Str. Dorobanților, Nr. 14, Bl. 51, Sc. A
+              <strong>Address:</strong><br />
+              Arges County, Pitesti City<br />
+              Str. Dorobantilor, Nr. 14, Bl. 51, Sc. A
             </p>
 
             <p>
@@ -89,13 +89,13 @@ const ContactPage = () => {
             </p>
 
             <p>
-              <strong>Program:</strong><br />
-              Luni – Vineri: 09:00 – 18:00<br />
-              Weekend: Închis
+              <strong>Schedule:</strong><br />
+              Monday – Friday: 09:00 – 18:00<br />
+              Weekend: Closed
             </p>
           </div>
 
-          {/* FORMULAR */}
+          {/* FORM */}
           <div className="
             bg-card border border-border 
             p-6 md:p-12 
@@ -105,13 +105,13 @@ const ContactPage = () => {
           ">
             <h2 className="text-2xl md:text-3xl font-semibold text-foreground mb-6 flex items-center gap-3">
               <Icon name="Mail" size={26} className="text-primary" />
-              Trimite-ne un mesaj
+              Send us a message
             </h2>
 
             <form onSubmit={sendEmail} className="space-y-6 md:space-y-8 text-base md:text-lg">
 
               <div>
-                <label className="block text-sm font-medium mb-2">Nume</label>
+                <label className="block text-sm font-medium mb-2">Name</label>
                 <input
                   name="name"
                   type="text"
@@ -131,7 +131,7 @@ const ContactPage = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">Mesaj</label>
+                <label className="block text-sm font-medium mb-2">Message</label>
                 <textarea
                   name="message"
                   rows="6"
@@ -153,18 +153,18 @@ const ContactPage = () => {
                   w-full shadow-lg
                 "
               >
-                {sending ? "Se trimite..." : "Trimite mesajul"}
+                {sending ? "Sending..." : "Send message"}
               </button>
 
               {status === "success" && (
                 <p className="text-green-600 text-center font-medium">
-                  Mesaj trimis cu succes! 🎉
+                  Message sent successfully! 🎉
                 </p>
               )}
 
               {status === "error" && (
                 <p className="text-red-600 text-center font-medium">
-                  Eroare la trimitere. Încearcă din nou.
+                  Error sending. Try again.
                 </p>
               )}
             </form>
@@ -172,10 +172,10 @@ const ContactPage = () => {
         </div>
       </div>
 
-      {/* DESPRE NOI */}
+      {/* ABOUT US */}
       <section className="w-full py-16 md:py-24 px-4 md:px-6 bg-muted border-t border-border">
         <h2 className="text-3xl md:text-4xl font-bold text-center text-foreground mb-12 md:mb-16">
-          Despre noi
+          About us
         </h2>
 
         <div className="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-12">
@@ -183,38 +183,37 @@ const ContactPage = () => {
           {/* CARD 1 */}
           <div className="bg-card border border-border p-8 md:p-10 rounded-2xl md:rounded-3xl shadow-xl text-center hover:-translate-y-1 hover:shadow-2xl transition">
             <Icon name="Target" size={40} className="mx-auto mb-6 text-primary" />
-            <h3 className="text-xl md:text-2xl font-semibold mb-4">Misiunea noastră</h3>
+            <h3 className="text-xl md:text-2xl font-semibold mb-4">Our Mission</h3>
             <p className="text-muted-foreground leading-relaxed">
-              Să facem tehnologia AI accesibilă tuturor românilor
-              și să transformăm planificarea unei vacanțe într-o experiență rapidă și eficientă.
+              To make AI technology accessible to all and transform vacation planning into
+              a fast and efficient experience.
             </p>
           </div>
 
           {/* CARD 2 */}
           <div className="bg-card border border-border p-8 md:p-10 rounded-2xl md:rounded-3xl shadow-xl text-center hover:-translate-y-1 hover:shadow-2xl transition">
             <Icon name="Compass" size={40} className="mx-auto mb-6 text-primary" />
-            <h3 className="text-xl md:text-2xl font-semibold mb-4">Ce facem?</h3>
+            <h3 className="text-xl md:text-2xl font-semibold mb-4">What we do?</h3>
             <p className="text-muted-foreground leading-relaxed">
-              Oferim recomandări personalizate pentru destinații,
-              zboruri, hoteluri și pachete — toate generate instant de AI.
+              We offer personalized recommendations for destinations,
+              flights, hotels, and packages — all generated instantly by AI.
             </p>
           </div>
 
           {/* CARD 3 */}
           <div className="bg-card border border-border p-8 md:p-10 rounded-2xl md:rounded-3xl shadow-xl text-center hover:-translate-y-1 hover:shadow-2xl transition">
             <Icon name="Handshake" size={40} className="mx-auto mb-6 text-primary" />
-            <h3 className="text-xl md:text-2xl font-semibold mb-4">Valorile noastre</h3>
+            <h3 className="text-xl md:text-2xl font-semibold mb-4">Our Values</h3>
             <p className="text-muted-foreground leading-relaxed">
-              Corectitudine, transparență și neutralitate.
-              Oferim doar recomandări reale — fără reclame mascate.
+              Fairness, transparency, and neutrality.
+              We only offer real recommendations — without hidden ads.
             </p>
           </div>
 
         </div>
       </section>
 
-      {/* FOOTER */}
-      
+      <Footer />
     </div>
   );
 };

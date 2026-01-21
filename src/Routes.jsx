@@ -58,18 +58,18 @@ const Routes = () => {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<Register />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
-          <Route path="/politica-cookie" element={<CookiePolicy />} />
+          <Route path="/cookie-policy" element={<CookiePolicy />} />
           <Route path="/contact" element={<ContactPage />} />
 
-          <Route path="/afiliere-disclosure" element={<AfiliereDisclosure />} />
-          <Route path="/ghiduri/destinatii-2025" element={<GuideDestinatii2025 />} />
-          <Route path="/ghiduri/bilete-ieftine" element={<GuideBileteAvion />} />
-          <Route path="/ghiduri/rezervare-hotel" element={<GuideHoteluri />} />
+          <Route path="/affiliate-disclosure" element={<AfiliereDisclosure />} />
+          <Route path="/guides/destinations-2025" element={<GuideDestinatii2025 />} />
+          <Route path="/guides/cheap-tickets" element={<GuideBileteAvion />} />
+          <Route path="/guides/hotel-booking" element={<GuideHoteluri />} />
 
-          {/* 🔥 Noua pagină de căutare */}
-          <Route path="/cauta-oferte" element={<OffersPage />} />
+          {/* 🔥 New search page */}
+          <Route path="/search-offers" element={<OffersPage />} />
           <Route
-            path="/cauta-oferte/favorite"
+            path="/search-offers/favorites"
             element={
               <ProtectedRoute>
                 <FavoritesPage />
@@ -80,9 +80,9 @@ const Routes = () => {
           <Route path="/checkout-success" element={<CheckoutSuccess />} />
           <Route path="/checkout-cancel" element={<CheckoutCancel />} />
 
-          {/* Legale */}
-          <Route path="/termeni-si-conditii" element={<TermsPage />} />
-          <Route path="/politica-confidentialitate" element={<PrivacyPolicy />} />
+          {/* Legal */}
+          <Route path="/terms-and-conditions" element={<TermsPage />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
 
           {/* Protejate */}
           <Route

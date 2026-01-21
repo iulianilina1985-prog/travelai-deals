@@ -6,26 +6,26 @@ const TrustSignals = () => {
     {
       id: 1,
       icon: 'Shield',
-      title: 'SSL Securizat',
-      description: 'Conexiune criptată 256-bit'
+      title: 'SSL Secured',
+      description: '256-bit encrypted connection'
     },
     {
       id: 2,
       icon: 'Lock',
       title: 'GDPR Compliant',
-      description: 'Protecția datelor UE'
+      description: 'EU Data Protection'
     },
     {
       id: 3,
       icon: 'CheckCircle',
-      title: 'Înregistrat în România',
-      description: 'Companie autorizată ONRC'
+      title: 'Registered Business',
+      description: 'Licensed Company'
     },
     {
       id: 4,
       icon: 'Users',
-      title: '50,000+ Utilizatori',
-      description: 'De încredere în Europa'
+      title: '50,000+ Users',
+      description: 'Trusted in Europe'
     }
   ];
 
@@ -34,10 +34,10 @@ const TrustSignals = () => {
       {/* Main Trust Message */}
       <div className="text-center mb-8">
         <h2 className="text-xl font-semibold text-foreground mb-2">
-          Securitatea ta este prioritatea noastră
+          Your security is our priority
         </h2>
         <p className="text-muted-foreground">
-          Platforma ta de încredere pentru oferte de călătorie în Europa
+          Your trusted platform for travel deals in Europe
         </p>
       </div>
       {/* Trust Badges Grid */}
@@ -67,24 +67,24 @@ const TrustSignals = () => {
           </div>
           <div className="flex-1">
             <h3 className="font-medium text-foreground mb-2">
-              Protecție avansată a datelor
+              Advanced data protection
             </h3>
             <ul className="space-y-1 text-sm text-muted-foreground">
               <li className="flex items-center space-x-2">
                 <Icon name="Check" size={16} className="text-success" />
-                <span>Autentificare cu doi factori disponibilă</span>
+                <span>Two-factor authentication available</span>
               </li>
               <li className="flex items-center space-x-2">
                 <Icon name="Check" size={16} className="text-success" />
-                <span>Monitorizare activitate suspectă 24/7</span>
+                <span>24/7 suspicious activity monitoring</span>
               </li>
               <li className="flex items-center space-x-2">
                 <Icon name="Check" size={16} className="text-success" />
-                <span>Backup automat și recuperare date</span>
+                <span>Automatic backup and data recovery</span>
               </li>
               <li className="flex items-center space-x-2">
                 <Icon name="Check" size={16} className="text-success" />
-                <span>Conformitate completă GDPR și CCPA</span>
+                <span>Full GDPR and CCPA compliance</span>
               </li>
             </ul>
           </div>

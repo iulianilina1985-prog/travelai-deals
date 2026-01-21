@@ -6,7 +6,7 @@ import Button from "../../../components/ui/Button";
 const DealCard = ({ deal, onRemove, onShare, onViewDetails, onToggleSave }) => {
   const formatDate = (dateString) => {
     if (!dateString) return "—";
-    return new Date(dateString).toLocaleDateString("ro-RO", {
+    return new Date(dateString).toLocaleDateString("en-US", {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
@@ -43,7 +43,7 @@ const DealCard = ({ deal, onRemove, onShare, onViewDetails, onToggleSave }) => {
         <div className="absolute top-3 left-3 flex flex-col gap-2">
           {isNew && (
             <span className="bg-success text-success-foreground px-2 py-1 rounded-md text-xs font-medium">
-              Nou
+              New
             </span>
           )}
         </div>
@@ -53,7 +53,7 @@ const DealCard = ({ deal, onRemove, onShare, onViewDetails, onToggleSave }) => {
           <div className="absolute top-3 right-3">
             <span className="bg-destructive text-destructive-foreground px-2 py-1 rounded-md text-xs font-medium flex items-center gap-1">
               <Icon name="Clock" size={12} />
-              {daysLeft} zile
+              {daysLeft} days
             </span>
           </div>
         )}
@@ -116,7 +116,7 @@ const DealCard = ({ deal, onRemove, onShare, onViewDetails, onToggleSave }) => {
 
           <div className="flex items-center gap-2">
             <Icon name="Clock" size={14} />
-            <span>Expiră: {formatDate(deal?.expiry_date)}</span>
+            <span>Expires: {formatDate(deal?.expiry_date)}</span>
           </div>
         </div>
 
@@ -149,7 +149,7 @@ const DealCard = ({ deal, onRemove, onShare, onViewDetails, onToggleSave }) => {
             className="flex-1"
           >
             <Icon name="Eye" size={16} className="mr-2" />
-            Detalii
+            Details
           </Button>
 
           <Button
@@ -161,7 +161,7 @@ const DealCard = ({ deal, onRemove, onShare, onViewDetails, onToggleSave }) => {
             }
           >
             <Icon name="ExternalLink" size={16} className="mr-2" />
-            Vezi oferta
+            View deal
           </Button>
         </div>
       </div>

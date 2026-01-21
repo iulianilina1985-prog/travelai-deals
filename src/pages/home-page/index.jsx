@@ -12,6 +12,8 @@ import HowItWorksSection from "./components/HowItWorksSection";
 import FeaturesSection from "./components/FeaturesSection";
 import TestimonialsSection from "./components/TestimonialsSection";
 import CTASection from "./components/CTASection";
+import ServicesEcosystemSection from "./components/ServicesEcosystemSection";
+
 
 /* ==============================
    🖼️ IMAGINI HERO (LOCALE)
@@ -74,6 +76,7 @@ const HomePage = () => {
         <HowItWorksSection />
         <FeaturesSection />
         <TestimonialsSection />
+        <ServicesEcosystemSection />
         <CTASection onStart={openAuthModal} />
       </main>
 

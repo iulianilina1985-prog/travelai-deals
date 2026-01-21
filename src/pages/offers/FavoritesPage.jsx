@@ -17,7 +17,7 @@ export default function FavoritesPage() {
                 <div>
                     <h1 className="text-3xl font-extrabold text-slate-900">Favorite</h1>
                     <p className="text-slate-600 mt-2">
-                        Ofertele tale salvate din AI Chat și Căutări.
+                        Your saved offers from AI Chat and Searches.
                     </p>
                 </div>
 
@@ -35,7 +35,7 @@ export default function FavoritesPage() {
                         N-ai încă favorite
                     </h3>
                     <p className="text-gray-600">
-                        Salvează o ofertă din AI Chat sau din Caută Oferte pentru a o vedea aici.
+                        Save an offer from AI Chat or from Search Offers to see it here.
                     </p>
                 </div>
             ) : (

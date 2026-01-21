@@ -45,8 +45,8 @@ class ErrorBoundary extends React.Component {
                 Back
               </button>
             </div>
-          </div >
-        </div >
+          </div>
+        </div>
       );
     }
 

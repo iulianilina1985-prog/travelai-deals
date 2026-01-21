@@ -8,20 +8,20 @@ const StatsSection = () => {
 
         <div className="space-y-2">
           <Icon name="Plane" size={40} color="var(--color-primary)" />
-          <h3 className="text-3xl font-bold">+150.000</h3>
-          <p className="text-muted-foreground">Oferte analizate zilnic</p>
+          <h3 className="text-3xl font-bold">+150,000</h3>
+          <p className="text-muted-foreground">Offers analyzed daily</p>
         </div>
 
         <div className="space-y-2">
           <Icon name="Sparkles" size={40} color="var(--color-primary)" />
           <h3 className="text-3xl font-bold">AI-Powered</h3>
-          <p className="text-muted-foreground">Recomandări personalizate</p>
+          <p className="text-muted-foreground">Personalized recommendations</p>
         </div>
 
         <div className="space-y-2">
           <Icon name="Users" size={40} color="var(--color-primary)" />
-          <h3 className="text-3xl font-bold">+20.000</h3>
-          <p className="text-muted-foreground">Utilizatori mulțumiți</p>
+          <h3 className="text-3xl font-bold">+20,000</h3>
+          <p className="text-muted-foreground">Happy users</p>
         </div>
 
       </div>

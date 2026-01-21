@@ -132,9 +132,9 @@ const NotificationSettingsTab = () => {
 
     if (error) {
       console.error(error);
-      alert("❌ Eroare la salvarea preferințelor!");
+      alert("❌ Error saving preferences!");
     } else {
-      alert("✅ Preferințele de notificare au fost salvate cu succes!");
+      alert("✅ Notification preferences saved successfully!");
     }
   };
 
@@ -146,36 +146,36 @@ const NotificationSettingsTab = () => {
       {
         user_id: userId,
         type: "test",
-        title: "🔔 Notificare de test",
+        title: "🔔 Test Notification",
         message:
-          "Aceasta este o notificare demonstrativă. Totul funcționează perfect!",
+          "This is a demonstration notification. Everything is working perfectly!",
         is_read: false,
         created_at: new Date(),
       },
     ]);
 
     await loadStats(userId);
-    alert("✅ Notificare de test trimisă cu succes!");
+    alert("✅ Test notification sent successfully!");
   };
 
   // 🔹 Opțiuni
   const frequencyOptions = [
-    { value: "immediate", label: "Imediat" },
-    { value: "hourly", label: "O dată pe oră" },
-    { value: "daily", label: "Rezumat zilnic" },
-    { value: "weekly", label: "Rezumat săptămânal" },
+    { value: "immediate", label: "Immediately" },
+    { value: "hourly", label: "Once per hour" },
+    { value: "daily", label: "Daily digest" },
+    { value: "weekly", label: "Weekly digest" },
   ];
 
   const timezoneOptions = [
-    { value: "Europe/Bucharest", label: "România (UTC+2)" },
-    { value: "Europe/London", label: "Londra (UTC+0)" },
+    { value: "Europe/Bucharest", label: "Romania (UTC+2)" },
+    { value: "Europe/London", label: "London (UTC+0)" },
     { value: "Europe/Paris", label: "Paris (UTC+1)" },
     { value: "Europe/Berlin", label: "Berlin (UTC+1)" },
-    { value: "Europe/Rome", label: "Roma (UTC+1)" },
+    { value: "Europe/Rome", label: "Rome (UTC+1)" },
   ];
 
   if (loading)
-    return <p className="text-muted-foreground">Se încarcă preferințele...</p>;
+    return <p className="text-muted-foreground">Loading preferences...</p>;
 
   return (
     <div className="space-y-6">
@@ -184,10 +184,10 @@ const NotificationSettingsTab = () => {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h3 className="text-lg font-semibold text-foreground">
-              Setări notificări
+              Notification Settings
             </h3>
             <p className="text-sm text-muted-foreground">
-              Gestionează cum și când primești notificările
+              Manage how and when you receive notifications
             </p>
           </div>
           <div className="flex space-x-3">
@@ -197,7 +197,7 @@ const NotificationSettingsTab = () => {
               iconName="Bell"
               onClick={handleTestNotification}
             >
-              Test notificare
+              Test notification
             </Button>
             <Button
               variant={isEditing ? "outline" : "default"}
@@ -205,7 +205,7 @@ const NotificationSettingsTab = () => {
               iconName={isEditing ? "X" : "Edit"}
               onClick={() => setIsEditing(!isEditing)}
             >
-              {isEditing ? "Renunță" : "Editează"}
+              {isEditing ? "Cancel" : "Edit"}
             </Button>
           </div>
         </div>
@@ -213,13 +213,13 @@ const NotificationSettingsTab = () => {
         {/* --- Email Notifications --- */}
         <Section
           icon="Mail"
-          title="Notificări prin Email"
-          description="Primești alerte și rezumate prin email"
+          title="Email Notifications"
+          description="Receive alerts and digests via email"
         >
           <CheckboxGroup className="space-y-3">
             <Checkbox
-              label="Alerte oferte"
-              description="Când apar oferte noi potrivite preferințelor tale"
+              label="Deal alerts"
+              description="When new deals matching your preferences appear"
               checked={emailSettings.dealAlerts}
               onChange={(e) =>
                 setEmailSettings({
@@ -230,8 +230,8 @@ const NotificationSettingsTab = () => {
               disabled={!isEditing}
             />
             <Checkbox
-              label="Scăderi de preț"
-              description="Când un preț pentru o destinație scade"
+              label="Price drops"
+              description="When a price for a destination drops"
               checked={emailSettings.priceDrops}
               onChange={(e) =>
                 setEmailSettings({
@@ -242,8 +242,8 @@ const NotificationSettingsTab = () => {
               disabled={!isEditing}
             />
             <Checkbox
-              label="Rezumat săptămânal"
-              description="Un rezumat al celor mai bune oferte"
+              label="Weekly digest"
+              description="A summary of the best deals"
               checked={emailSettings.weeklyDigest}
               onChange={(e) =>
                 setEmailSettings({
@@ -254,8 +254,8 @@ const NotificationSettingsTab = () => {
               disabled={!isEditing}
             />
             <Checkbox
-              label="Actualizări sistem"
-              description="Notificări legate de cont sau aplicație"
+              label="System updates"
+              description="Notifications related to account or application"
               checked={emailSettings.systemUpdates}
               onChange={(e) =>
                 setEmailSettings({
@@ -266,8 +266,8 @@ const NotificationSettingsTab = () => {
               disabled={!isEditing}
             />
             <Checkbox
-              label="Emailuri promoționale"
-              description="Promoții și oferte speciale"
+              label="Marketing emails"
+              description="Promotions and special offers"
               checked={emailSettings.marketingEmails}
               onChange={(e) =>
                 setEmailSettings({
@@ -283,12 +283,12 @@ const NotificationSettingsTab = () => {
         {/* --- Push Notifications --- */}
         <Section
           icon="Smartphone"
-          title="Notificări Push"
-          description="Notificări directe pe dispozitiv"
+          title="Push Notifications"
+          description="Direct notifications on your device"
         >
           <CheckboxGroup className="space-y-3">
             <Checkbox
-              label="Alerte imediate"
+              label="Immediate alerts"
               checked={pushSettings.instantDeals}
               onChange={(e) =>
                 setPushSettings({
@@ -310,7 +310,7 @@ const NotificationSettingsTab = () => {
               disabled={!isEditing}
             />
             <Checkbox
-              label="Memento rezervări"
+              label="Booking reminders"
               checked={pushSettings.bookingReminders}
               onChange={(e) =>
                 setPushSettings({
@@ -326,12 +326,12 @@ const NotificationSettingsTab = () => {
         {/* --- Preferences --- */}
         <Section
           icon="Settings"
-          title="Preferințe generale"
-          description="Frecvență și intervale de liniște"
+          title="General preferences"
+          description="Frequency and quiet hours"
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Select
-              label="Frecvența notificărilor"
+              label="Notification frequency"
               options={frequencyOptions}
               value={preferences.frequency}
               onChange={(v) =>
@@ -340,7 +340,7 @@ const NotificationSettingsTab = () => {
               disabled={!isEditing}
             />
             <Select
-              label="Fus orar"
+              label="Timezone"
               options={timezoneOptions}
               value={preferences.timezone}
               onChange={(v) => setPreferences({ ...preferences, timezone: v })}
@@ -352,10 +352,10 @@ const NotificationSettingsTab = () => {
         {isEditing && (
           <div className="flex justify-end mt-6 space-x-3">
             <Button variant="outline" onClick={() => setIsEditing(false)}>
-              Renunță
+              Cancel
             </Button>
             <Button onClick={handleSaveSettings} iconName="Save">
-              Salvează
+              Save
             </Button>
           </div>
         )}
@@ -364,13 +364,13 @@ const NotificationSettingsTab = () => {
       {/* --- Statistici notificări --- */}
       <div className="bg-card border border-border rounded-lg p-6">
         <h3 className="text-lg font-semibold text-foreground mb-6">
-          Statistici notificări
+          Notification Statistics
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <StatBox label="Săptămâna aceasta" value={stats.weekly} color="primary" />
-          <StatBox label="Alerte oferte" value={stats.deals} color="success" />
-          <StatBox label="Scăderi preț" value={stats.drops} color="warning" />
-          <StatBox label="Rezervări" value={stats.bookings} color="accent" />
+          <StatBox label="This week" value={stats.weekly} color="primary" />
+          <StatBox label="Deal alerts" value={stats.deals} color="success" />
+          <StatBox label="Price drops" value={stats.drops} color="warning" />
+          <StatBox label="Bookings" value={stats.bookings} color="accent" />
         </div>
       </div>
     </div>

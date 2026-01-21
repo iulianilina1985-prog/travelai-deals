@@ -72,7 +72,7 @@ const OfferCard = ({ offer, mode = "live", onViewDetails }) => {
        FLIGHT META
     ========================= */
     const formattedDate = departDate
-        ? new Date(departDate).toLocaleDateString("ro-RO", {
+        ? new Date(departDate).toLocaleDateString("en-US", {
             day: "2-digit",
             month: "short",
         })
@@ -80,7 +80,7 @@ const OfferCard = ({ offer, mode = "live", onViewDetails }) => {
 
     const flightSubtitle =
         price != null
-            ? `De la €${price} • ${transfers === 0 ? "Direct" : `${transfers} escale`
+            ? `From €${price} • ${transfers === 0 ? "Direct" : `${transfers} stops`
             }${formattedDate ? ` • ${formattedDate}` : ""}`
             : null;
 
@@ -96,7 +96,7 @@ const OfferCard = ({ offer, mode = "live", onViewDetails }) => {
 
     const handleCTA = () => {
         if (!cfg.allowClick) {
-            alert("Acesta este un exemplu demonstrativ.");
+            alert("This is a demonstrative example.");
             return;
         }
 
@@ -140,7 +140,7 @@ const OfferCard = ({ offer, mode = "live", onViewDetails }) => {
                             ? "bg-rose-500 text-white"
                             : "bg-white/80 text-gray-600 hover:bg-white"
                             }`}
-                        title={isFavorite ? "Șterge din favorite" : "Adaugă la favorite"}
+                        title={isFavorite ? "Remove from favorites" : "Add to favorites"}
                     >
                         <Icon
                             name="Heart"
@@ -181,7 +181,7 @@ const OfferCard = ({ offer, mode = "live", onViewDetails }) => {
 
                 {/* CTA */}
                 <Button fullWidth iconName="ExternalLink" iconPosition="right" onClick={handleCTA}>
-                    {price != null ? `Vezi oferta €${price}` : offer.cta?.label || "Vezi oferta"}
+                    {price != null ? `See offer €${price}` : offer.cta?.label || "See offer"}
                 </Button>
 
 
@@ -190,7 +190,7 @@ const OfferCard = ({ offer, mode = "live", onViewDetails }) => {
                         onClick={() => onViewDetails(offer)}
                         className="w-full mt-2 text-sm text-primary hover:underline"
                     >
-                        Vezi detalii
+                        See details
                     </button>
                 )}
             </div>

@@ -26,10 +26,10 @@ const EmailVerificationNotice = ({ email, onResendVerification, onBackToForm }) 
     try {
       await onResendVerification(safeEmail);
       setResendCooldown(60);
-      alert("Emailul de verificare a fost retrimis cu succes!");
+      alert("Verification email resent successfully!");
     } catch (error) {
-      console.error("Eroare la retrimiterea emailului de verificare:", error);
-      alert("A apărut o eroare. Te rugăm să încerci din nou.");
+      console.error("Error resending verification email:", error);
+      alert("An error occurred. Please try again.");
     } finally {
       setResendLoading(false);
     }
@@ -38,24 +38,24 @@ const EmailVerificationNotice = ({ email, onResendVerification, onBackToForm }) 
   const steps = [
     {
       number: 1,
-      title: "Verifică-ți emailul",
-      description: `Ți-am trimis un link de confirmare la adresa ${safeEmail}.`
+      title: "Check your email",
+      description: `We've sent a confirmation link to ${safeEmail}.`
     },
     {
       number: 2,
-      title: "Accesează linkul de verificare",
-      description: "Deschide emailul și apasă linkul de confirmare pentru a-ți activa contul."
+      title: "Access the verification link",
+      description: "Open the email and click the confirmation link to activate your account."
     },
     {
       number: 3,
-      title: "Începe explorarea ofertelor",
-      description: "După confirmare, te poți autentifica și folosi TravelAI Deals."
+      title: "Start exploring deals",
+      description: "After confirmation, you can log in and use TravelAI Deals."
     }
   ];
 
   return (
     <div className="max-w-md mx-auto text-center space-y-8">
-      {/* Icon succes */}
+      {/* Icon success */}
       <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto shadow-sm">
         <Icon name="Mail" size={42} className="text-green-600" />
       </div>
@@ -63,10 +63,10 @@ const EmailVerificationNotice = ({ email, onResendVerification, onBackToForm }) 
       {/* Mesaj principal */}
       <div className="space-y-2">
         <h2 className="text-2xl font-bold text-foreground">
-          Verifică-ți adresa de email
+          Verify your email address
         </h2>
         <p className="text-muted-foreground">
-          Ți-am trimis un email de confirmare. Urmează instrucțiunile pentru a activa contul.
+          We've sent you a confirmation email. Follow the instructions to activate your account.
         </p>
       </div>
 
@@ -83,7 +83,7 @@ const EmailVerificationNotice = ({ email, onResendVerification, onBackToForm }) 
       {/* Pașii următori */}
       <div className="space-y-4 text-left">
         <h3 className="text-lg font-semibold text-center text-foreground">
-          Următorii pași
+          Next steps
         </h3>
 
         {steps.map((step) => (
@@ -102,7 +102,7 @@ const EmailVerificationNotice = ({ email, onResendVerification, onBackToForm }) 
       {/* Retrimitere email */}
       <div className="space-y-3">
         <p className="text-sm text-muted-foreground">
-          Nu ai primit emailul? Verifică și folderul Spam sau cere retrimiterea.
+          Didn't receive the email? Check your Spam folder or request a resend.
         </p>
 
         <Button
@@ -115,8 +115,8 @@ const EmailVerificationNotice = ({ email, onResendVerification, onBackToForm }) 
           fullWidth
         >
           {resendCooldown > 0
-            ? `Retrimite în ${resendCooldown}s`
-            : "Retrimite emailul de verificare"}
+            ? `Resend in ${resendCooldown}s`
+            : "Resend verification email"}
         </Button>
       </div>
 
@@ -125,15 +125,15 @@ const EmailVerificationNotice = ({ email, onResendVerification, onBackToForm }) 
         <div className="flex items-center space-x-2">
           <Icon name="HelpCircle" size={16} className="text-muted-foreground" />
           <span className="text-sm font-medium text-foreground">
-            Ai nevoie de ajutor?
+            Need help?
           </span>
         </div>
 
         <div className="space-y-2 text-xs text-muted-foreground">
-          <p>• Verifică folderul Spam sau Junk</p>
-          <p>• Asigură-te că adresa este corectă</p>
-          <p>• Linkul expiră în 24 de ore</p>
-          <p>• Contactează suportul dacă problema persistă</p>
+          <p>• Check Spam or Junk folder</p>
+          <p>• Ensure address is correct</p>
+          <p>• Link expires in 24 hours</p>
+          <p>• Contact support if problem persists</p>
         </div>
 
         <div className="flex items-center justify-center space-x-4 pt-2">
@@ -141,7 +141,7 @@ const EmailVerificationNotice = ({ email, onResendVerification, onBackToForm }) 
             href="mailto:support@travelaideals.ro"
             className="text-primary hover:underline text-xs"
           >
-            Contact suport
+            Contact support
           </a>
 
           <span className="text-muted-foreground">•</span>
@@ -150,7 +150,7 @@ const EmailVerificationNotice = ({ email, onResendVerification, onBackToForm }) 
             onClick={onBackToForm}
             className="text-primary hover:underline text-xs"
           >
-            Schimbă adresa de email
+            Change email address
           </button>
         </div>
       </div>
@@ -160,7 +160,7 @@ const EmailVerificationNotice = ({ email, onResendVerification, onBackToForm }) 
         <div className="flex items-start space-x-2">
           <Icon name="Shield" size={14} className="text-muted-foreground" />
           <p className="text-xs text-muted-foreground">
-            Pentru siguranța ta, linkul de verificare expiră în 24 de ore.
+            For your security, the verification link expires in 24 hours.
           </p>
         </div>
       </div>

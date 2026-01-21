@@ -17,7 +17,7 @@ const OffersList = ({
     return (
       <div className="mt-16 text-center py-12">
         <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
-        <p className="mt-4 text-gray-600">Căutăm cele mai bune oferte...</p>
+        <p className="mt-4 text-gray-600">Looking for the best offers...</p>
       </div>
     );
   }
@@ -27,10 +27,10 @@ const OffersList = ({
       <div className="mt-16 text-center py-12">
         <div className="text-6xl mb-4">🔍</div>
         <h3 className="text-xl font-semibold text-gray-900 mb-2">
-          Nu am găsit oferte
+          No offers found
         </h3>
         <p className="text-gray-600">
-          Încearcă să modifici criteriile de căutare sau o altă destinație.
+          Try modifying the search criteria or another destination.
         </p>
       </div>
     );
@@ -41,16 +41,16 @@ const OffersList = ({
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold">
           {isMock
-            ? "Exemple de oferte"
+            ? "Offer examples"
             : context === "favorites"
-              ? "Ofertele tale favorite"
-              : "Rezultate căutare"}
+              ? "Your favorite offers"
+              : "Search results"}
         </h2>
 
         {!isMock && (
           <span className="text-sm text-gray-600">
             {safeOffers.length}{" "}
-            {safeOffers.length === 1 ? "rezultat" : "rezultate"}
+            {safeOffers.length === 1 ? "result" : "results"}
           </span>
         )}
       </div>
@@ -68,8 +68,8 @@ const OffersList = ({
       {isMock && (
         <div className="mt-8 p-6 bg-blue-50 rounded-xl border border-blue-100">
           <p className="text-sm text-blue-900">
-            <strong>💡 Sfat:</strong> Acestea sunt exemple demonstrative.
-            Folosește formularul de căutare de mai sus pentru a vedea oferte reale.
+            <strong>💡 Tip:</strong> These are demonstrative examples.
+            Use the search form above to see real offers.
           </p>
         </div>
       )}
