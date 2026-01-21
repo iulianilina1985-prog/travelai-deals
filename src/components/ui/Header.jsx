@@ -144,14 +144,28 @@ const Header = () => {
                 to="/user-profile"
                 onClick={closeMobileMenu}
                 className={`flex items-center space-x-3 px-4 py-3 rounded-lg ${isActivePath("/user-profile")
-                    ? "bg-primary text-primary-foreground"
-                    : "hover:bg-muted"
+                  ? "bg-primary text-primary-foreground"
+                  : "hover:bg-muted"
                   }`}
               >
                 <Icon name="User" size={20} />
                 <span>Profil</span>
               </Link>
             )}
+            {userProfile?.roles?.includes("admin") && (
+              <Link
+                to="/admin-dashboard"
+                onClick={closeMobileMenu}
+                className={`flex items-center space-x-3 px-4 py-3 rounded-lg ${isActivePath("/admin-dashboard")
+                    ? "bg-primary text-primary-foreground"
+                    : "hover:bg-muted"
+                  }`}
+              >
+                <Icon name="Shield" size={20} />
+                <span>Panou Admin</span>
+              </Link>
+            )}
+
 
 
             {isAuthenticated ? (
