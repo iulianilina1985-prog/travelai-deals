@@ -68,13 +68,16 @@ const PartnersSection = () => {
                 alt={p.name}
                 loading="lazy"
                 className="
-                  h-14
-                  sm:h-16
-                  md:h-20
-                  lg:h-24
-                  object-contain
-                "
+                    h-20
+                    sm:h-24
+                    md:h-28
+                    lg:h-32
+                    object-contain
+                    transition
+                    duration-300
+                  "
               />
+
             </a>
           ))}
         </div>

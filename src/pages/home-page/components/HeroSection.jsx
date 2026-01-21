@@ -2,19 +2,17 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Icon from "../../../components/AppIcon";
 
-/* 🔥 IMAGINI LOCALE – NU CONTEAZĂ NUMELE */
+/* 🔥 IMAGINI HERO (locale) */
 const HERO_IMAGES = [
-  //"/assets/hero/pexels-aleksandar-11487629.jpg",
-  //"/assets/hero/pexels-alfie-sta-825870-5943231.jpg",
   "/assets/hero/pexels-asadphoto-1320679.jpg",
   "/assets/hero/pexels-asadphoto-1449767.jpg",
   "/assets/hero/pexels-asadphoto-3601426.jpg",
   "/assets/hero/pexels-asadphoto-9482128.jpg",
-  //"/assets/hero/pexels-bianca-jelz-niac-3871365-9330289.jpg",
   "/assets/hero/pexels-efrem-efre-2786187-31238615.jpg",
   "/assets/hero/pexels-greta-soave-7237647.jpg",
 ];
 
+/* 📝 TEXTE HERO */
 const HERO_TEXTS = [
   {
     title: "Descoperă cele mai bune oferte de călătorie cu",
@@ -36,41 +34,53 @@ const HERO_TEXTS = [
   },
 ];
 
+const ROTATE_EVERY_MS = 9000;
+
 const HeroSection = () => {
   const navigate = useNavigate();
-  const [index, setIndex] = useState(0);
 
-  /* 🔄 ROTIRE IMAGINI – FĂRĂ FLICKER */
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isLoaded, setIsLoaded] = useState(true);
+
+  /* 🔁 ROTIRE IMAGINI CU PRELOAD */
   useEffect(() => {
     const interval = setInterval(() => {
-      setIndex((prev) => (prev + 1) % HERO_IMAGES.length);
-    }, 9000);
+      const nextIndex = (currentIndex + 1) % HERO_IMAGES.length;
+      setIsLoaded(false);
+
+      const img = new Image();
+      img.src = HERO_IMAGES[nextIndex];
+      img.onload = () => {
+        setCurrentIndex(nextIndex);
+        setIsLoaded(true);
+      };
+    }, ROTATE_EVERY_MS);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [currentIndex]);
 
-  const image = HERO_IMAGES[index];
-  const text = HERO_TEXTS[index % HERO_TEXTS.length];
+  const text = HERO_TEXTS[currentIndex % HERO_TEXTS.length];
 
   return (
     <section className="relative h-[85vh] overflow-hidden">
-      {/* 🔥 BACKGROUND REAL – FĂRĂ <img> */}
-      <div
-        className="absolute inset-0 transition-opacity duration-1000"
-        style={{
-          backgroundImage: `url(${image})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      />
+      {/* 🌅 BACKGROUND – fără flicker */}
+      <div className="absolute inset-0">
+        <div
+          className="absolute inset-0 transition-opacity duration-1000 ease-in-out"
+          style={{
+            backgroundImage: `url(${HERO_IMAGES[currentIndex]})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            opacity: isLoaded ? 1 : 0,
+          }}
+        />
+        <div className="absolute inset-0 bg-black/45" />
+      </div>
 
-      {/* OVERLAY – CONTRAST */}
-      <div className="absolute inset-0 bg-black/45" />
-
-      {/* CONTENT */}
+      {/* 🧠 CONTENT */}
       <div className="relative z-10 h-full flex items-center justify-center text-center px-6">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-4">
+          <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-4 leading-tight">
             {text.title}
           </h1>
 
@@ -78,7 +88,7 @@ const HeroSection = () => {
             <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
               <Icon name="Plane" size={24} color="white" />
             </div>
-            <span className="text-5xl font-bold text-white">
+            <span className="text-4xl md:text-5xl font-bold text-white">
               {text.highlight}
             </span>
           </div>
@@ -87,8 +97,8 @@ const HeroSection = () => {
             {text.subtitle}
           </p>
 
+          {/* CTA */}
           <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
-            {/* CTA principal */}
             <button
               onClick={() => navigate("/cauta-oferte")}
               className="w-full sm:w-auto px-8 py-3 bg-white text-black rounded-lg text-lg font-semibold hover:bg-gray-200 shadow-md"
@@ -96,24 +106,22 @@ const HeroSection = () => {
               Caută oferte
             </button>
 
-            {/* CTA secundar (mobil = outline, desktop = solid) */}
             <button
               onClick={() => navigate("/ai-chat-interface")}
               className="
-      w-full sm:w-auto
-      px-8 py-3 rounded-lg text-lg font-semibold
-      flex items-center justify-center gap-2
-      shadow-md transition-all
-      border border-white/70 text-white bg-white/10
-      hover:bg-white/15
-      sm:border-0 sm:bg-indigo-600 sm:hover:bg-indigo-700
-    "
+                w-full sm:w-auto
+                px-8 py-3 rounded-lg text-lg font-semibold
+                flex items-center justify-center gap-2
+                shadow-md transition-all
+                border border-white/70 text-white bg-white/10
+                hover:bg-white/15
+                sm:border-0 sm:bg-indigo-600 sm:hover:bg-indigo-700
+              "
             >
               <Icon name="MessageCircle" size={18} />
               Chat AI
             </button>
           </div>
-
         </div>
       </div>
     </section>
