@@ -105,9 +105,17 @@ export const AuthProvider = ({ children }) => {
     let ignore = false;
 
     const init = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      let { data: { session } } = await supabase.auth.getSession();
+
+      // 🔑 PWA FIX: try refresh if session expired
+      if (!session) {
+        const refreshed = await supabase.auth.refreshSession();
+        session = refreshed.data?.session || null;
+      }
+
       if (!ignore) await handleAuthChange("INITIAL_LOAD", session);
     };
+
 
     init();
 
