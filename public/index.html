@@ -1,43 +1,45 @@
 <!DOCTYPE html>
-<html lang="ro">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<html lang="en">
 
-    <!-- 🔥 Previne caching agresiv pe mobil / PWA -->
-    <meta http-equiv="Cache-Control" content="no-store" />
-    <meta http-equiv="Pragma" content="no-cache" />
-    <meta http-equiv="Expires" content="0" />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- PWA theme -->
-    <meta name="theme-color" content="#0ea5e9" />
-    <link rel="manifest" href="/manifest.json" />
+  <!-- PWA -->
+  <meta name="theme-color" content="#0ea5e9" />
+  <link rel="manifest" href="/manifest.json" />
 
-    <title>TravelAI Deals</title>
-  </head>
+  <title>TravelAI Deals</title>
+</head>
 
-  <body>
-    <div id="root"></div>
+<body>
+  <div id="root"></div>
 
-    <!-- React app -->
-    <script type="module" src="/src/main.tsx"></script>
+  <!-- React app entry -->
+  <script type="module" src="/src/main.tsx"></script>
 
-    <!-- PWA + Service Worker -->
-    <script>
-      if ("serviceWorker" in navigator) {
-        window.addEventListener("load", () => {
-          navigator.serviceWorker
-            .register("/service-worker.js", { updateViaCache: "none" })
-            .then((reg) => {
-              // 🔥 Forțăm update imediat
-              reg.update();
-              console.log("✅ Service Worker înregistrat și actualizat");
-            })
-            .catch((err) =>
-              console.error("❌ Eroare Service Worker:", err)
-            );
-        });
-      }
-    </script>
-  </body>
+  <!-- Service Worker registration -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      console.log("✅ Service Worker supported");
+
+      window.addEventListener("load", () => {
+        console.log("🔄 Registering Service Worker...");
+
+        navigator.serviceWorker
+          .register("/service-worker.js", { scope: "/" })
+          .then((registration) => {
+            console.log("✅ Service Worker registered:", registration);
+
+            // Optional: force update check
+            registration.update();
+          })
+          .catch((error) => {
+            console.error("❌ Service Worker registration failed:", error);
+          });
+      });
+    }
+  </script>
+</body>
+
 </html>
