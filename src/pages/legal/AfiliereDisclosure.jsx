@@ -122,7 +122,7 @@ const AfiliereDisclosure = () => {
           </section>
         </div>
       </div>
-      <Footer />
+
     </div>
   );
 };

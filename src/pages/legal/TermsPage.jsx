@@ -208,7 +208,7 @@ const TermsPage = () => {
           </div>
         </div>
       </div>
-      <Footer />
+
     </div>
   );
 };

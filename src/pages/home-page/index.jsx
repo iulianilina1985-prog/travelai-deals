@@ -80,7 +80,7 @@ const HomePage = () => {
         <CTASection onStart={openAuthModal} />
       </main>
 
-      <Footer />
+
 
       {/* AUTH MODAL */}
       {showAuthModal && <AuthModal onClose={closeAuthModal} />}
