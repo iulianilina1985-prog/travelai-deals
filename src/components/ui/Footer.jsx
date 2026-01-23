@@ -39,8 +39,8 @@ const Footer = () => {
 
         {/* 🔹 Affiliate disclosure legal text (mandatory) */}
         <p className="text-xs text-muted-foreground max-w-3xl mx-auto leading-relaxed px-4">
-          TravelAI Deals uses affiliate links to partners such as Booking.com,
-          Klook, Trip.com, Momondo and others. We may receive a commission if you make
+          TravelAI Deals uses affiliate links to partners such as Economy Bookings,
+          Klook, Kiwi.com, Aviasales and others. We may receive a commission if you make
           a reservation through the links displayed, at no additional cost to you.
         </p>
 

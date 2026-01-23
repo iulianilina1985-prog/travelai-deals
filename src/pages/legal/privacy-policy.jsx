@@ -207,8 +207,8 @@ const PrivacyPolicy = () => {
 
               <p className="text-muted-foreground">
                 For any question related to your personal data, you can write to us at:{" "}
-                <a href="mailto:contact@travelai.ro" className="text-primary underline">
-                  contact@travelai.ro
+                <a href="mailto:office@globallinknet.ro" className="text-primary underline">
+                  office@globallinknet.ro
                 </a>
               </p>
             </section>

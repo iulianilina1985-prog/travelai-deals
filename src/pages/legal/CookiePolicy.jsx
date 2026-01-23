@@ -143,8 +143,8 @@ const CookiePolicy = () => {
             <p className="text-muted-foreground">
               For any questions about cookies, you can contact us at:
               <br />
-              <a href="mailto:contact@travelai.ro" className="text-primary underline">
-                contact@travelai.ro
+              <a href="mailto:office@globallinknet.ro" className="text-primary underline">
+                office@globallinknet.ro
               </a>
             </p>
           </section>

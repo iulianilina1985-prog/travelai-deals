@@ -97,9 +97,9 @@ const AfiliereDisclosure = () => {
             </h2>
 
             <ul className="space-y-2 ml-6 text-muted-foreground list-disc leading-relaxed text-sm md:text-base">
-              <li>Booking.com – hotels and accommodation</li>
+              <li>Economy Bookings – hotels and accommodation</li>
               <li>Klook – activities & tickets</li>
-              <li>Momondo / Aviasales – flights</li>
+              <li>Aviasales – flights</li>
               <li>Trip.com – flights & hotels</li>
               <li>Global partners in the travel industry</li>
             </ul>

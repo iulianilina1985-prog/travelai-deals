@@ -199,8 +199,8 @@ const TermsPage = () => {
 
               <p className="text-muted-foreground">
                 For clarifications you can write to us at:{" "}
-                <a href="mailto:contact@travelai.ro" className="text-primary underline">
-                  contact@travelai.ro
+                <a href="mailto:office@globallinknet.ro" className="text-primary underline">
+                  office@globallinknet.ro
                 </a>
               </p>
             </section>

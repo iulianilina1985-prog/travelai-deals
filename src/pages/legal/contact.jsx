@@ -83,8 +83,8 @@ const ContactPage = () => {
 
             <p>
               <strong>Email:</strong><br />
-              <a href="mailto:contact@travelai.ro" className="text-primary underline">
-                contact@travelai.ro
+              <a href="mailto:office@globallinknet.ro" className="text-primary underline">
+                office@globallinknet.ro
               </a>
             </p>
 
