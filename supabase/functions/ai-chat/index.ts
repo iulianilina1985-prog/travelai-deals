@@ -333,6 +333,21 @@ IMPORTANT: Spune-i utilizatorului că nu ai găsit un preț instant, dar poate v
         }
       }
 
+      // 4. HOTELURI
+      else if (lowerPrompt.includes("hotel") || lowerPrompt.includes("cazare") || lowerPrompt.includes("pensiun")) {
+        const cities = ["paris", "roma", "londra", "barcelona", "dubai", "tokyo", "amsterdam", "bucuresti"];
+        const foundCity = cities.find(c => lowerPrompt.includes(c));
+
+        if (foundCity) {
+          const capitalized = foundCity.charAt(0).toUpperCase() + foundCity.slice(1);
+          replyText = `Am găsit câteva opțiuni de cazare superbe în ${capitalized}. 🏨`;
+          intent = { type: "hotel", to: capitalized };
+          cards = getAIProvidersByCategory("hotel").map(p => buildGenericCard(p, intent));
+        } else {
+          replyText = "Te pot ajuta să găsești cea mai bună cazare! În ce oraș vrei să stai? 🏨";
+        }
+      }
+
       // 4. ZBORURI (Pseudo-AI fallback)
       else if (flightIntent) {
         replyText = `Am găsit zborul tău către ${flightIntent.to_city}! ${flightIntent.price ? `Prețul este de la ${flightIntent.price}€.` : "Poți vedea prețurile actualizate pe link."}`;

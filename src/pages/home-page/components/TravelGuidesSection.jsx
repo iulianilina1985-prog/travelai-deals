@@ -128,12 +128,27 @@ const TravelGuidesSection = () => {
           Travel Guides and Tips
         </h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+        <div
+          className="
+            flex gap-4 overflow-x-auto pb-4
+            snap-x snap-mandatory
+            sm:grid sm:overflow-visible sm:pb-0
+            sm:grid-cols-2 lg:grid-cols-3
+          "
+        >
           {visibleGuides.map((g) => (
             <article
               key={g.title}
-              className="bg-white rounded-xl shadow-sm hover:shadow-lg transition p-5 border border-gray-100"
+              className="
+                min-w-[85%] snap-start
+                sm:min-w-0
+                bg-white rounded-xl
+                shadow-sm hover:shadow-lg
+                transition p-5
+                border border-gray-100
+              "
             >
+
               <img
                 src={g.image}
                 alt={g.title}

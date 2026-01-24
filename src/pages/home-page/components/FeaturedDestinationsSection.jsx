@@ -81,11 +81,24 @@ const FeaturedDestinationsSection = () => {
         </div>
 
         {/* Grid */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div
+          className="
+            flex gap-4 overflow-x-auto pb-4
+            snap-x snap-mandatory
+            md:grid md:overflow-visible md:pb-0
+            md:grid-cols-2 lg:grid-cols-3
+          "
+        >
           {visibleDestinations.map((dest) => (
             <article
               key={dest.name}
-              className="rounded-xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition"
+              className="
+                min-w-[85%] snap-start
+                md:min-w-0
+                rounded-xl border border-gray-100
+                bg-white shadow-sm
+                hover:shadow-md transition
+              "
             >
               <img
                 src={dest.image}

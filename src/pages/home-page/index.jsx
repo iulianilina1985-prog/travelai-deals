@@ -3,6 +3,7 @@ import Header from "../../components/ui/Header";
 import Footer from "../../components/ui/Footer";
 import AuthModal from "../../components/AuthModal";
 
+
 import HeroSection from "./components/HeroSection";
 import PartnersSection from "./components/PartnersSection";
 import FeaturedDestinationsSection from "./components/FeaturedDestinationsSection";
@@ -39,6 +40,8 @@ const dayOfYear = Math.floor(
 
 const heroBackground =
   HERO_IMAGES[dayOfYear % HERO_IMAGES.length];
+
+
 
 /* ==============================
    🏠 HOMEPAGE

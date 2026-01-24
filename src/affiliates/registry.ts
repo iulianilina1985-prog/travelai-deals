@@ -13,6 +13,7 @@ export type AffiliateCategory =
     | "food"
     | "tours"
     | "transport"
+    | "hotels"
     | "other";
 
 export type AffiliateProvider = {
@@ -339,6 +340,76 @@ export const AFFILIATES: Record<string, AffiliateProvider> = {
         ctaLabel: "See partners",
         buildLink: () => "https://tpx.lt/IDhRRzm4",
     },
+    /* ===============================
+   SECURITY / VPN
+   =============================== */
+    nordvpn: {
+        id: "nordvpn",
+        name: "NordVPN",
+        category: "other",
+        brandColor: "#1e3a8a",
+        description: "Secure your connection on public Wi-Fi. Fast, private and trusted VPN worldwide.",
+        ctaLabel: "Get NordVPN",
+        image_url: "/assets/partners/nordvpn.png",
+        buildLink: () => "https://nordvpn.tpx.lt/fMXVJDLP",
+    },
+
+    /* ===============================
+       TICKETS / EVENTS
+       =============================== */
+    ticketnetwork: {
+        id: "ticketnetwork",
+        name: "TicketNetwork",
+        category: "tickets",
+        brandColor: "#dc2626",
+        description: "Concerts, sports and live events tickets worldwide.",
+        ctaLabel: "Find tickets",
+        image_url: "/assets/partners/ticketnetwork.png",
+        buildLink: () => "https://ticketnetwork.tpx.lt/SaFYyatP",
+    },
+
+    /* ===============================
+       LUGGAGE STORAGE
+       =============================== */
+    radicalstorage: {
+        id: "radicalstorage",
+        name: "Radical Storage",
+        category: "other",
+        brandColor: "#7c3aed",
+        description: "Luggage storage in cities worldwide. Travel hands-free.",
+        ctaLabel: "Find storage",
+        image_url: "/assets/partners/radicalstorage.png",
+        buildLink: () => "https://radicalstorage.tpx.lt/r6asFMUc",
+    },
+
+    /* ===============================
+       CAR RENTALS
+       =============================== */
+    getrentacar: {
+        id: "getrentacar",
+        name: "GetRentacar",
+        category: "cars",
+        brandColor: "#2563eb",
+        description: "Car rentals worldwide with flexible terms and local providers.",
+        ctaLabel: "Rent a car",
+        image_url: "/assets/partners/getrentacar.png",
+        buildLink: () => "https://getrentacar.tpx.lt/PIUF6hCw",
+    },
+
+    /* ===============================
+       HOTELS
+       =============================== */
+    agoda: {
+        id: "agoda",
+        name: "Agoda",
+        category: "hotels",
+        brandColor: "#2563eb",
+        description: "Hotels, apartments and accommodations worldwide at competitive prices.",
+        ctaLabel: "See hotels",
+        image_url: "/assets/partners/agoda.png",
+        buildLink: () => "https://agoda.tpx.lt/N1Zka1JT",
+    },
+
 };
 
 export const getProvidersByCategory = (category: AffiliateCategory): AffiliateProvider[] => {
@@ -354,7 +425,7 @@ export const getAIProvidersByCategory = (aiCategory: string): AffiliateProvider[
         "transfer": ["transfers"],
         "esim": ["esim"],
         "compensation": ["compensation"],
-        "hotel": ["other"] // Booking is hardcoded for now or we can add it later
+        "hotel": ["hotels"]
     };
 
     const categories = mapping[aiCategory] || [];

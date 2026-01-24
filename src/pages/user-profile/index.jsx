@@ -7,9 +7,10 @@ import { supabase } from "../../lib/supabase";
 import PersonalInfoTab from "./components/PersonalInfoTab";
 import TravelPreferencesTab from "./components/TravelPreferencesTab";
 import SubscriptionTab from "./components/SubscriptionTab";
-import NotificationSettingsTab from "./components/NotificationSettingsTab";
+
 import DataPrivacyTab from "./components/DataPrivacyTab";
 import LanguageCurrencyTab from "./components/LanguageCurrencyTab";
+
 
 const UserProfile = () => {
   const [activeTab, setActiveTab] = useState(
@@ -66,7 +67,7 @@ const UserProfile = () => {
   const tabs = [
     { id: "personal", label: "Personal Information", icon: "User", component: PersonalInfoTab },
 
-    { id: "notifications", label: "Notifications", icon: "Bell", component: NotificationSettingsTab },
+
     { id: "privacy", label: "Privacy", icon: "Shield", component: DataPrivacyTab },
 
   ];
@@ -88,6 +89,9 @@ const UserProfile = () => {
       <Header />
 
       <div className="pt-16 px-4 sm:px-6 lg:px-8 py-8">
+        {/* Testers */}
+
+
         {/* Profil */}
         <div className="bg-card border border-border rounded-lg p-6 mb-8">
           {loading ? (

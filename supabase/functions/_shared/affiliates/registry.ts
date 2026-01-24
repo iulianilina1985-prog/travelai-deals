@@ -1,4 +1,4 @@
-// supabase/functions/_shared/affiliates/registry.ts
+// src/affiliates/registry.ts
 // Single source of truth for all affiliate providers
 
 export type AffiliateCategory =
@@ -13,6 +13,7 @@ export type AffiliateCategory =
     | "food"
     | "tours"
     | "transport"
+    | "hotels"
     | "other";
 
 export type AffiliateProvider = {
@@ -36,10 +37,9 @@ export const AFFILIATES: Record<string, AffiliateProvider> = {
         name: "Compensair",
         category: "compensation",
         brandColor: "#2563eb",
-        description:
-            "Claim compensation for delayed or cancelled flights. Check your eligibility for free.",
-        ctaLabel: "Claim compensation",
-        image_url: "/assets/images/no_image.png",
+        description: "Get compensation for delayed or cancelled flights. Check eligibility for free.",
+        ctaLabel: "Request compensation",
+        image_url: "/assets/partners/Compensair.png",
         buildLink: () => "https://compensair.tpx.lt/U5isYCUu",
     },
 
@@ -48,10 +48,9 @@ export const AFFILIATES: Record<string, AffiliateProvider> = {
         name: "AirHelp",
         category: "compensation",
         brandColor: "#0f172a",
-        description:
-            "Global leader in air passenger rights. Get your money back for disrupted flights.",
+        description: "World leader in air passenger rights. Recover your money for flight issues.",
         ctaLabel: "Check flight",
-        image_url: "/assets/images/no_image.png",
+        image_url: "/assets/partners/airhelp.png",
         buildLink: () => "https://airhelp.tpx.lt/8Vc3jzeS",
     },
 
@@ -64,10 +63,9 @@ export const AFFILIATES: Record<string, AffiliateProvider> = {
         name: "KiwiTaxi",
         category: "transfers",
         brandColor: "#00a650",
-        description:
-            "Private airport transfers to your hotel. Professional drivers and fixed prices.",
+        description: "Private airport-to-hotel transfers. Professional drivers and fixed prices.",
         ctaLabel: "Book taxi",
-        image_url: "/assets/images/car-default.jpg",
+        image_url: "/assets/partners/kiwi.png",
         buildLink: () => "https://kiwitaxi.tpx.lt/UkO0mEQp",
     },
 
@@ -76,10 +74,9 @@ export const AFFILIATES: Record<string, AffiliateProvider> = {
         name: "GetTransfer",
         category: "transfers",
         brandColor: "#2563eb",
-        description:
-            "The world’s largest transfer marketplace. Choose the best offer for your trip.",
-        ctaLabel: "View offers",
-        image_url: "/assets/images/car-default.jpg",
+        description: "The largest transfer platform in the world. Choose the right offer for you.",
+        ctaLabel: "See offers",
+        image_url: "/assets/partners/get-transfer.png",
         buildLink: () => "https://gettransfer.tpx.lt/rn63Ywr6",
     },
 
@@ -88,10 +85,9 @@ export const AFFILIATES: Record<string, AffiliateProvider> = {
         name: "Holiday Taxis",
         category: "transfers",
         brandColor: "#f97316",
-        description:
-            "Reliable transfers in over 150 countries. Options for every budget.",
+        description: "Reliable transfers in over 150 countries. Options for all budgets.",
         ctaLabel: "Book transfer",
-        image_url: "/assets/images/car-default.jpg",
+        image_url: "/assets/partners/holiday-taxis.png",
         buildLink: () => "https://holidaytaxis.tpx.lt/JwHtT3CU",
     },
 
@@ -100,26 +96,55 @@ export const AFFILIATES: Record<string, AffiliateProvider> = {
         name: "Intui Travel",
         category: "transfers",
         brandColor: "#0ea5e9",
-        description:
-            "Worldwide transfer booking system. Safety, comfort, and peace of mind.",
+        description: "Booking system for transfers worldwide. Safety and comfort.",
         ctaLabel: "Search transfer",
-        image_url: "/assets/images/car-default.jpg",
+        image_url: "/assets/partners/intui-travel.png",
         buildLink: () => "https://intui.tpx.lt/uNkNui5o",
     },
+    welcome: {
+        id: "welcome",
+        name: "Welcome Pickups",
+        category: "transfers",
+        brandColor: "#0ea5e9",
+        description: "Booking system for transfers worldwide. Safety and comfort.",
+        ctaLabel: "Search transfer",
+        image_url: "/assets/partners/welcome.png",
+        buildLink: () => "https://tpx.lt/IDhRRzm4",
+    },
+    indrive: {
+        id: "indrive",
+        name: "Indrive - city to city",
+        category: "transfers",
+        brandColor: "#0ea5e9",
+        description: "Booking system for transfers worldwide. Safety and comfort.",
+        ctaLabel: "Search transfer",
+        image_url: "/assets/partners/Indrive.png",
+        buildLink: () => "https://indrive.tpx.lt/PjItpkkJ",
+    },
+
 
     /* ===============================
        TICKETS / ATTRACTIONS / TOURS
        =============================== */
+    ticketmaster: {
+        id: "ticket",
+        name: "Ticket Master",
+        category: "tickets",
+        brandColor: "#ff5b00",
+        description: "Instant tickets for museums and attractions. Skip the line and enjoy the experience.",
+        ctaLabel: "See tickets",
+        image_url: "/assets/partners/ticketmaster.png",
+        buildLink: () => "https://ticketmaster.tpx.lt/6baSABiP",
+    },
 
     tiqets: {
         id: "tiqets",
         name: "Tiqets",
         category: "tickets",
         brandColor: "#ff5b00",
-        description:
-            "Instant tickets for museums and attractions. Skip the lines and enjoy the experience.",
-        ctaLabel: "View tickets",
-        image_url: "/assets/images/activity-default.jpg",
+        description: "Instant tickets for museums and attractions. Skip the line and enjoy the experience.",
+        ctaLabel: "See tickets",
+        image_url: "/assets/partners/tiqets.png",
         buildLink: () => "https://tiqets.tpx.lt/S3EpuE54",
     },
 
@@ -128,10 +153,9 @@ export const AFFILIATES: Record<string, AffiliateProvider> = {
         name: "Go City",
         category: "tickets",
         brandColor: "#7c3aed",
-        description:
-            "One pass for dozens of top attractions. Save time and see more.",
+        description: "A single pass for dozens of top attractions. Save time and visit more.",
         ctaLabel: "Choose pass",
-        image_url: "/assets/images/activity-default.jpg",
+        image_url: "/assets/partners/go-city.png",
         buildLink: () => "https://gocity.tpx.lt/S4LY11s7",
     },
 
@@ -140,16 +164,13 @@ export const AFFILIATES: Record<string, AffiliateProvider> = {
         name: "Klook",
         category: "activities",
         brandColor: "#ff5b00",
-        description:
-            "Unique local activities, tours, and experiences. Discover what to do at your destination.",
+        description: "Adventures, tours and unique local experiences. Discover what you can do at your destination.",
         ctaLabel: "Discover activities",
-        image_url: "/assets/images/activity-default.jpg",
+        image_url: "/assets/partners/klook.png",
         buildLink: (params) => {
             const city = params?.city || params?.to || "";
-            return city
-                ? `https://klook.tpx.lt/jnEi9ZtF?q=${encodeURIComponent(city)}`
-                : "https://klook.tpx.lt/jnEi9ZtF";
-        },
+            return city ? `https://klook.tpx.lt/jnEi9ZtF?q=${encodeURIComponent(city)}` : "https://klook.tpx.lt/jnEi9ZtF";
+        }
     },
 
     wegotrip: {
@@ -157,10 +178,9 @@ export const AFFILIATES: Record<string, AffiliateProvider> = {
         name: "WeGoTrip",
         category: "tours",
         brandColor: "#2563eb",
-        description:
-            "Self-guided audio tours on your phone. Explore at your own pace.",
-        ctaLabel: "View tours",
-        image_url: "/assets/activities/wegotrip.jpg",
+        description: "Audio guides and tours on your phone. Explore at your own pace.",
+        ctaLabel: "See tours",
+        image_url: "/assets/partners/wegotrip.png",
         buildLink: () => "https://wegotrip.tpx.lt/wLLCYstz",
     },
 
@@ -169,10 +189,9 @@ export const AFFILIATES: Record<string, AffiliateProvider> = {
         name: "SeaRadar",
         category: "tours",
         brandColor: "#0284c7",
-        description:
-            "Yacht rentals and sea experiences. Sail into your next adventure.",
-        ctaLabel: "View yachts",
-        image_url: "/assets/activities/searadar.jpg",
+        description: "Yacht rentals and sea experiences. Sail to your next adventure.",
+        ctaLabel: "See yachts",
+        image_url: "/assets/partners/searadar.png",
         buildLink: () => "https://searadar.tpx.lt/Zzzl97vT",
     },
 
@@ -185,10 +204,9 @@ export const AFFILIATES: Record<string, AffiliateProvider> = {
         name: "Airalo",
         category: "esim",
         brandColor: "#2563eb",
-        description:
-            "Stay connected in over 200 countries with eSIM. No roaming fees, instant setup.",
-        ctaLabel: "View eSIM plans",
-        image_url: "/assets/esim/airalo.jpg",
+        description: "Stay connected in over 200 countries with eSIM. No roaming charges, fast installation.",
+        ctaLabel: "See eSIM plans",
+        image_url: "/assets/partners/airalo.png",
         buildLink: () => "https://airalo.tpx.lt/feoFvQ5n",
     },
 
@@ -197,10 +215,9 @@ export const AFFILIATES: Record<string, AffiliateProvider> = {
         name: "Drimsim",
         category: "esim",
         brandColor: "#0f172a",
-        description:
-            "Universal SIM card for travelers. Local rates worldwide.",
+        description: "Universal SIM card for travelers. Local rates all over the world.",
         ctaLabel: "Order SIM",
-        image_url: "/assets/esim/drimsim.jpg",
+        image_url: "/assets/partners/drimsim.png",
         buildLink: () => "https://drimsim.tpx.lt/3ntSCd91",
     },
 
@@ -209,10 +226,9 @@ export const AFFILIATES: Record<string, AffiliateProvider> = {
         name: "Yesim",
         category: "esim",
         brandColor: "#22c55e",
-        description:
-            "Reliable mobile internet wherever you travel. Activate your eSIM in minutes.",
-        ctaLabel: "View Yesim offers",
-        image_url: "/assets/esim/yesim.jpg",
+        description: "Stable mobile internet wherever you travel. Activate your eSIM in minutes.",
+        ctaLabel: "See Yesim offers",
+        image_url: "/assets/partners/yesim.png",
         buildLink: () => "https://yesim.tpx.lt/OeegGKjR",
     },
 
@@ -221,15 +237,14 @@ export const AFFILIATES: Record<string, AffiliateProvider> = {
         name: "EKTA eSIM",
         category: "esim",
         brandColor: "#2563eb",
-        description:
-            "Simple global connectivity. Choose the right plan for your destination.",
+        description: "Simple global connectivity. Choose the right package for your destination.",
         ctaLabel: "Activate eSIM",
-        image_url: "/assets/esim/ekta.jpg",
+        image_url: "/assets/partners/EKTA.png",
         buildLink: () => "https://ektatraveling.tpx.lt/zSJixg2v",
     },
 
     /* ===============================
-       FLIGHTS / CAR RENTALS
+       CAR RENTALS
        =============================== */
 
     aviasales: {
@@ -237,15 +252,12 @@ export const AFFILIATES: Record<string, AffiliateProvider> = {
         name: "Aviasales",
         category: "flights",
         brandColor: "#2563eb",
-        description:
-            "Fast flight search engine for cheap flights. Compare hundreds of airlines.",
-        ctaLabel: "View flights",
-        image_url: "/assets/flight/flight.jpg",
+        description: "The fastest search engine for cheap flights. Compare hundreds of airlines.",
+        ctaLabel: "See flights",
+        image_url: "/assets/partners/aviasales.png",
         buildLink: (params) => {
-            const { from_iata, to_iata, depart_date, return_date, passengers = 1 } =
-                params || {};
-            if (!from_iata || !to_iata)
-                return "https://www.aviasales.com/?marker=688834&locale=en";
+            const { from_iata, to_iata, depart_date, return_date, passengers = 1 } = params || {};
+            if (!from_iata || !to_iata) return "https://www.aviasales.com/?marker=688834&locale=en";
 
             const toShortDate = (isoDate: string) => {
                 if (!/^\d{4}-\d{2}-\d{2}$/.test(isoDate)) return null;
@@ -253,8 +265,7 @@ export const AFFILIATES: Record<string, AffiliateProvider> = {
             };
 
             const d1 = depart_date ? toShortDate(depart_date) : null;
-            if (!d1)
-                return `https://www.aviasales.com/search?origin=${from_iata}&destination=${to_iata}&marker=688834&locale=en`;
+            if (!d1) return `https://www.aviasales.com/search?origin=${from_iata}&destination=${to_iata}&marker=688834&locale=en`;
 
             let path = `${from_iata}${d1}${to_iata}`;
             if (return_date) {
@@ -263,7 +274,7 @@ export const AFFILIATES: Record<string, AffiliateProvider> = {
             }
             path += String(passengers);
             return `https://www.aviasales.com/search/${path}?marker=688834&locale=en&currency=EUR`;
-        },
+        }
     },
 
     qeeq: {
@@ -271,10 +282,9 @@ export const AFFILIATES: Record<string, AffiliateProvider> = {
         name: "QEEQ",
         category: "cars",
         brandColor: "#2563eb",
-        description:
-            "Worldwide car rentals. Find the best deals from top providers.",
+        description: "World-wide car rentals. The best deals from top providers.",
         ctaLabel: "Search cars",
-        image_url: "/assets/images/car-default.jpg",
+        image_url: "/assets/partners/qeeq.png",
         buildLink: () => "https://qeeq.tpx.lt/yOJgifcr",
     },
 
@@ -283,10 +293,9 @@ export const AFFILIATES: Record<string, AffiliateProvider> = {
         name: "EconomyBookings",
         category: "cars",
         brandColor: "#1e40af",
-        description:
-            "Affordable car rentals worldwide. Simple booking and 24/7 support.",
-        ctaLabel: "View cars",
-        image_url: "/assets/images/car-default.jpg",
+        description: "Affordable car bookings worldwide. Simple process and non-stop support.",
+        ctaLabel: "See cars",
+        image_url: "/assets/partners/economy-bookings.png",
         buildLink: () => "https://economybookings.tpx.lt/H8mpmQJp",
     },
 
@@ -295,16 +304,13 @@ export const AFFILIATES: Record<string, AffiliateProvider> = {
         name: "Localrent",
         category: "cars",
         brandColor: "#00A859",
-        description:
-            "Car rentals from local providers. Personalized service and fair prices.",
-        ctaLabel: "View local deals",
-        image_url: "/assets/images/car-default.jpg",
+        description: "Car rentals from local providers. Personalized services and fair prices.",
+        ctaLabel: "See local offers",
+        image_url: "/assets/partners/localrent.png",
         buildLink: (params) => {
             const loc = params?.location || params?.to || "";
-            return loc
-                ? `https://localrent.tpx.lt/BDajXZeJ?pickup=${encodeURIComponent(loc)}`
-                : "https://localrent.tpx.lt/BDajXZeJ";
-        },
+            return loc ? `https://localrent.tpx.lt/BDajXZeJ?pickup=${encodeURIComponent(loc)}` : "https://localrent.tpx.lt/BDajXZeJ";
+        }
     },
 
     /* ===============================
@@ -316,10 +322,9 @@ export const AFFILIATES: Record<string, AffiliateProvider> = {
         name: "Eatwith",
         category: "food",
         brandColor: "#dc2626",
-        description:
-            "Local dining experiences, cooking classes, and food tours. Eat with locals.",
-        ctaLabel: "View experiences",
-        image_url: "/assets/food/eatwith.jpg",
+        description: "Local dinners, cooking classes and culinary tours. Eat with the locals.",
+        ctaLabel: "See experiences",
+        image_url: "/assets/partners/Eatwith.png",
         buildLink: () => "https://eatwith.tpx.lt/i5TpILAX",
     },
 
@@ -331,35 +336,98 @@ export const AFFILIATES: Record<string, AffiliateProvider> = {
         id: "travelpayouts",
         name: "Travelpayouts",
         category: "other",
-        description:
-            "Access to hundreds of travel affiliate programs.",
-        ctaLabel: "View partners",
+        description: "Access to hundreds of travel affiliate programs.",
+        ctaLabel: "See partners",
         buildLink: () => "https://tpx.lt/IDhRRzm4",
     },
+    /* ===============================
+   SECURITY / VPN
+   =============================== */
+    nordvpn: {
+        id: "nordvpn",
+        name: "NordVPN",
+        category: "other",
+        brandColor: "#1e3a8a",
+        description: "Secure your connection on public Wi-Fi. Fast, private and trusted VPN worldwide.",
+        ctaLabel: "Get NordVPN",
+        image_url: "/assets/partners/nordvpn.png",
+        buildLink: () => "https://nordvpn.tpx.lt/fMXVJDLP",
+    },
+
+    /* ===============================
+       TICKETS / EVENTS
+       =============================== */
+    ticketnetwork: {
+        id: "ticketnetwork",
+        name: "TicketNetwork",
+        category: "tickets",
+        brandColor: "#dc2626",
+        description: "Concerts, sports and live events tickets worldwide.",
+        ctaLabel: "Find tickets",
+        image_url: "/assets/partners/ticketnetwork.png",
+        buildLink: () => "https://ticketnetwork.tpx.lt/SaFYyatP",
+    },
+
+    /* ===============================
+       LUGGAGE STORAGE
+       =============================== */
+    radicalstorage: {
+        id: "radicalstorage",
+        name: "Radical Storage",
+        category: "other",
+        brandColor: "#7c3aed",
+        description: "Luggage storage in cities worldwide. Travel hands-free.",
+        ctaLabel: "Find storage",
+        image_url: "/assets/partners/radicalstorage.png",
+        buildLink: () => "https://radicalstorage.tpx.lt/r6asFMUc",
+    },
+
+    /* ===============================
+       CAR RENTALS
+       =============================== */
+    getrentacar: {
+        id: "getrentacar",
+        name: "GetRentacar",
+        category: "cars",
+        brandColor: "#2563eb",
+        description: "Car rentals worldwide with flexible terms and local providers.",
+        ctaLabel: "Rent a car",
+        image_url: "/assets/partners/getrentacar.png",
+        buildLink: () => "https://getrentacar.tpx.lt/PIUF6hCw",
+    },
+
+    /* ===============================
+       HOTELS
+       =============================== */
+    agoda: {
+        id: "agoda",
+        name: "Agoda",
+        category: "hotels",
+        brandColor: "#2563eb",
+        description: "Hotels, apartments and accommodations worldwide at competitive prices.",
+        ctaLabel: "See hotels",
+        image_url: "/assets/partners/agoda.png",
+        buildLink: () => "https://agoda.tpx.lt/N1Zka1JT",
+    },
+
 };
 
-export const getProvidersByCategory = (
-    category: AffiliateCategory
-): AffiliateProvider[] => {
-    return Object.values(AFFILIATES).filter((p) => p.category === category);
+export const getProvidersByCategory = (category: AffiliateCategory): AffiliateProvider[] => {
+    return Object.values(AFFILIATES).filter(p => p.category === category);
 };
 
-export const getAIProvidersByCategory = (
-    aiCategory: string
-): AffiliateProvider[] => {
+export const getAIProvidersByCategory = (aiCategory: string): AffiliateProvider[] => {
     // Mapping internal AI intents to registry categories
     const mapping: Record<string, AffiliateCategory[]> = {
-        flight: ["flights"],
-        car_rental: ["cars"],
-        activity: ["activities", "tickets", "tours"],
-        transfer: ["transfers"],
-        esim: ["esim"],
-        compensation: ["compensation"],
-        hotel: ["other"], // Booking handled separately for now
+        "flight": ["flights"],
+        "car_rental": ["cars"],
+        "activity": ["activities", "tickets", "tours"],
+        "transfer": ["transfers"],
+        "esim": ["esim"],
+        "compensation": ["compensation"],
+        "hotel": ["hotels"]
     };
 
     const categories = mapping[aiCategory] || [];
-    return Object.values(AFFILIATES).filter((p) =>
-        categories.includes(p.category)
-    );
+    return Object.values(AFFILIATES).filter(p => categories.includes(p.category));
 };

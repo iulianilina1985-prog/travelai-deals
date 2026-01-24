@@ -82,11 +82,11 @@ const TYPE_TO_CATEGORIES = {
   shuttle: ["transfers"],
   intercity: ["transport", "transfers"],
 
-  activities: ["activities", "tours", "food"],
+  activities: ["activities", "tours", "food", "tickets"],
   tickets: ["tickets"],
-  events: ["events"],
+  events: ["events", "tickets"],
 
-  yacht: ["yacht"],
+  yacht: ["yacht", "tours"],
 
   esim: ["esim"],
   insurance: ["insurance"],

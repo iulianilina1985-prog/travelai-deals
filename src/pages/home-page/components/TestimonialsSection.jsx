@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import Icon from "../../../components/AppIcon";
 
 
+const isMobile = window.innerWidth < 768;
 
 const ALL_TESTIMONIALS = [
   {
@@ -97,6 +98,8 @@ const TestimonialsSection = () => {
   }, [startIndex]);
 
   useEffect(() => {
+    if (isMobile) return;
+
     const interval = setInterval(() => {
       setStartIndex((prev) => (prev + ITEMS_VISIBLE) % ALL_TESTIMONIALS.length);
     }, ROTATE_EVERY_MS);
@@ -112,12 +115,25 @@ const TestimonialsSection = () => {
           What our users are saying
         </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+        <div
+          className="
+            flex gap-6 overflow-x-auto pb-4
+            snap-x snap-mandatory
+            md:grid md:grid-cols-3 md:overflow-visible md:pb-0
+          "
+        >
           {visibleTestimonials.map((t, i) => (
             <div
               key={i}
-              className="bg-white p-8 rounded-2xl shadow-md border border-gray-200 hover:shadow-xl transition"
+              className="
+                min-w-[85%] snap-start
+                md:min-w-0
+                bg-white p-8 rounded-2xl
+                shadow-md border border-gray-200
+                hover:shadow-xl transition
+              "
             >
+
               {/* Avatar */}
               <div className="flex justify-center mb-4">
                 <img

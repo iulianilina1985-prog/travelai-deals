@@ -1,6 +1,7 @@
 // src/context/AuthContext.jsx
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+import * as React from "react";
+import { createContext, useContext, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 
 const AuthContext = createContext(null);
@@ -12,10 +13,13 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [userProfile, setUserProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [profileLoading, setProfileLoading] = useState(false);
+  console.log("DEBUG: AuthProvider render. React exists:", !!React);
+  console.log("DEBUG: React.useState exists:", !!React?.useState);
+
+  const [user, setUser] = React.useState(null);
+  const [userProfile, setUserProfile] = React.useState(null);
+  const [loading, setLoading] = React.useState(true);
+  const [profileLoading, setProfileLoading] = React.useState(false);
 
   // ===========================================================
   // LOAD PROFILE & ROLES
