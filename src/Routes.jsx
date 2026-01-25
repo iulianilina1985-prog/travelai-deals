@@ -40,6 +40,13 @@ import TravelGuidePage from "./pages/guides/TravelGuidePage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ProtectedAdminRoute from "./components/ui/ProtectedAdminRoute";
 
+import FlightsPage from "./pages/services/FlightsPage";
+import HotelsPage from "./pages/services/HotelsPage";
+import CarRentalPage from "./pages/services/CarRentalPage";
+import EsimPage from "./pages/services/EsimPage";
+import ActivitiesPage from "./pages/services/ActivitiesPage";
+
+
 const Routes = () => {
   return (
     <BrowserRouter>
@@ -67,6 +74,14 @@ const Routes = () => {
           <Route path="/guides/cheap-tickets" element={<GuideBileteAvion />} />
           <Route path="/guides/hotel-booking" element={<GuideHoteluri />} />
           <Route path="/guides/:slug" element={<TravelGuidePage />} />
+
+          <Route path="/flights" element={<FlightsPage />} />
+          <Route path="/hotels" element={<HotelsPage />} />
+          <Route path="/car-rental" element={<CarRentalPage />} />
+          <Route path="/esim" element={<EsimPage />} />
+          <Route path="/activities" element={<ActivitiesPage />} />
+
+
 
           {/* 🔥 New search page */}
           <Route path="/search-offers" element={<OffersPage />} />

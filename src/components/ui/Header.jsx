@@ -8,6 +8,8 @@ const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const [isServicesOpen, setIsServicesOpen] = useState(false);
+  const toggleServices = () => setIsServicesOpen((p) => !p);
 
   const { isAuthenticated, signOut, userProfile } = useAuth();
 
@@ -25,6 +27,13 @@ const Header = () => {
   const isActivePath = (path) => location?.pathname === path;
   const toggleMobileMenu = () => setIsMobileMenuOpen((p) => !p);
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
+  const servicesItems = [
+    { label: "Flights", path: "/flights", icon: "Plane" },
+    { label: "Hotels", path: "/hotels", icon: "Hotel" },
+    { label: "Car Rental", path: "/car-rental", icon: "Car" },
+    { label: "Activities", path: "/activities", icon: "Ticket" },
+    { label: "Travel eSIM", path: "/esim", icon: "SimCard" },
+  ];
 
   return (
     <header className="fixed top-0 left-0 right-0 z-100 bg-background/95 backdrop-blur-sm border-b border-border">
@@ -56,6 +65,31 @@ const Header = () => {
                 </div>
               </Link>
             ))}
+
+            <div className="relative group">
+              <button className="nav-item flex items-center space-x-2">
+                <Icon name="Layers" size={18} />
+                <span>Services</span>
+              </button>
+
+              <div className="absolute left-0 top-full mt-1 w-56 rounded-lg border border-border bg-background shadow-lg
+                  opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150">
+                <div className="py-2">
+                  {servicesItems.map((item) => (
+                    <Link
+                      key={item.path}
+                      to={item.path}
+                      className="flex items-center gap-3 px-4 py-2 text-sm hover:bg-muted"
+                    >
+                      <Icon name={item.icon} size={16} />
+                      <span>{item.label}</span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+
 
             {isAuthenticated && (
               <Link
@@ -124,14 +158,16 @@ const Header = () => {
       {isMobileMenuOpen && (
         <div className="md:hidden absolute top-16 left-0 right-0 bg-background border-b border-border shadow">
           <nav className="px-4 py-4 space-y-2">
+
+            {/* MAIN NAV */}
             {navigationItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
                 onClick={closeMobileMenu}
-                className={`flex items-center space-x-3 px-4 py-3 rounded-lg ${isActivePath(item.path)
-                  ? "bg-primary text-primary-foreground"
-                  : "hover:bg-muted"
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition ${isActivePath(item.path)
+                    ? "bg-muted font-medium"
+                    : "hover:bg-muted"
                   }`}
               >
                 <Icon name={item.icon} size={20} />
@@ -139,26 +175,76 @@ const Header = () => {
               </Link>
             ))}
 
+            {/* SERVICES DROPDOWN */}
+            <div className="pt-3 border-t border-border">
+
+              <button
+                onClick={toggleServices}
+                className="w-full flex items-center justify-between px-4 py-3 rounded-lg hover:bg-muted transition"
+              >
+                <div className="flex items-center gap-3">
+                  <Icon name="Layers" size={20} />
+                  <span className="text-sm font-medium">Services</span>
+                </div>
+                <Icon
+                  name="ChevronDown"
+                  size={18}
+                  className={`transition-transform ${isServicesOpen ? "rotate-180" : ""
+                    }`}
+                />
+              </button>
+
+              {isServicesOpen && (
+                <div className="mt-1 space-y-1">
+                  {servicesItems.map((item) => {
+                    const isActive = isActivePath(item.path);
+
+                    return (
+                      <Link
+                        key={item.path}
+                        to={item.path}
+                        onClick={closeMobileMenu}
+                        className={`ml-6 flex items-center gap-3 px-4 py-2 rounded-lg transition ${isActive
+                            ? "bg-muted font-medium"
+                            : "hover:bg-muted"
+                          }`}
+                      >
+                        <span
+                          className={`h-5 w-1 rounded-full ${isActive ? "bg-primary" : "bg-transparent"
+                            }`}
+                        />
+                        <Icon name={item.icon} size={18} />
+                        <span className="text-sm">{item.label}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* PROFILE */}
             {isAuthenticated && (
               <Link
                 to="/user-profile"
                 onClick={closeMobileMenu}
-                className={`flex items-center space-x-3 px-4 py-3 rounded-lg ${isActivePath("/user-profile")
-                  ? "bg-primary text-primary-foreground"
-                  : "hover:bg-muted"
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition ${isActivePath("/user-profile")
+                    ? "bg-muted font-medium"
+                    : "hover:bg-muted"
                   }`}
               >
                 <Icon name="User" size={20} />
                 <span>Profile</span>
               </Link>
             )}
+
+            {/* ADMIN */}
             {userProfile?.roles?.includes("admin") && (
               <Link
                 to="/admin-dashboard"
                 onClick={closeMobileMenu}
-                className={`flex items-center space-x-3 px-4 py-3 rounded-lg ${isActivePath("/admin-dashboard")
-                  ? "bg-primary text-primary-foreground"
-                  : "hover:bg-muted"
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition ${isActivePath("/admin-dashboard")
+                    ? "bg-muted font-medium"
+                    : "hover:bg-muted"
                   }`}
               >
                 <Icon name="Shield" size={20} />
@@ -166,15 +252,14 @@ const Header = () => {
               </Link>
             )}
 
-
-
+            {/* AUTH */}
             {isAuthenticated ? (
               <button
                 onClick={() => {
                   closeMobileMenu();
                   handleLogout();
                 }}
-                className="flex items-center space-x-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-600 hover:text-white transition"
+                className="flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-600 hover:text-white transition"
               >
                 <Icon name="LogOut" size={20} />
                 <span>Logout</span>
@@ -201,17 +286,21 @@ const Header = () => {
                 </button>
               </>
             )}
+
           </nav>
         </div>
       )}
 
-      {isMobileMenuOpen && (
-        <div
-          className="md:hidden fixed inset-0 top-16 bg-black/20"
-          onClick={closeMobileMenu}
-        />
-      )}
-    </header>
+
+      {
+        isMobileMenuOpen && (
+          <div
+            className="md:hidden fixed inset-0 top-16 bg-black/20"
+            onClick={closeMobileMenu}
+          />
+        )
+      }
+    </header >
   );
 };
 
