@@ -12,27 +12,27 @@ const HERO_IMAGES = [
   "/assets/hero/pexels-greta-soave-7237647.jpg",
 ];
 
-/* 📝 HERO TEXTS */
 const HERO_TEXTS = [
   {
-    title: "Discover the best travel deals with",
-    highlight: "TravelAI Deals",
+    title: "Your personal AI for",
+    highlight: "travel planning",
     subtitle:
-      "Artificial intelligence that automatically compares flights and vacations from over 100 sources.",
+      "Tell us where you want to go. TravelAI searches trusted travel websites and guides you to the best options.",
   },
   {
-    title: "Plan smart vacations with",
-    highlight: "your personal AI",
+    title: "Stop jumping between",
+    highlight: "dozens of travel sites",
     subtitle:
-      "Tell us where you want to go, and TravelAI finds the best options for you.",
+      "TravelAI analyzes flights, stays, activities and extras — then sends you directly to the provider.",
   },
   {
-    title: "Travel more, pay less with",
-    highlight: "TravelAI Deals",
+    title: "Plan smarter trips with",
+    highlight: "less effort",
     subtitle:
-      "Real deals, constantly updated, without losing hours on dozens of websites.",
+      "No bookings here. No hidden fees. Just intelligent search and clear recommendations.",
   },
 ];
+
 
 const ROTATE_EVERY_MS = 9000;
 
@@ -103,7 +103,7 @@ const HeroSection = () => {
               onClick={() => navigate("/search-offers")}
               className="w-full sm:w-auto px-8 py-3 bg-white text-black rounded-lg text-lg font-semibold hover:bg-gray-200 shadow-md"
             >
-              Search deals
+              Start planning
             </button>
 
             <button
@@ -119,7 +119,7 @@ const HeroSection = () => {
               "
             >
               <Icon name="MessageCircle" size={18} />
-              AI Chat
+              Ask TravelAI
             </button>
           </div>
         </div>

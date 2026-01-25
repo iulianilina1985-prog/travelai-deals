@@ -5,23 +5,24 @@ const FeaturesSection = () => {
   const features = [
     {
       icon: "Bot",
-      title: "Automatic AI Search",
-      desc: "Our algorithm analyzes thousands of offers in real-time and finds the best options for you.",
+      title: "AI-assisted travel search",
+      desc: "TravelAI explores multiple trusted travel platforms and organizes relevant options based on your destination and preferences.",
       color: "from-blue-500 to-indigo-600",
     },
     {
       icon: "Bell",
-      title: "Instant Notifications",
-      desc: "Get intelligent alerts when prices drop or a better offer appears.",
+      title: "Relevant alerts & suggestions",
+      desc: "Receive contextual suggestions and reminders related to your searches, without tracking or predicting prices.",
       color: "from-indigo-500 to-violet-600",
     },
     {
       icon: "ShieldCheck",
-      title: "Secure Data",
-      desc: "We comply with the strictest GDPR standards. Your data always stays safe.",
+      title: "Privacy-first by design",
+      desc: "Your searches are handled securely and in compliance with GDPR. TravelAI never sells or shares your personal data.",
       color: "from-violet-500 to-purple-600",
     },
   ];
+
 
   return (
     <section className="py-20 px-6 bg-gradient-to-b from-white to-gray-50">

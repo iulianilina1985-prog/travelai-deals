@@ -6,78 +6,79 @@ const isMobile = window.innerWidth < 768;
 
 const ALL_TESTIMONIALS = [
   {
-    name: "Andrei Popescu",
+    name: "Alex M.",
     gender: "male",
     rating: 5,
-    text: "TravelAI Deals has significantly reduced my search time. Everything is clear, fast, and stress-free."
+    text: "TravelAI helped me plan a complete trip without jumping between multiple travel websites."
   },
   {
-    name: "Maria Lungu",
+    name: "Emma R.",
     gender: "female",
     rating: 5,
-    text: "I love getting alerts exactly when good deals appear. I've caught some excellent city-breaks."
+    text: "Everything is structured and easy to follow. It feels like guided planning, not endless searching."
   },
   {
-    name: "Radu Ciobanu",
+    name: "Daniel K.",
     gender: "male",
     rating: 5,
-    text: "Ideal for spontaneous getaways. In a few minutes, I check flights, hotels, and discounts."
+    text: "Perfect when you don’t have time to manually compare flights, stays, and extras."
   },
   {
-    name: "Elena Dobre",
-    gender: "female",
-    rating: 4,
-    text: "Simple interface and useful recommendations. No useless ads or confusing information."
-  },
-  {
-    name: "Mihai Ionescu",
-    gender: "male",
-    rating: 5,
-    text: "A tool that really helps you save money. I've already recommended it to friends."
-  },
-  {
-    name: "Ioana Marinescu",
-    gender: "female",
-    rating: 5,
-    text: "Perfect for quick planning. The AI does all the heavy lifting."
-  },
-  {
-    name: "Alex Stoica",
-    gender: "male",
-    rating: 4,
-    text: "I quickly find the best options without wasting time on dozens of websites."
-  },
-  {
-    name: "Cristina Pavel",
-    gender: "female",
-    rating: 5,
-    text: "Very useful for last-minute vacations. I highly recommend it."
-  },
-  {
-    name: "Daniel Rusu",
-    gender: "male",
-    rating: 5,
-    text: "Everything is centralized and easy to use. Exactly what I needed."
-  },
-  {
-    name: "Ana Petrescu",
+    name: "Sofia L.",
     gender: "female",
     rating: 4,
-    text: "I like that the recommendations are clear and relevant, not random."
+    text: "The recommendations feel relevant and well organized, not random or overwhelming."
   },
   {
-    name: "Bogdan Ilie",
+    name: "Michael T.",
     gender: "male",
     rating: 5,
-    text: "A smart tool that really makes a difference to the budget."
+    text: "I like that I’m always sent to the provider’s official website to book."
   },
   {
-    name: "Laura Dumitrescu",
+    name: "Laura B.",
     gender: "female",
     rating: 5,
-    text: "TravelAI Deals helped me plan vacations with no headaches."
+    text: "Less stress, fewer tabs, and a much clearer picture of my travel options."
+  },
+  {
+    name: "Chris W.",
+    gender: "male",
+    rating: 4,
+    text: "TravelAI brings everything together in one place, which makes planning much easier."
+  },
+  {
+    name: "Natalie P.",
+    gender: "female",
+    rating: 5,
+    text: "It feels like having a smart assistant that organizes my travel research."
+  },
+  {
+    name: "James H.",
+    gender: "male",
+    rating: 5,
+    text: "I decide where to book, but TravelAI saves me a lot of research time."
+  },
+  {
+    name: "Olivia S.",
+    gender: "female",
+    rating: 4,
+    text: "Simple interface and clear recommendations. Exactly what I need for quick planning."
+  },
+  {
+    name: "Mark D.",
+    gender: "male",
+    rating: 5,
+    text: "A calm, efficient way to explore travel options without pressure."
+  },
+  {
+    name: "Isabella C.",
+    gender: "female",
+    rating: 5,
+    text: "Travel planning feels lighter and more organized with TravelAI."
   },
 ];
+
 
 const ITEMS_VISIBLE = 3;
 const ROTATE_EVERY_MS = 8000;

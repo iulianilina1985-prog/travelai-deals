@@ -54,15 +54,22 @@ const ServicesEcosystemSection = () => {
                         <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-gray-900">
                             More than just flights and hotels
                         </h2>
+
                         <p className="mt-2 text-sm md:text-base text-gray-600 max-w-2xl">
-                            TravelAI connects the important pieces of a trip into a clear plan: transport, internet,
-                            activities, and useful extra options.
+                            TravelAI helps you organize the essential parts of a trip into a clear plan —
+                            from transport and connectivity to activities and useful extras.
+                        </p>
+
+                        <p className="mt-2 text-xs text-gray-500 max-w-2xl">
+                            TravelAI does not sell services. You are always guided to trusted providers to complete your booking.
                         </p>
                     </div>
+
                     <p className="text-xs md:text-sm text-gray-500">
-                        Complete Ecosystem • Activated Progressively
+                        Complete ecosystem • Activated progressively
                     </p>
                 </div>
+
 
                 {/* Grid */}
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

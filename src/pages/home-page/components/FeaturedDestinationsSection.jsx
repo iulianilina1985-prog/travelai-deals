@@ -72,7 +72,7 @@ const FeaturedDestinationsSection = () => {
               Popular Destinations Recommended by TravelAI
             </h2>
             <p className="mt-2 text-gray-600 max-w-2xl">
-              Weekly updated editorial selection based on season and traveler interest.
+              Editorial inspiration based on season and traveler interest. Availability and prices depend on providers.
             </p>
           </div>
           <p className="text-sm text-gray-500">

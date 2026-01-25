@@ -32,9 +32,16 @@ const PartnersSection = () => {
     <section className="w-full py-16 bg-white">
       <div className="max-w-7xl mx-auto px-6 text-center">
 
-        <h2 className="text-2xl lg:text-3xl font-bold mb-12 text-foreground">
-          Deals are automatically verified through our official partners
+        <h2 className="text-center max-w-4xl mx-auto mb-12">
+          <span className="block text-2xl lg:text-3xl font-semibold text-foreground">
+            TravelAI connects you to trusted travel partners
+          </span>
+
+          <span className="block mt-2 text-base lg:text-lg text-muted-foreground">
+            You always book directly on the provider’s official website
+          </span>
         </h2>
+
 
         <div
           className="

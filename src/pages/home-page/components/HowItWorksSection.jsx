@@ -69,7 +69,7 @@ const HowItWorksSection = () => {
           </div>
 
           <h3 className="text-2xl font-semibold mt-6 text-gray-900">
-            2. AI filters
+            2. AI analysis
           </h3>
           <p className="text-gray-600 mt-3">
             We automatically analyze thousands of offers and select the best ones.
@@ -102,10 +102,10 @@ const HowItWorksSection = () => {
           </div>
 
           <h3 className="text-2xl font-semibold mt-6 text-gray-900">
-            3. Book
+            3. Book on provider site
           </h3>
           <p className="text-gray-600 mt-3">
-            We send you directly to the best available price, with no hidden fees.
+            You are redirected to the official website to complete your booking.
           </p>
         </div>
 
