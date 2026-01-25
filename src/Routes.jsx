@@ -34,6 +34,7 @@ import FavoritesPage from "./pages/offers/FavoritesPage.jsx";
 
 import CheckoutSuccess from "./pages/payments/CheckoutSuccess";
 import CheckoutCancel from "./pages/payments/CheckoutCancel";
+import TravelGuidePage from "./pages/guides/TravelGuidePage";
 
 // Protecție rute
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -65,6 +66,7 @@ const Routes = () => {
           <Route path="/guides/destinations-2025" element={<GuideDestinatii2025 />} />
           <Route path="/guides/cheap-tickets" element={<GuideBileteAvion />} />
           <Route path="/guides/hotel-booking" element={<GuideHoteluri />} />
+          <Route path="/guides/:slug" element={<TravelGuidePage />} />
 
           {/* 🔥 New search page */}
           <Route path="/search-offers" element={<OffersPage />} />
