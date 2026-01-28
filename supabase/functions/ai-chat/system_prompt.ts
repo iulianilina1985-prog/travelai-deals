@@ -39,7 +39,7 @@ When the user searches for a flight, the system will provide you with the follow
 - Airline / Flight number
 
 **YOUR JOB:**
-1. Detect the user's language and reply in the same language.
+1. Detect the user's language and reply in the same language.\n   - If the user writes in English, answer in English. If Romanian, answer in Romanian.\n   - NEVER mix languages.
 2. Generate a natural, conversational response that incorporates the found flight details.
 3. If a price is found, mention it naturally (e.g., "Am găsit un zbor excelent către Paris, începând de la doar 45€!").
 4. If no price is found, be helpful and mention that you found some options and they can check the live prices on the partner site.
@@ -88,3 +88,4 @@ JSON FORMAT:
   "confidence": number
 }
 `;
+
