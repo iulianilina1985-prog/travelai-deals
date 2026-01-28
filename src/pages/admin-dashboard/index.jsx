@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet';
 import Header from '../../components/ui/Header';
 import StatsCard from './components/StatsCard';
 import UserManagementTable from './components/UserManagementTable';
+import TrafficChart from './components/TrafficChart';
 import RevenueChart from './components/RevenueChart';
 import ActivityFeed from './components/ActivityFeed';
 import SystemAlerts from './components/SystemAlerts';
@@ -155,6 +156,10 @@ const AdminDashboard = () => {
             </div>
           </div>
 
+          {/* Traffic Overview */}
+          <div className="mb-8">
+            <TrafficChart />
+          </div>
           {/* Main Content Grid */}
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 mb-8">
             <div className="xl:col-span-2">
@@ -208,3 +213,4 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
+
