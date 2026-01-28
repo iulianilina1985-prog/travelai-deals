@@ -207,14 +207,14 @@ const TrafficChart = () => {
   return (
     <div className="bg-card border border-border rounded-lg shadow-card">
       <div className="p-6 border-b border-border">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <div>
             <h3 className="text-lg font-semibold text-foreground">Traffic overview</h3>
             <p className="text-sm text-muted-foreground">
               Visits grouped by time range and country distribution
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             {Object.keys(RANGE_CONFIG).map((key) => (
               <Button
                 key={key}
@@ -266,7 +266,7 @@ const TrafficChart = () => {
 
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
               <div className="xl:col-span-2">
-                <div className="h-72" aria-label="Traffic Chart">
+                <div className="h-64 sm:h-72" aria-label="Traffic Chart">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={trafficSeries}>
                       <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
@@ -286,7 +286,7 @@ const TrafficChart = () => {
               </div>
 
               <div className="xl:col-span-1">
-                <div className="h-72" aria-label="Country Breakdown">
+                <div className="h-64 sm:h-72" aria-label="Country Breakdown">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={countrySeries} layout="vertical" margin={{ left: 30 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />

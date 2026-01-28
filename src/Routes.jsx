@@ -1,8 +1,9 @@
 import React from "react";
-import { BrowserRouter, Routes as RouterRoutes, Route } from "react-router-dom";
+import { BrowserRouter, Routes as RouterRoutes, Route, useLocation } from "react-router-dom";
 import ScrollToTop from "components/ScrollToTop";
 import ErrorBoundary from "components/ErrorBoundary";
 import NotFound from "pages/NotFound";
+import { userService } from "./services/userService";
 
 // Layout
 import Header from "./components/ui/Header";
@@ -47,11 +48,46 @@ import EsimPage from "./pages/services/EsimPage";
 import ActivitiesPage from "./pages/services/ActivitiesPage";
 
 
+const PageViewTracker = () => {
+  const location = useLocation();
+  const lastPathRef = React.useRef("");
+
+  React.useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const path = location.pathname + location.search + location.hash;
+    if (lastPathRef.current === path) return;
+    lastPathRef.current = path;
+
+    userService.trackEvent("page_view", "route_change", {
+      path: location.pathname,
+      search: location.search,
+      hash: location.hash,
+      referrer: document.referrer || null,
+      language: navigator.language || null,
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || null,
+      platform: navigator.platform || null,
+      screen: {
+        width: window.screen?.width || null,
+        height: window.screen?.height || null,
+      },
+      viewport: {
+        width: window.innerWidth || null,
+        height: window.innerHeight || null,
+      },
+      user_agent: navigator.userAgent || null,
+    });
+  }, [location]);
+
+  return null;
+};
+
 const Routes = () => {
   return (
     <BrowserRouter>
       <ErrorBoundary>
         <ScrollToTop />
+        <PageViewTracker />
 
         {/* Header global */}
         <Header />
