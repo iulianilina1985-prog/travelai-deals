@@ -1,6 +1,13 @@
+import SEO from "../../components/seo/SEO";
+
 const ActivitiesPage = () => {
     return (
         <div className="container mx-auto px-6 py-16 space-y-16">
+            <SEO
+                title="Activities & Experiences"
+                description="Explore tours, attractions, and local experiences to make the most of your trip. Book on trusted platforms."
+                canonicalPath="/activities"
+            />
 
             {/* PAGE TITLE */}
             <section className="space-y-4">

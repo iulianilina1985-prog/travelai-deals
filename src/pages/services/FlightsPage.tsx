@@ -1,6 +1,14 @@
+import SEO from "../../components/seo/SEO";
+
 const FlightsPage = () => {
     return (
         <div className="container mx-auto px-6 py-16 space-y-16">
+            <SEO
+                title="Flights"
+                description="Discover trusted flight booking platforms and choose the option that fits your travel needs."
+                canonicalPath="/flights"
+                image="/assets/flight/flight.jpg"
+            />
 
             {/* PAGE TITLE */}
             <section className="space-y-4">

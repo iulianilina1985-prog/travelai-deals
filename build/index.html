@@ -11,6 +11,12 @@
 
   <meta name="description" content="Oferte inteligente de călătorie generate cu AI" />
 
+  <meta property="og:title" content="TravelAI Deals" />
+  <meta property="og:description" content="Oferte inteligente de cÄƒlÄƒtorie generate cu AI" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="/assets/hero/paris.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+
   <!-- Favicon -->
   <link rel="icon" href="/favicon.ico" />
 
@@ -33,13 +39,23 @@
       document.head.appendChild(script);
     })();
   </script>
-  <script type="module" crossorigin src="/assets/index-DPG7tHJ0.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-C5c2lSwV.css">
+  <script type="module" crossorigin src="/assets/index-5_1glWuq.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-vnTGr58i.css">
 </head>
 
 <body>
   <noscript>Trebuie să activezi JavaScript pentru a rula aplicația.</noscript>
-  <div id="root"></div>
+  <div class="dhiwise-code" id="root"></div>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function (registrations) {
+        for (let registration of registrations) {
+          registration.unregister();
+          console.log('🚀 Legacy Service Worker unregistered');
+        }
+      });
+    }
+  </script>
 </body>
 
 </html>

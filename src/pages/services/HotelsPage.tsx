@@ -1,6 +1,13 @@
+import SEO from "../../components/seo/SEO";
+
 const HotelsPage = () => {
     return (
         <div className="container mx-auto px-6 py-16 space-y-16">
+            <SEO
+                title="Hotels & Accommodation"
+                description="Find accommodation options that match your travel style and budget. Compare trusted booking platforms."
+                canonicalPath="/hotels"
+            />
 
             {/* PAGE TITLE */}
             <section className="space-y-4">

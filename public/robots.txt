@@ -1,3 +1,12 @@
 # https://www.robotstxt.org/robotstxt.html
 User-agent: *
-Disallow:
+Disallow: /admin-dashboard
+Disallow: /user-profile
+Disallow: /reset-password
+Disallow: /login
+Disallow: /register
+Disallow: /search-offers/favorites
+Disallow: /checkout-success
+Disallow: /checkout-cancel
+
+Sitemap: https://travelai-deals.com/sitemap.xml

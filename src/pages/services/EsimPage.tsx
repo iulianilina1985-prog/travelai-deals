@@ -1,6 +1,13 @@
+import SEO from "../../components/seo/SEO";
+
 const EsimPage = () => {
     return (
         <div className="container mx-auto px-6 py-16 space-y-16">
+            <SEO
+                title="Travel eSIM"
+                description="Stay connected while traveling without physical SIM cards. Explore travel eSIM solutions and providers."
+                canonicalPath="/esim"
+            />
 
             {/* PAGE TITLE */}
             <section className="space-y-4">

@@ -3,6 +3,7 @@ import { useNavigate, Link, useLocation } from "react-router-dom";
 import Header from "../../components/ui/Header";
 import TrustSignals from "./components/TrustSignals";
 import { supabase } from "../../lib/supabase";
+import SEO from "../../components/seo/SEO";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -115,6 +116,12 @@ const LoginPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="Autentificare"
+        description="Autentifică-te în contul TravelAI Deals."
+        canonicalPath="/login"
+        noindex
+      />
       <Header />
 
       <main className="pt-24">

@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import Header from "../../components/ui/Header";
 import Footer from "../../components/ui/Footer";
 import Icon from "../../components/AppIcon";
+import SEO from "../../components/seo/SEO";
 
 const ContactPage = () => {
   const [sending, setSending] = useState(false);
@@ -32,6 +33,11 @@ const ContactPage = () => {
 
   return (
     <div className="bg-background min-h-screen flex flex-col pt-24 md:pt-28">
+      <SEO
+        title="Contact"
+        description="Contact TravelAI Deals for questions, feedback or partnership proposals."
+        canonicalPath="/contact"
+      />
       <Header />
 
       {/* HERO */}

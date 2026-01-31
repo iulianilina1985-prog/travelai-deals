@@ -3,6 +3,7 @@ import { useFavorites } from "../../contexts/FavoritesContext";
 import Button from "../../components/ui/Button";
 import Icon from "../../components/AppIcon";
 import OfferCard from "../../components/OfferCard";
+import SEO from "../../components/seo/SEO";
 
 export default function FavoritesPage() {
     const { favorites, toggleFavorite } = useFavorites();
@@ -13,6 +14,12 @@ export default function FavoritesPage() {
 
     return (
         <div className="max-w-6xl mx-auto p-4 pt-24 pb-20">
+            <SEO
+                title="Favorites"
+                description="Saved offers in your TravelAI Deals account."
+                canonicalPath="/search-offers/favorites"
+                noindex
+            />
             <div className="flex items-center justify-between mb-8">
                 <div>
                     <h1 className="text-3xl font-extrabold text-slate-900">Favorite</h1>

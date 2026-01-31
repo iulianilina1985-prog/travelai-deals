@@ -4,6 +4,7 @@
 // ======================================================
 
 import { supabase } from "../lib/supabase";
+import { userService } from "./userService";
 
 // Affiliate links (NO API, redirect only)
 const KLOOK_AFFILIATE_URL = "https://klook.tpx.lt/jnEi9ZtF";
@@ -28,6 +29,12 @@ export async function getTravelRecommendation(
         user_id: session?.user?.id || "guest",
         conversation_id: conversationId,
         prompt: userMessage,
+        session_id: typeof window !== "undefined" ? userService.getSessionId() : null,
+        client_path:
+          typeof window !== "undefined"
+            ? `${window.location.pathname}${window.location.search}${window.location.hash}`
+            : null,
+        source: "openaiService",
       },
     });
 

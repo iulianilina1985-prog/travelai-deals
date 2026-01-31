@@ -1,4 +1,5 @@
 import React from "react";
+import SEO from "../../components/seo/SEO";
 
 const tips = [
   {
@@ -49,6 +50,13 @@ for the same route.
 const GuideBileteAvion = () => {
   return (
     <div className="max-w-4xl mx-auto px-6 py-20">
+      <SEO
+        title="How to find the cheapest air tickets"
+        description="Practical strategies to find cheaper flight tickets: flexible dates, alternative airports, booking windows and more."
+        canonicalPath="/guides/cheap-tickets"
+        image="/assets/bilet/zbor.jpg"
+        type="article"
+      />
       <h1 className="text-3xl font-bold mb-6 text-center">
         How to find the cheapest air tickets
       </h1>

@@ -5,6 +5,7 @@ import Icon from "../../components/AppIcon";
 import RegistrationForm from "./components/RegistrationForm";
 import SubscriptionTierSelector from "./components/SubscriptionTierSelector";
 import authService from "../../services/authService";
+import SEO from "../../components/seo/SEO";
 
 const Register = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -65,6 +66,12 @@ const Register = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="Creează cont"
+        description="Creează un cont TravelAI Deals pentru a salva căutări și a primi alerte personalizate."
+        canonicalPath="/register"
+        noindex
+      />
       <Header />
 
       <main className="pt-20">

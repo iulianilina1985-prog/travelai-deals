@@ -6,6 +6,8 @@ import { supabase } from "../../lib/supabase";
 import Icon from "../../components/AppIcon";
 import Button from "../../components/ui/Button";
 import { useFavorites } from "../../contexts/FavoritesContext";
+import { userService } from "../../services/userService";
+import SEO from "../../components/seo/SEO";
 
 const normalizeImage = (img) => {
   if (!img) return "/assets/images/no_image.png";
@@ -189,6 +191,9 @@ const OffersPage = () => {
             offerType,
             payload,
             user_id: session?.user?.id || null,
+            session_id: userService.getSessionId(),
+            client_path: `${location.pathname}${location.search}${location.hash}`,
+            source: "offersSearch",
           }),
         }
       );
@@ -372,7 +377,13 @@ const OffersPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 pt-24 pb-20">
+    <>
+      <SEO
+        title="Caută oferte de călătorie"
+        description="Caută rapid oferte de zboruri, hoteluri și servicii de călătorie. TravelAI te ajută să găsești opțiuni potrivite, mai rapid."
+        canonicalPath="/search-offers"
+      />
+      <div className="min-h-screen bg-slate-50 pt-24 pb-20">
 
       {/* ================= HEADER + TABS ================= */}
       <div className="bg-white border-b sticky top-0 z-40">
@@ -477,7 +488,8 @@ const OffersPage = () => {
         {/* CONTENT */}
         <div className="mt-10">{renderContent()}</div>
       </div>
-    </div>
+      </div>
+    </>
   );
 
 };

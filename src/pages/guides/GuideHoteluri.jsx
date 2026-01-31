@@ -1,4 +1,5 @@
 import React from "react";
+import SEO from "../../components/seo/SEO";
 
 const tips = [
   {
@@ -42,6 +43,13 @@ const tips = [
 const GuideHoteluri = () => {
   return (
     <div className="max-w-4xl mx-auto px-6 py-20">
+      <SEO
+        title="When is the best time to book a hotel"
+        description="Learn when to book hotels for the best price: advance windows, shoulder seasons, and practical booking tips."
+        canonicalPath="/guides/hotel-booking"
+        image="/assets/bilet/receptie.jpg"
+        type="article"
+      />
 
       <h1 className="text-3xl font-bold mb-6 text-center">
         When is the best time to book a hotel

@@ -3,6 +3,7 @@ import Header from "../../components/ui/Header";
 import Icon from "../../components/AppIcon";
 import Image from "../../components/AppImage";
 import { supabase } from "../../lib/supabase";
+import SEO from "../../components/seo/SEO";
 
 import PersonalInfoTab from "./components/PersonalInfoTab";
 import TravelPreferencesTab from "./components/TravelPreferencesTab";
@@ -86,6 +87,12 @@ const UserProfile = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="Profil utilizator"
+        description="Setări de cont și preferințe TravelAI Deals."
+        canonicalPath="/user-profile"
+        noindex
+      />
       <Header />
 
       <div className="pt-16 px-4 sm:px-6 lg:px-8 py-8">

@@ -1,6 +1,13 @@
+import SEO from "../../components/seo/SEO";
+
 const CarRentalPage = () => {
     return (
         <div className="container mx-auto px-6 py-16 space-y-16">
+            <SEO
+                title="Car Rental"
+                description="Renting a car gives you flexibility and control over your trip. Compare trusted car rental platforms."
+                canonicalPath="/car-rental"
+            />
 
             {/* PAGE TITLE */}
             <section className="space-y-4">

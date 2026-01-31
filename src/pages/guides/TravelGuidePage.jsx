@@ -2,6 +2,8 @@ import React from "react";
 import { useParams } from "react-router-dom";
 import { GUIDES_MONTH_2026 } from "../../data/guides";
 import { GUIDES_CONTENT } from "../../data/guidesContent";
+import SEO from "../../components/seo/SEO";
+import { getSiteUrl, toAbsoluteUrl } from "../../components/seo/url";
 
 const TravelGuidePage = () => {
     const { slug } = useParams();
@@ -16,13 +18,47 @@ const TravelGuidePage = () => {
     if (!guide || !content) {
         return (
             <div className="max-w-3xl mx-auto px-6 py-16">
+                <SEO
+                    title="Guide not found"
+                    description="This guide does not exist."
+                    canonicalPath={`/guides/${slug || ""}`}
+                    noindex
+                />
                 <h1 className="text-2xl font-bold">Guide not found</h1>
             </div>
         );
     }
 
+    const canonicalPath = guide.link || `/guides/${slug}`;
+    const siteUrl = getSiteUrl();
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        headline: guide.title,
+        description: content.intro,
+        image: toAbsoluteUrl(guide.image),
+        author: { "@type": "Organization", name: "TravelAI Deals" },
+        publisher: {
+            "@type": "Organization",
+            name: "TravelAI Deals",
+            url: siteUrl || undefined,
+        },
+        mainEntityOfPage: {
+            "@type": "WebPage",
+            "@id": toAbsoluteUrl(canonicalPath),
+        },
+    };
+
     return (
         <article className="max-w-3xl mx-auto px-6 py-16">
+            <SEO
+                title={guide.title}
+                description={content.intro}
+                canonicalPath={canonicalPath}
+                image={guide.image}
+                type="article"
+                jsonLd={jsonLd}
+            />
             {/* TITLU */}
             <h1 className="text-3xl font-bold mb-6 text-center">
                 {guide.title}

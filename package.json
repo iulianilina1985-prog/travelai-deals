@@ -64,7 +64,8 @@
   "scripts": {
     "dev": "vite",
     "start": "vite",
-    "build": "vite build --sourcemap",
+    "seo:generate": "node scripts/generate-seo-files.mjs",
+    "build": "node scripts/generate-seo-files.mjs && vite build --sourcemap",
     "serve": "vite preview"
   },
   "eslintConfig": {

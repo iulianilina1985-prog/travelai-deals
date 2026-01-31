@@ -4,10 +4,16 @@ import React from "react";
 import Header from "../../components/ui/Header";
 import Footer from "../../components/ui/Footer";
 import Icon from "../../components/AppIcon";
+import SEO from "../../components/seo/SEO";
 
 const TermsPage = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col pt-24 md:pt-28">
+      <SEO
+        title="Terms and Conditions"
+        description="Terms and Conditions for using the TravelAI Deals platform."
+        canonicalPath="/terms-and-conditions"
+      />
       <Header />
 
       {/* HERO */}

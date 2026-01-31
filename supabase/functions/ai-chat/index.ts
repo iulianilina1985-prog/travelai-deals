@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { SYSTEM_PROMPT } from "./system_prompt.ts";
 import { resolveToIata } from "./airport_resolver.ts";
 import { getAIProvidersByCategory, AffiliateProvider } from "../_shared/affiliates/registry.ts";
@@ -14,10 +15,65 @@ const corsHeaders = {
 const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
 if (!OPENAI_API_KEY) throw new Error("Missing OPENAI_API_KEY");
 
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+const supabaseAdmin =
+  SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY
+    ? createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
+    : null;
+
 /* ================= HELPERS ================= */
 
 function norm(v: unknown) {
   return String(v ?? "").trim();
+}
+
+function isUuid(v: unknown) {
+  const s = norm(v);
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(s);
+}
+
+async function resolveUserIdFromRequest(req: Request, fallbackUserId?: unknown) {
+  if (isUuid(fallbackUserId)) return norm(fallbackUserId);
+  if (!supabaseAdmin) return null;
+
+  const authHeader = req.headers.get("authorization") || "";
+  const token = authHeader.replace("Bearer ", "").trim();
+  if (!token) return null;
+
+  try {
+    const { data, error } = await supabaseAdmin.auth.getUser(token);
+    if (error || !data?.user?.id) return null;
+    return data.user.id;
+  } catch {
+    return null;
+  }
+}
+
+async function logAnalyticsEvent(params: {
+  req: Request;
+  userId: string | null;
+  sessionId: string | null;
+  eventType: string;
+  eventName: string;
+  properties: Record<string, unknown>;
+}) {
+  if (!supabaseAdmin) return;
+  try {
+    const userAgent = params.req.headers.get("user-agent") || null;
+    const { error } = await supabaseAdmin.from("analytics_events").insert({
+      user_id: params.userId,
+      event_type: params.eventType,
+      event_name: params.eventName,
+      properties: params.properties,
+      session_id: params.sessionId,
+      user_agent: userAgent,
+    });
+
+    if (error) console.error("analytics_events insert error:", error);
+  } catch (err) {
+    console.error("analytics_events insert exception:", err);
+  }
 }
 
 function strip(s: string) {
@@ -236,6 +292,14 @@ serve(async (req) => {
   try {
     const body = await req.json();
     const prompt = norm(body?.prompt);
+    const startedAt = Date.now();
+    const requestId = crypto.randomUUID();
+    const sessionId = norm(body?.session_id) || null;
+    const callerPath = norm(body?.client_path) || null;
+    const source = norm(body?.source) || null;
+    const offerType = norm(body?.offerType) || null;
+
+    const userId = await resolveUserIdFromRequest(req, body?.user_id);
 
 
 
@@ -353,20 +417,44 @@ serve(async (req) => {
 
       console.log("🤖 Pseudo-AI Reply:", replyText);
 
-      return new Response(
-        JSON.stringify({
-          reply: replyText,
-          message: { text: replyText, confidence: 1 },
-          intent,
-          cards,
-          type: intent.type ? "offer" : null
-        }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      const payload = {
+        reply: replyText,
+        message: { text: replyText, confidence: 1 },
+        intent,
+        cards,
+        type: intent.type ? "offer" : null,
+      };
+
+      await logAnalyticsEvent({
+        req,
+        userId,
+        sessionId,
+        eventType: "ai_chat",
+        eventName: "invoke",
+        properties: {
+          request_id: requestId,
+          source,
+          client_path: callerPath,
+          offer_type: offerType,
+          prompt_chars: prompt.length,
+          prompt_words: prompt ? prompt.split(/\\s+/).filter(Boolean).length : 0,
+          is_pseudo_ai: true,
+          model: null,
+          intent_type: (intent as any)?.type ?? null,
+          has_flight_intent: Boolean(flightIntent),
+          duration_ms: Date.now() - startedAt,
+          success: true,
+        },
+      });
+
+      return new Response(JSON.stringify(payload), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     // REAL AI PATH
     console.log("💉 Injecting context for AI:", pricingContext ? "YES" : "NO");
+    const model = "gpt-4o-mini";
     const aiRes = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -374,7 +462,7 @@ serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "gpt-4o-mini",
+        model,
         messages: [
           { role: "system", content: SYSTEM_PROMPT + (pricingContext ? `\n\n${pricingContext}` : "") },
           { role: "user", content: prompt },
@@ -420,6 +508,28 @@ serve(async (req) => {
       cards = providers.map(p => buildGenericCard(p, intent));
     }
 
+    await logAnalyticsEvent({
+      req,
+      userId,
+      sessionId,
+      eventType: "ai_chat",
+      eventName: "invoke",
+      properties: {
+        request_id: requestId,
+        source,
+        client_path: callerPath,
+        offer_type: offerType,
+        prompt_chars: prompt.length,
+        prompt_words: prompt ? prompt.split(/\\s+/).filter(Boolean).length : 0,
+        is_pseudo_ai: false,
+        model,
+        intent_type: (intent as any)?.type ?? null,
+        has_flight_intent: Boolean(flightIntent),
+        duration_ms: Date.now() - startedAt,
+        success: true,
+      },
+    });
+
     return new Response(
       JSON.stringify({
         message: {
@@ -446,7 +556,7 @@ serve(async (req) => {
         reply: "Am întâmpinat o eroare internă. Te rog încearcă din nou.",
         error: String(err)
       }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
 });

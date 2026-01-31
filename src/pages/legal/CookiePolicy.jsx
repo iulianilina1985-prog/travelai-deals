@@ -4,10 +4,16 @@ import React from "react";
 import Header from "../../components/ui/Header";
 import Footer from "../../components/ui/Footer";
 import Icon from "../../components/AppIcon";
+import SEO from "../../components/seo/SEO";
 
 const CookiePolicy = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col pt-24 md:pt-28">
+      <SEO
+        title="Cookie Policy"
+        description="Cookie Policy for TravelAI Deals: how cookies are used for performance, security and personalization."
+        canonicalPath="/cookie-policy"
+      />
       <Header />
 
       {/* HERO */}

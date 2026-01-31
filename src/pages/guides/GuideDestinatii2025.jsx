@@ -1,4 +1,5 @@
 import React from "react";
+import SEO from "../../components/seo/SEO";
 
 const cities = [
   {
@@ -46,6 +47,13 @@ const cities = [
 const GuideDestinatii2025 = () => {
   return (
     <div className="max-w-4xl mx-auto px-6 py-20">
+      <SEO
+        title="Top 5 affordable destinations in 2025"
+        description="Top 5 affordable city-break destinations in 2025, selected by analyzing average flight prices and city costs."
+        canonicalPath="/guides/destinations-2025"
+        image="/assets/guides/budapesta.jpg"
+        type="article"
+      />
       <h1 className="text-3xl font-bold mb-6 text-center">
         Top 5 affordable destinations in 2025
       </h1>

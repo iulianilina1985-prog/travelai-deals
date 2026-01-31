@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Helmet } from 'react-helmet';
 import Header from '../../components/ui/Header';
 import StatsCard from './components/StatsCard';
 import UserManagementTable from './components/UserManagementTable';
@@ -8,9 +7,12 @@ import RevenueChart from './components/RevenueChart';
 import ActivityFeed from './components/ActivityFeed';
 import SystemAlerts from './components/SystemAlerts';
 import ApiMonitoring from './components/ApiMonitoring';
+import PageAccessLog from "./components/PageAccessLog";
+import AiChatUsage from "./components/AiChatUsage";
 import Icon from '../../components/AppIcon';
 import Button from '../../components/ui/Button';
 import { supabase } from '../../lib/supabase';
+import SEO from "../../components/seo/SEO";
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState({
@@ -19,6 +21,7 @@ const AdminDashboard = () => {
     monthlyRevenue: 0,
     activeSearches: 0,
     apiRequests: 0,
+    aiChatRequests: 0,
   });
 
   const [loading, setLoading] = useState(true);
@@ -60,12 +63,19 @@ const AdminDashboard = () => {
         .select('*', { count: 'exact', head: true })
         .eq('event_type', 'api_call');
 
+      // utilizari AI Chat
+      const { count: aiChatRequests } = await supabase
+        .from("analytics_events")
+        .select("*", { count: "exact", head: true })
+        .eq("event_type", "ai_chat");
+
       setStats({
         totalUsers: totalUsers ?? 0,
         activeSubscriptions: activeSubscriptions ?? 0,
         monthlyRevenue,
         activeSearches: activeSearches ?? 0,
         apiRequests: apiRequests ?? 0,
+        aiChatRequests: aiChatRequests ?? 0,
       });
 
       setLoading(false);
@@ -85,6 +95,7 @@ const AdminDashboard = () => {
     { title: 'Monthly Revenue', value: `${stats.monthlyRevenue} €`, icon: 'TrendingUp' },
     { title: 'Active Searches', value: stats.activeSearches, icon: 'Search' },
     { title: 'API Requests', value: stats.apiRequests, icon: 'Activity' },
+    { title: 'AI Chat Requests', value: stats.aiChatRequests, icon: 'MessageCircle' },
     { title: 'System Uptime', value: '99.9%', icon: 'Shield' },
   ];
 
@@ -97,10 +108,12 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Helmet>
-        <title>Admin Panel - TravelAI Deals</title>
-        <meta name="description" content="TravelAI Deals Administrative Panel" />
-      </Helmet>
+      <SEO
+        title="Admin Panel"
+        description="TravelAI Deals administrative dashboard."
+        canonicalPath="/admin-dashboard"
+        noindex
+      />
 
       <Header />
 
@@ -159,6 +172,12 @@ const AdminDashboard = () => {
           {/* Traffic Overview */}
           <div className="mb-8">
             <TrafficChart />
+          </div>
+
+          {/* Analytics */}
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-8">
+            <PageAccessLog />
+            <AiChatUsage />
           </div>
           {/* Main Content Grid */}
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 mb-8">

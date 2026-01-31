@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { supabase } from "../../../lib/supabase";
 import { useNavigate } from "react-router-dom";
+import SEO from "../../../components/seo/SEO";
 
 const ResetPasswordPage = () => {
   const navigate = useNavigate();
@@ -9,10 +10,6 @@ const ResetPasswordPage = () => {
   const [confirm, setConfirm] = useState("");
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    document.title = "Reset Password - TravelAI Deals";
-  }, []);
 
   const handleReset = async (e) => {
     e.preventDefault();
@@ -44,6 +41,12 @@ const ResetPasswordPage = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
+      <SEO
+        title="Reset password"
+        description="Reset password for your TravelAI Deals account."
+        canonicalPath="/reset-password"
+        noindex
+      />
       <div className="bg-card border border-border p-8 rounded-lg shadow-sm w-full max-w-md">
 
         <h2 className="text-2xl font-semibold mb-4">Reset password</h2>

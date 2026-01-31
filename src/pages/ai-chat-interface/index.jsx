@@ -8,6 +8,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 import Header from "../../components/ui/Header";
+import SEO from "../../components/seo/SEO";
 import ChatMessage from "./components/ChatMessage";
 import ChatInput from "./components/ChatInput";
 import ChatSidebar from "./components/ChatSidebar";
@@ -478,6 +479,11 @@ const AIChatInterface = () => {
 
   return (
     <div className="bg-background pt-16 h-screen flex flex-col overflow-hidden">
+      <SEO
+        title="AI Travel Assistant"
+        description="Cere recomandări de călătorie și primește sugestii de zboruri, hoteluri și activități, generate cu ajutorul AI."
+        canonicalPath="/ai-chat-interface"
+      />
       <Header />
 
 

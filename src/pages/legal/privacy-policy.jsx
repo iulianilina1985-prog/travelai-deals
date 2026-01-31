@@ -4,10 +4,16 @@ import React from "react";
 import Header from "../../components/ui/Header";
 import Footer from "../../components/ui/Footer";
 import Icon from "../../components/AppIcon";
+import SEO from "../../components/seo/SEO";
 
 const PrivacyPolicy = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col pt-24 md:pt-28">
+      <SEO
+        title="Privacy Policy"
+        description="Privacy Policy for TravelAI Deals: how we process and protect personal data."
+        canonicalPath="/privacy-policy"
+      />
       <Header />
 
       {/* HERO */}

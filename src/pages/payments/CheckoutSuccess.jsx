@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import SEO from "../../components/seo/SEO";
 
 const CheckoutSuccess = () => {
   useEffect(() => {
@@ -7,6 +8,12 @@ const CheckoutSuccess = () => {
 
   return (
     <div className="p-10 text-center">
+      <SEO
+        title="Checkout success"
+        description="Payment processed successfully."
+        canonicalPath="/checkout-success"
+        noindex
+      />
       <h1 className="text-3xl font-bold text-green-600">
         Plata a fost procesată cu succes! 🎉
       </h1>

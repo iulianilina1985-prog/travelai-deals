@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import Header from "../../components/ui/Header";
 import Footer from "../../components/ui/Footer";
 import AuthModal from "../../components/AuthModal";
+import SEO from "../../components/seo/SEO";
+import { getSiteUrl, toAbsoluteUrl } from "../../components/seo/url";
 
 
 import HeroSection from "./components/HeroSection";
@@ -53,8 +55,31 @@ const HomePage = () => {
   const openAuthModal = () => setShowAuthModal(true);
   const closeAuthModal = () => setShowAuthModal(false);
 
+  const siteUrl = getSiteUrl();
+  const jsonLd = [
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      name: "TravelAI Deals",
+      url: siteUrl || undefined,
+      logo: toAbsoluteUrl("/icon.png"),
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: "TravelAI Deals",
+      url: siteUrl || undefined,
+    },
+  ];
+
   return (
     <div className="relative min-h-screen flex flex-col overflow-hidden bg-transparent">
+      <SEO
+        title="Oferte inteligente de călătorie cu AI"
+        description="Descoperă oferte de zboruri, hoteluri și experiențe cu ajutorul AI. Caută, compară și primește recomandări personalizate."
+        canonicalPath="/"
+        jsonLd={jsonLd}
+      />
 
 
       {/* HEADER */}

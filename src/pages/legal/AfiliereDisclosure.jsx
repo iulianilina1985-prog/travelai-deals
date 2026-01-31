@@ -2,10 +2,16 @@ import React from "react";
 import Header from "../../components/ui/Header";
 import Footer from "../../components/ui/Footer";
 import Icon from "../../components/AppIcon";
+import SEO from "../../components/seo/SEO";
 
 const AfiliereDisclosure = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col pt-24 md:pt-28">
+      <SEO
+        title="Affiliate Disclosure"
+        description="Affiliate disclosure for TravelAI Deals: how partnerships work and when commissions may be earned."
+        canonicalPath="/affiliate-disclosure"
+      />
       <Header />
 
       {/* HERO SECTION */}
